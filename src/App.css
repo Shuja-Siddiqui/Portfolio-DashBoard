@@ -1,0 +1,127 @@
+*{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+.container_div{
+    display:flex
+}
+
+main{
+    width: 100%;
+    padding: 20px;
+    background: #2C2C36;
+}
+.sidebar{
+    background: #191923;
+    color: #fff;
+    height: 135vh;
+    width: 300px;
+    transition: all 0.5s;
+}
+.top_section{
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+}
+
+.logo{
+    font-size: 30px;
+    color: #01BE96;
+}
+
+.bars{
+    display: flex;
+    font-size: 25px;
+    margin-left: 50px;
+    cursor: pointer;
+}
+.menu{
+    margin-top: 60px;
+}
+
+.link{
+    display: flex;
+    color: #fff;
+    padding: 10px 15px;
+    gap: 20px;
+    transition: all 0.5s;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.link:hover{
+    background: #01BE96;
+    color: #000;
+    transition: all 0.5s;
+}
+
+.active{
+    background: #01BE96;
+    color: #000;
+}
+.icon, .link_text{
+    font-size: 20px;
+}
+
+
+/* ---form------- */
+
+form{
+  display: block;
+  background-color: #191923;
+  box-shadow: 1px 1px 3px 2px #383838;
+  margin: 100px auto;
+  max-width: 600px;
+  padding: 30px 40px;
+  border-radius: 2px;
+}
+
+form input:focus,
+form input:active{
+}
+
+form input, textarea, select{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 15px auto;
+    padding: 10px;
+    font-family: "poppins";
+    background-color: #2C2C36;
+    border: 1px solid #313131;
+    border-radius: 2px;
+    color: #fff;
+}
+
+form button{
+    height: 30px;
+    width: 150px;
+    align-items: center;
+    border: none;
+    background-color: #2C2C36;
+    border: 1px solid #01BE96;
+    color: #01BE96;
+    border-radius: 7px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+}
+
+form button:hover{
+    background-color: #01BE96;
+    color: #2C2C36;
+}
+
+table{
+    background-color: #191923;
+}
+
+table  tbody{
+    color: #fff;
+}
+
+table thead{
+    color: #01BE96;
+}
