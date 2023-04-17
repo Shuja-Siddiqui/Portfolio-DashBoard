@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { servicesData } from "../components/Navbar/Array";
+import { MdDelete } from "react-icons/md";
 
 export default function Services() {
   const [data, setData] = useState({ field: "", message: "" });
@@ -54,6 +55,7 @@ export default function Services() {
             <th scope="row">{i.id}</th>
             <td>{i.field}</td>
             <td>{i.description}</td>
+            <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
           </tr>
         </tbody>
         ))}

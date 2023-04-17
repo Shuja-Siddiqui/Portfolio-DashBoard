@@ -16,8 +16,7 @@ main{
 .sidebar{
     background: #191923;
     color: #fff;
-    height: 135vh;
-    width: 300px;
+    height: 355vh;
     transition: all 0.5s;
 }
 .top_section{
@@ -116,6 +115,7 @@ form button:hover{
 
 table{
     background-color: #191923;
+    font-size: 0.9rem;
 }
 
 table  tbody{
@@ -124,4 +124,22 @@ table  tbody{
 
 table thead{
     color: #01BE96;
+}
+
+.main-info{
+    /* display: flex; */
+}
+.main-info img{
+    /* width: 300px; */
+}
+
+.info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(152, 153, 153);
+}
+
+.info h3{
+    color: #01BE96 !important;
 }

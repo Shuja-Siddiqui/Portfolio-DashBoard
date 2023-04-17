@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { projectData } from "../components/Navbar/Array";
+import { MdDelete } from "react-icons/md";
+
 
 export default function Projects() {
   const [data, setData] = useState({
     field: "",
     message: "",
-    image:"",
+    image: "",
     url: "",
     projectDescription: "",
   });
@@ -77,26 +79,29 @@ export default function Projects() {
         />
         <button>SUBMIT</button>
       </form>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">PROJECT NAME</th>
-            <th scope="col">DESCRIPTION</th>
-            <th scope="col">LINK</th>
-          </tr>
-        </thead>
-        {projectData.map((i,index) => (
-        <tbody>
-          <tr>
-            <th scope="row">{i.id}</th>
-            <td>{i.p_name}</td>
-            <td>{i.description}</td>
-            <td>{i.link}</td>
-          </tr>
-        </tbody>
-        ))}
-      </table>
+      <div className="table-responsive-lg table-responsive-md table-responsive-sm">
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">PROJECT NAME</th>
+                <th scope="col">DESCRIPTION</th>
+                <th scope="col">LINK</th>
+              </tr>
+            </thead>
+            {projectData.map((i, index) => (
+              <tbody>
+                <tr>
+                  <th scope="row">{i.id}</th>
+                  <td>{i.p_name}</td>
+                  <td>{i.description}</td>
+                  <td>{i.link}</td>
+                  <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
+                </tr>
+              </tbody>
+            ))}
+          </table>
+          </div>
     </div>
   );
 }

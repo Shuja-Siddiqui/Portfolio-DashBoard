@@ -1,17 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { userData } from "../components/Navbar/Array";
 
 export default function Info() {
+  // let a = "";
+
   const [data, setData] = useState({
     name: "",
     field: "",
-    address:"",
-    phone:"",
-    email:"",
+    address: "",
+    phone: "",
+    email: "",
     message: "",
-    account:"",
-    accountUrl:"",
+    account: "",
+    accountUrl: "",
     image: "",
   });
+
+  const [input, setInput] = useState(0);
+
+  const handleId = (e) => {
+    const value = e.target.value;
+    setInput(value);
+  };
+
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -29,9 +40,80 @@ export default function Info() {
     formData.append("image", data.image);
   };
 
+  const [myData, setMyData] = useState(null);
+
+  useEffect(() => {
+    const temp = userData.filter((item) => item.id == input);
+    if (input !== 0) setMyData({ ...temp[0] });
+  }, [input]);
+
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Dev Information</h1>
+      <form>
+        <input
+          type="number"
+          name="id"
+          onChange={handleId}
+          value={input.id}
+          placeholder="enter id"
+        />
+      </form>
+      {myData && (
+        <div className="container">
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-lg-8 col-sm-12">
+                <div className="row">
+                  <div className="row info">
+                    <div className="title col-lg-3 col-sm-12">
+                      <h3>NAME:</h3>
+                    </div>
+                    <div className="sub_title col-lg-8 col-sm-12 mb-3">
+                      <h4>{myData?.name}</h4>
+                    </div>
+                  </div>
+                  <div className="row info">
+                    <div className="title col-lg-3 col-sm-12">
+                      <h3>FIELD:</h3>
+                    </div>
+                    <div className="sub_title col-lg-8 col-sm-12 mb-3">
+                      <h4>{myData?.field}</h4>
+                    </div>
+                  </div>
+                  <div className="row info">
+                    <div className="title col-lg-3 col-sm-12">
+                      <h3>EMAIL:</h3>
+                    </div>
+                    <div className="sub_title col-lg-8 col-sm-12">
+                      <h4>{myData?.email}</h4>
+                    </div>
+                  </div>
+                  <div className="row info">
+                    <div className="title col-lg-3">
+                      <h3>PHONE:</h3>
+                    </div>
+                    <div className="sub_title col-lg-8 col-sm-12 mb-3">
+                      <h4>{myData?.phone}</h4>
+                    </div>
+                  </div>
+                  <div className="row info">
+                    <div className="title col-lg-3 col-sm-12">
+                      <h3>ABOUT:</h3>
+                    </div>
+                    <div className="sub_title col-lg-8 col-sm-12 mb-3">
+                      <h4>{myData?.about}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4 col-sm-12">
+                <img src={myData?.image} alt="" width={"100%"} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <form method="post" onSubmit={handleSubmit}>
         <input
           type="text"

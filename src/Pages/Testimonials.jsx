@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { testimonialsData } from "../components/Navbar/Array";
+import { MdDelete } from "react-icons/md";
 
 export default function Testimonials() {
   const [data, setData] = useState({
@@ -73,28 +74,31 @@ export default function Testimonials() {
         />
         <button>SUBMIT</button>
       </form>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Client NAME</th>
-            <th scope="col">FIELD</th>
-            <th scope="col">STARS</th>
-            <th scope="col">REVIEW</th>
-          </tr>
-        </thead>
-      {testimonialsData.map((i,index)=> (
-        <tbody>
-          <tr>
-            <th scope="row">{i.id}</th>
-            <td>{i.name}</td>
-            <td>{i.field}</td>
-            <td>{i.stars}</td>
-            <td>{i.review}</td>
-          </tr>
-        </tbody>
-        ))}
-      </table>
+      <div className="table-responsive-lg table-responsive-md table-responsive-sm">
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Client NAME</th>
+              <th scope="col">FIELD</th>
+              <th scope="col">STARS</th>
+              <th scope="col">REVIEW</th>
+            </tr>
+          </thead>
+          {testimonialsData.map((i, index) => (
+            <tbody>
+              <tr>
+                <th scope="row">{i.id}</th>
+                <td>{i.name}</td>
+                <td>{i.field}</td>
+                <td>{i.stars}</td>
+                <td>{i.review}</td>
+                <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
+              </tr>
+            </tbody>
+          ))}
+        </table>
+      </div>
     </div>
   );
 }
