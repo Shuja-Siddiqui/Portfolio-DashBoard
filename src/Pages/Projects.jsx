@@ -96,7 +96,7 @@ export default function Projects() {
                   <td>{i.p_name}</td>
                   <td>{i.description}</td>
                   <td>{i.link}</td>
-                  <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
+                  <td className="delete_icon"><MdDelete /></td>
                 </tr>
               </tbody>
             ))}

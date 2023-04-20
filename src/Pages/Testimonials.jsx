@@ -93,7 +93,7 @@ export default function Testimonials() {
                 <td>{i.field}</td>
                 <td>{i.stars}</td>
                 <td>{i.review}</td>
-                <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
+                <td className="delete_icon"><MdDelete /></td>
               </tr>
             </tbody>
           ))}

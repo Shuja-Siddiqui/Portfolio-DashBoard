@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { userData } from "../components/Navbar/Array";
+import { FaEdit } from "react-icons/fa";
 
 export default function Info() {
+  const [show, setShow] = useState(false);
+
+  const showForm = () => {
+    setShow(true);
+    console.log(show);
+  };
   // let a = "";
 
   const [data, setData] = useState({
@@ -61,7 +68,92 @@ export default function Info() {
       </form>
       {myData && (
         <div className="container">
-          <div className="container-fluid">
+          <form
+            method="post"
+            onSubmit={handleSubmit}
+            className={show ? "show" : "dontShow"}
+          >
+            <input
+              type="text"
+              name="name"
+              id=""
+              onChange={handleChange}
+              value={data.name}
+              placeholder={myData?.name}
+              required
+            />
+            <input
+              type="text"
+              name="field"
+              id=""
+              onChange={handleChange}
+              value={data.field}
+              placeholder={myData?.field}
+              required
+            />
+            <input
+              type="text"
+              name="address"
+              id=""
+              onChange={handleChange}
+              value={data.address}
+              placeholder="Address"
+              required
+            />
+            <input
+              type="number"
+              name="phone"
+              id=""
+              onChange={handleChange}
+              value={data.phone}
+              placeholder={myData?.phone}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              id=""
+              onChange={handleChange}
+              value={data.email}
+              placeholder={myData?.email}
+              required
+            />
+            <textarea
+              name="message"
+              id=""
+              onChange={handleChange}
+              value={data.message}
+              col="30"
+              rows="10"
+              placeholder={myData?.about}
+              required
+            />
+            <select name="" id="" placeholder="Personal Accounts">
+              <option value="">Select Accounts...</option>
+              <option value={data.account}>Github</option>
+              <option value={data.account}>LinkedIn</option>
+              <option value={data.account}>StackOverflow</option>
+            </select>
+            <input
+              type="url"
+              name="acoountsUrl"
+              id=""
+              accept=""
+              onChange={handleChange}
+              placeholder="Accounts Url https//:"
+              required
+            />
+            <input
+              type="file"
+              name="image"
+              id=""
+              accept="image/jpg, image/jpeg, image/png"
+              onChange={handleChange}
+              required
+            />
+            <button>SUBMIT</button>
+          </form>
+          <div className="container-fluid mb-4 mb-lg-2">
             <div className="row">
               <div className="col-lg-8 col-sm-12">
                 <div className="row">
@@ -112,89 +204,15 @@ export default function Info() {
               </div>
             </div>
           </div>
+
+          <button
+            onClick={showForm}
+            className={show ? "dontShow" : "show"}
+          >
+           <FaEdit /> EDIT
+          </button>
         </div>
       )}
-      <form method="post" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          id=""
-          onChange={handleChange}
-          value={data.name}
-          placeholder="Name"
-          required
-        />
-        <input
-          type="text"
-          name="field"
-          id=""
-          onChange={handleChange}
-          value={data.field}
-          placeholder="Field"
-          required
-        />
-        <input
-          type="text"
-          name="address"
-          id=""
-          onChange={handleChange}
-          value={data.address}
-          placeholder="Address"
-          required
-        />
-        <input
-          type="number"
-          name="phone"
-          id=""
-          onChange={handleChange}
-          value={data.phone}
-          placeholder="+92"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          id=""
-          onChange={handleChange}
-          value={data.email}
-          placeholder="example@email.com"
-          required
-        />
-        <textarea
-          name="message"
-          id=""
-          onChange={handleChange}
-          value={data.message}
-          col="30"
-          rows="10"
-          placeholder="About Yourself"
-          required
-        />
-        <select name="" id="" placeholder="Personal Accounts">
-          <option value="">Select Accounts...</option>
-          <option value={data.account}>Github</option>
-          <option value={data.account}>LinkedIn</option>
-          <option value={data.account}>StackOverflow</option>
-        </select>
-        <input
-          type="url"
-          name="acoountsUrl"
-          id=""
-          accept=""
-          onChange={handleChange}
-          placeholder="Accounts Url https//:"
-          required
-        />
-        <input
-          type="file"
-          name="image"
-          id=""
-          accept="image/jpg, image/jpeg, image/png"
-          onChange={handleChange}
-          required
-        />
-        <button>SUBMIT</button>
-      </form>
     </div>
   );
 }

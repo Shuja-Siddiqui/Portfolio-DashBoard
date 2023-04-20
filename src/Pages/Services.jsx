@@ -41,25 +41,29 @@ export default function Services() {
         />
         <button>SUBMIT</button>
       </form>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">NAME</th>
-            <th scope="col">DESCRIPTION</th>
-          </tr>
-        </thead>
-        {servicesData.map((i,index)=>(
-        <tbody>
-          <tr>
-            <th scope="row">{i.id}</th>
-            <td>{i.field}</td>
-            <td>{i.description}</td>
-            <td style={{color:"red", cursor:"pointer"}}><MdDelete /></td>
-          </tr>
-        </tbody>
-        ))}
-      </table>
+      <div className="table-responsive-lg table-responsive-md table-responsive-sm">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">NAME</th>
+              <th scope="col">DESCRIPTION</th>
+            </tr>
+          </thead>
+          {servicesData.map((i, index) => (
+            <tbody>
+              <tr>
+                <th scope="row">{i.id}</th>
+                <td>{i.field}</td>
+                <td>{i.description}</td>
+                <td className="delete_icon">
+                  <MdDelete />
+                </td>
+              </tr>
+            </tbody>
+          ))}
+        </table>
+      </div>
     </div>
   );
 }

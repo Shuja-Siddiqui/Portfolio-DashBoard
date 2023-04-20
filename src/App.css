@@ -11,6 +11,7 @@
 main{
     width: 100%;
     padding: 20px;
+    padding-left: 70px;
     background: #2C2C36;
 }
 .sidebar{
@@ -116,14 +117,22 @@ form button:hover{
 table{
     background-color: #191923;
     font-size: 0.9rem;
+    width: 100%;
 }
 
 table  tbody{
-    color: #fff;
+    width: auto;
+    color: #ffffffc4;
 }
 
 table thead{
     color: #01BE96;
+}
+
+table .delete_icon{
+    cursor: pointer;
+    color: rgba(252, 63, 63, 0.664);
+    font-size: 22px !important;
 }
 
 .main-info{
@@ -142,4 +151,29 @@ table thead{
 
 .info h3{
     color: #01BE96 !important;
+}
+
+.dontShow{
+    display: none;
+}
+.show{
+    display: block;
+}
+button{
+    height: 30px;
+    width: 150px;
+    align-items: center;
+    border: none;
+    background-color: #2C2C36;
+    border: 1px solid #01BE96;
+    color: #01BE96;
+    border-radius: 7px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+}
+
+button:hover{
+    background-color: #01BE96;
+    color: #2C2C36;
 }
