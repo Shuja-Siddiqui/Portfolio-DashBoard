@@ -8,7 +8,6 @@ export default function Services() {
     const res = await fetch(
       "http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9"
     ).then((res) => res.json());
-    console.log(res);
     setServiceData(res.data);
   };
 
