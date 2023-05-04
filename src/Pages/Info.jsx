@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { userData } from "../components/Navbar/Array";
 import { FaEdit } from "react-icons/fa";
 
 export default function Info() {
@@ -9,19 +8,6 @@ export default function Info() {
     setShow(true);
     console.log(show);
   };
-  // let a = "";
-
-  const [data, setData] = useState({
-    name: "",
-    field: "",
-    address: "",
-    phone: "",
-    email: "",
-    message: "",
-    account: "",
-    accountUrl: "",
-    image: "",
-  });
 
   const [input, setInput] = useState(0);
 
@@ -30,29 +16,31 @@ export default function Info() {
     setInput(value);
   };
 
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setData({ ...data, [name]: value });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("field", data.field);
-    formData.append("message", data.message);
-    formData.append("account", data.account);
-    formData.append("accountUrl", data.accountUrl);
-    formData.append("image", data.image);
+    formData.append("name", editMyData?.name);
+    formData.append("field", editMyData?.field);
+    formData.append("message", editMyData?.message);
+    formData.append("account", editMyData?.account);
+    formData.append("accountUrl", editMyData?.accountUrl);
+    // formData.append("image", editMyData?.image);
   };
 
   const [myData, setMyData] = useState(null);
+  const [editMyData, setEditMyData] = useState(null);
+
+  const getData = async () => {
+    const res = await fetch(
+      "http://localhost:5000/developer_info/6450cb8a8eb415ba6bd72ae9"
+    ).then((res) => res.json());
+    setMyData(res.data);
+    setEditMyData(res.data);
+  };
 
   useEffect(() => {
-    const temp = userData.filter((item) => item.id == input);
-    if (input !== 0) setMyData({ ...temp[0] });
-  }, [input]);
+    getData();
+  }, []);
 
   return (
     <div>
@@ -62,7 +50,7 @@ export default function Info() {
           type="number"
           name="id"
           onChange={handleId}
-          value={input.id}
+          value={editMyData?._id}
           placeholder="enter id"
         />
       </form>
@@ -77,26 +65,23 @@ export default function Info() {
               type="text"
               name="name"
               id=""
-              onChange={handleChange}
-              value={data.name}
-              placeholder={myData?.name}
+              value={editMyData?.name}
+              placeholder="Full Name"
               required
             />
             <input
               type="text"
               name="field"
               id=""
-              onChange={handleChange}
-              value={data.field}
-              placeholder={myData?.field}
+              value={editMyData?.field}
+              placeholder="Field"
               required
             />
             <input
               type="text"
               name="address"
               id=""
-              onChange={handleChange}
-              value={data.address}
+              value={editMyData?.address}
               placeholder="Address"
               required
             />
@@ -104,42 +89,39 @@ export default function Info() {
               type="number"
               name="phone"
               id=""
-              onChange={handleChange}
-              value={data.phone}
-              placeholder={myData?.phone}
+              value={editMyData?.phone}
+              placeholder="Mobile Number"
               required
             />
             <input
               type="email"
               name="email"
               id=""
-              onChange={handleChange}
-              value={data.email}
-              placeholder={myData?.email}
+              value={editMyData?.email}
+              placeholder="example@email.com"
               required
             />
             <textarea
               name="message"
               id=""
-              onChange={handleChange}
-              value={data.message}
               col="30"
               rows="10"
-              placeholder={myData?.about}
+              placeholder="About Yourself!"
               required
-            />
+            >
+              {editMyData?.about}
+            </textarea>
             <select name="" id="" placeholder="Personal Accounts">
               <option value="">Select Accounts...</option>
-              <option value={data.account}>Github</option>
-              <option value={data.account}>LinkedIn</option>
-              <option value={data.account}>StackOverflow</option>
+              <option value={editMyData?._id}>Github</option>
+              <option value={editMyData?._id}>LinkedIn</option>
+              <option value={editMyData?._id}>StackOverflow</option>
             </select>
             <input
               type="url"
               name="acoountsUrl"
               id=""
               accept=""
-              onChange={handleChange}
               placeholder="Accounts Url https//:"
               required
             />
@@ -148,11 +130,12 @@ export default function Info() {
               name="image"
               id=""
               accept="image/jpg, image/jpeg, image/png"
-              onChange={handleChange}
               required
             />
             <button>SUBMIT</button>
           </form>
+
+          {/* Information */}
           <div className="container-fluid mb-4 mb-lg-2">
             <div className="row">
               <div className="col-lg-8 col-sm-12">
@@ -200,16 +183,17 @@ export default function Info() {
                 </div>
               </div>
               <div className="col-lg-4 col-sm-12">
-                <img src={myData?.image} alt="" width={"100%"} />
+                <img
+                  src={"https://i.imgur.com/TarFi3P.png"}
+                  alt=""
+                  width={"100%"}
+                />
               </div>
             </div>
           </div>
 
-          <button
-            onClick={showForm}
-            className={show ? "dontShow" : "show"}
-          >
-           <FaEdit /> EDIT
+          <button onClick={showForm} className={show ? "dontShow" : "show"}>
+            <FaEdit /> EDIT
           </button>
         </div>
       )}

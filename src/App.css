@@ -78,9 +78,6 @@ form{
   border-radius: 2px;
 }
 
-form input:focus,
-form input:active{
-}
 
 form input, textarea, select{
     display: flex;
@@ -97,7 +94,7 @@ form input, textarea, select{
 
 form button{
     height: 30px;
-    width: 150px;
+    width: 140px;
     align-items: center;
     border: none;
     background-color: #2C2C36;
@@ -109,10 +106,14 @@ form button{
     margin: 0 auto;
 }
 
-form button:hover{
-    background-color: #01BE96;
-    color: #2C2C36;
+@media only screen and (max-width: 345px){
+    
+    form button{
+        width: 100%;
+    }
+
 }
+
 
 table{
     background-color: #191923;
@@ -133,13 +134,6 @@ table .delete_icon{
     cursor: pointer;
     color: rgba(252, 63, 63, 0.664);
     font-size: 22px !important;
-}
-
-.main-info{
-    /* display: flex; */
-}
-.main-info img{
-    /* width: 300px; */
 }
 
 .info{
