@@ -1,31 +1,29 @@
-import { useState } from "react";
-import { projectData } from "../components/Navbar/Array";
+import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 
-
 export default function Projects() {
-  const [data, setData] = useState({
-    field: "",
-    message: "",
-    image: "",
-    url: "",
-    projectDescription: "",
-  });
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setData({ ...data, [name]: value });
+  const [projectData, setProjectData] = useState(null);
+
+  const getData = async () => {
+    const res = await fetch(
+      "http://localhost:5000/project/6450cb8a8eb415ba6bd72ae9"
+    ).then((res) => res.json());
+    setProjectData(res.data);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("field", data.field);
-    formData.append("message", data.message);
-    formData.append("image", data.image);
-    formData.append("projectDescription", data.projectDescription);
-    formData.append("url", data.url);
+    formData.append("field", projectData?.field);
+    formData.append("message", projectData?.message);
+    formData.append("image", projectData?.image);
+    formData.append("projectDescription", projectData?.projectDescription);
+    formData.append("url", projectData?.url);
   };
+
+  useEffect(()=>{
+    getData();
+  },[])
 
   return (
     <div>
@@ -34,8 +32,6 @@ export default function Projects() {
         <textarea
           name="message"
           id=""
-          onChange={handleChange}
-          value={data.message}
           col="30"
           rows="5"
           placeholder="Discription"
@@ -46,23 +42,18 @@ export default function Projects() {
           name="image"
           id=""
           accept="image/jpg, image/jpeg, image/png"
-          onChange={handleChange}
           required
         />
         <input
           type="text"
           name="name"
           id=""
-          onChange={handleChange}
-          value={data.name}
           placeholder="Project Name"
           required
         />
         <textarea
           name="projectDescription"
           id=""
-          onChange={handleChange}
-          value={data.projectDescription}
           col="30"
           rows="5"
           placeholder="Project Discription"
@@ -72,36 +63,36 @@ export default function Projects() {
           type="url"
           name="url"
           id=""
-          onChange={handleChange}
-          value={data.url}
           placeholder="https//:"
           required
         />
         <button>SUBMIT</button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
-          <table className="table">
-            <thead>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">PROJECT NAME</th>
+              <th scope="col">DESCRIPTION</th>
+              <th scope="col">LINK</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projectData && projectData.map((i, index) => (
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">PROJECT NAME</th>
-                <th scope="col">DESCRIPTION</th>
-                <th scope="col">LINK</th>
+                <th scope="row">{index + 1}</th>
+                <td>{i.project_name}</td>
+                <td>{i.description}</td>
+                <td>{i.link}</td>
+                <td className="delete_icon">
+                  <MdDelete />
+                </td>
               </tr>
-            </thead>
-            {projectData.map((i, index) => (
-              <tbody>
-                <tr>
-                  <th scope="row">{i.id}</th>
-                  <td>{i.p_name}</td>
-                  <td>{i.description}</td>
-                  <td>{i.link}</td>
-                  <td className="delete_icon"><MdDelete /></td>
-                </tr>
-              </tbody>
             ))}
-          </table>
-          </div>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

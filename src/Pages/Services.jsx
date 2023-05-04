@@ -1,39 +1,43 @@
-import { useState } from "react";
-import { servicesData } from "../components/Navbar/Array";
+import { useState, useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 
 export default function Services() {
-  const [data, setData] = useState({ field: "", message: "" });
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setData({ ...data, [name]: value });
+  const [serviceData, setServiceData] = useState(null);
+
+  const getData = async () => {
+    const res = await fetch(
+      "http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9"
+    ).then((res) => res.json());
+    console.log(res);
+    setServiceData(res.data);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("field", data.field);
-    formData.append("message", data.message);
+    formData.append("field", serviceData?.field);
+    formData.append("message", serviceData?.message);
   };
 
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>SERVICES</h1>
       <form method="post" onSubmit={handleSubmit}>
         <select name="field" id="" required>
           <option value="">Select...</option>
-          <option value={data.field}>ui/ux designer</option>
-          <option value={data.field}>graphic designer</option>
-          <option value={data.field}>web designer</option>
-          <option value={data.field}>App Development</option>
-          <option value={data.field}>Web Development</option>
+          <option value={"ui/ux designer"}>ui/ux designer</option>
+          <option value={"graphic designer"}>graphic designer</option>
+          <option value={"web designer"}>web designer</option>
+          <option value={"App Development"}>App Development</option>
+          <option value={"Web Development"}>Web Development</option>
         </select>
         <textarea
           name="message"
           id=""
-          onChange={handleChange}
-          value={data.message}
+          value={serviceData?.message}
           col="30"
           rows="5"
           placeholder="Discription"
@@ -50,18 +54,18 @@ export default function Services() {
               <th scope="col">DESCRIPTION</th>
             </tr>
           </thead>
-          {servicesData.map((i, index) => (
-            <tbody>
+          <tbody>
+            {serviceData && serviceData.map((i, index) => (
               <tr>
-                <th scope="row">{i.id}</th>
-                <td>{i.field}</td>
+                <th scope="row">{index + 1}</th>
+                <td>{i.name}</td>
                 <td>{i.description}</td>
                 <td className="delete_icon">
                   <MdDelete />
                 </td>
               </tr>
-            </tbody>
-          ))}
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
