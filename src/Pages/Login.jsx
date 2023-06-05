@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { loginRequest } from "../api";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({setToken}) {
+  const navigate = useNavigate();
   const [data, setData] = useState({
-    username:"",
-    password:"",
+    username: "",
+    password: "",
   });
   const handleChange = (e) => {
     const name = e.target.name;
@@ -14,10 +17,20 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
+
     formData.append("field", data.field);
     formData.append("message", data.message);
     formData.append("projectDescription", data.projectDescription);
     formData.append("url", data.url);
+  };
+
+  const handleLogin = async () => {
+    const response = await loginRequest(data);
+    console.log("response for login is", response)
+    localStorage.setItem("token", response?.data?.data?.token);
+    localStorage.setItem('user_id', response?.data?.data?.user_id);
+    setToken(response?.data?.data?.token);
+    return response.status === 200 && navigate("/info");
   };
 
   return (
@@ -42,7 +55,7 @@ export default function Login() {
           placeholder="Password"
           required
         />
-        <button>LogIn</button>
+        <button onClick={handleLogin}>LogIn</button>
       </form>
     </div>
   );

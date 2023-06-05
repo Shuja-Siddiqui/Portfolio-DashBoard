@@ -1,12 +1,36 @@
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
+import { updateDeveloperInfoRequest } from "../api";
+const uid = localStorage.getItem("user_id");
 
 export default function Info() {
   const [show, setShow] = useState(false);
+  const [myData, setMyData] = useState(null);
+  const [editMyData, setEditMyData] = useState(null);
+  // const [links, setLinks] = useState([{ title: "", path: "" }]);
+  const [links, setLinks] = useState([]);
 
   const showForm = () => {
     setShow(true);
     console.log(show);
+  };
+
+  const removeLink = (index) => {
+    setEditMyData((prevData) => {
+      const updatedLinks = [...prevData.links];
+      updatedLinks.splice(index, 1);
+      return {
+        ...prevData,
+        links: updatedLinks,
+      };
+    });
+  };
+
+  const addLink = () => {
+    setEditMyData((prevData) => ({
+      ...prevData,
+      links: [...prevData.links, { title: "", path: "" }],
+    }));
   };
 
   const [input, setInput] = useState(0);
@@ -16,6 +40,19 @@ export default function Info() {
     setInput(value);
   };
 
+  const getData = async () => {
+    const res = await fetch(
+      `http://192.168.0.119:5000/developer_info/6450cb8a8eb415ba6bd72ae9`
+    ).then((res) => res.json());
+    setMyData(res.data);
+    setEditMyData(res.data);
+    console.log("data comming from backend for edit is", res.data);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -23,37 +60,22 @@ export default function Info() {
     formData.append("field", editMyData?.field);
     formData.append("message", editMyData?.message);
     formData.append("account", editMyData?.account);
+    formData.append("address", editMyData?.address);
     formData.append("accountUrl", editMyData?.accountUrl);
+    formData.append("links", editMyData.links);
     // formData.append("image", editMyData?.image);
   };
 
-  const [myData, setMyData] = useState(null);
-  const [editMyData, setEditMyData] = useState(null);
-
-  const getData = async () => {
-    const res = await fetch(
-      "http://localhost:5000/developer_info/6450cb8a8eb415ba6bd72ae9"
-    ).then((res) => res.json());
-    setMyData(res.data);
-    setEditMyData(res.data);
+  const handleUpdateDeveloperInfoRequest = async () => {
+    console.log("Edit data inside updateRequest is", editMyData)
+    const response = await updateDeveloperInfoRequest(editMyData);
+    console.log("response for edit my data request", response);
   };
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Dev Information</h1>
-      <form>
-        <input
-          type="number"
-          name="id"
-          onChange={handleId}
-          value={editMyData?._id}
-          placeholder="enter id"
-        />
-      </form>
+
       {myData && (
         <div className="container">
           <form
@@ -66,6 +88,9 @@ export default function Info() {
               name="name"
               id=""
               value={editMyData?.name}
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, name: e.target.value })
+              }
               placeholder="Full Name"
               required
             />
@@ -74,6 +99,9 @@ export default function Info() {
               name="field"
               id=""
               value={editMyData?.field}
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, field: e.target.value })
+              }
               placeholder="Field"
               required
             />
@@ -82,14 +110,20 @@ export default function Info() {
               name="address"
               id=""
               value={editMyData?.address}
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, address: e.target.value })
+              }
               placeholder="Address"
               required
             />
             <input
-              type="number"
+              type="text"
               name="phone"
               id=""
               value={editMyData?.phone}
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, phone: e.target.value })
+              }
               placeholder="Mobile Number"
               required
             />
@@ -98,6 +132,9 @@ export default function Info() {
               name="email"
               id=""
               value={editMyData?.email}
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, email: e.target.value })
+              }
               placeholder="example@email.com"
               required
             />
@@ -107,32 +144,64 @@ export default function Info() {
               col="30"
               rows="10"
               placeholder="About Yourself!"
+              onChange={(e) =>
+                setEditMyData({ ...editMyData, about: e.target.value })
+              }
               required
             >
               {editMyData?.about}
             </textarea>
-            <select name="" id="" placeholder="Personal Accounts">
-              <option value="">Select Accounts...</option>
-              <option value={editMyData?._id}>Github</option>
-              <option value={editMyData?._id}>LinkedIn</option>
-              <option value={editMyData?._id}>StackOverflow</option>
-            </select>
-            <input
-              type="url"
-              name="acoountsUrl"
-              id=""
-              accept=""
-              placeholder="Accounts Url https//:"
-              required
-            />
+            {editMyData?.links?.map((link, index) => (
+              <div key={index}>
+                <select
+                  name=""
+                  id=""
+                  value={link.title}
+                  onChange={(e) => {
+                    const updatedLinks = [...editMyData.links];
+                    updatedLinks[index].title = e.target.value;
+                    setEditMyData({ ...editMyData, links: updatedLinks });
+                  }}
+                >
+                  <option value="">Select Accounts...</option>
+                  <option value={"github"}>Github</option>
+                  <option value={"linkedIn"}>LinkedIn</option>
+                  <option value={"stackoverflow"}>StackOverflow</option>
+                </select>
+                <input
+                  type="url"
+                  name="accountsUrl"
+                  id=""
+                  accept=""
+                  value={link.path}
+                  onChange={(e) => {
+                    const updatedLinks = [...editMyData.links];
+                    updatedLinks[index].path = e.target.value;
+                    setEditMyData({ ...editMyData, links: updatedLinks });
+                  }}
+                  placeholder="Accounts URL https://"
+                  required
+                />
+                <button
+                  style={{ marginBottom: "5px" }}
+                  onClick={() => removeLink(index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button onClick={addLink}>Add Social</button>
+
             <input
               type="file"
               name="image"
               id=""
+              value={links.path}
               accept="image/jpg, image/jpeg, image/png"
               required
             />
-            <button>SUBMIT</button>
+            <button onClick={handleUpdateDeveloperInfoRequest}>SUBMIT</button>
           </form>
 
           {/* Information */}

@@ -1,14 +1,29 @@
 import { useState, useEffect } from "react";
 import { MdDelete } from "react-icons/md";
+import { createServiceRequest } from "../api";
+const uid = localStorage.getItem("user_id");
 
 export default function Services() {
   const [serviceData, setServiceData] = useState(null);
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+  });
 
   const getData = async () => {
-    const res = await fetch(
-      "http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9"
-    ).then((res) => res.json());
+    const res = await fetch(`http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9`).then(
+      (res) => res.json()
+    );
     setServiceData(res.data);
+  };
+
+  const handleCeateService = async () => {
+    const response = await createServiceRequest(data);
+    setData({
+      name: "",
+      description: "",
+    });
+    response.status === 201 && getData();
   };
 
   const handleSubmit = (e) => {
@@ -25,7 +40,13 @@ export default function Services() {
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>SERVICES</h1>
       <form method="post" onSubmit={handleSubmit}>
-        <select name="field" id="" required>
+        <select
+          name="field"
+          id=""
+          required
+          value={data?.name}
+          onChange={(e) => setData({ ...data, name: e.target.value })}
+        >
           <option value="">Select...</option>
           <option value={"ui/ux designer"}>ui/ux designer</option>
           <option value={"graphic designer"}>graphic designer</option>
@@ -36,13 +57,14 @@ export default function Services() {
         <textarea
           name="message"
           id=""
-          value={serviceData?.message}
+          value={data?.description}
+          onChange={(e) => setData({ ...data, description: e.target.value })}
           col="30"
           rows="5"
           placeholder="Discription"
           required
         />
-        <button>SUBMIT</button>
+        <button disabled={!data?.name || !data?.description} onClick={handleCeateService}>SUBMIT</button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
         <table class="table">
@@ -54,16 +76,17 @@ export default function Services() {
             </tr>
           </thead>
           <tbody>
-            {serviceData && serviceData.map((i, index) => (
-              <tr>
-                <th scope="row">{index + 1}</th>
-                <td>{i.name}</td>
-                <td>{i.description}</td>
-                <td className="delete_icon">
-                  <MdDelete />
-                </td>
-              </tr>
-            ))}
+            {serviceData &&
+              serviceData?.map((i, index) => (
+                <tr>
+                  <th scope="row">{index + 1}</th>
+                  <td>{i.name}</td>
+                  <td>{i.description}</td>
+                  <td className="delete_icon">
+                    <MdDelete />
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

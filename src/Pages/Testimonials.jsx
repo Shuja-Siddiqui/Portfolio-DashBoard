@@ -1,14 +1,43 @@
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
+import {
+  createTestimonialRequest,
+  deleteTestimonialRequest,
+  getTestimonialRequest,
+} from "../api";
 
 export default function Testimonials() {
   const [testimonialData, setTestimonialData] = useState(null);
+  const [file, setFile] = useState("");
+  const [data, setData] = useState({
+    client_name: "",
+    review: "",
+    stars: "",
+    field: "",
+    image: "",
+  });
 
   const getData = async () => {
-    const res = await fetch(
-      "http://localhost:5000/testimonial/6450cb8a8eb415ba6bd72ae9"
-    ).then((res) => res.json());
-    setTestimonialData(res.data);
+    const { data } = await getTestimonialRequest();
+    setTestimonialData(data?.data);
+  };
+
+  const handleCreateTestimonial = async () => {
+    const dataWithImage = { ...data, image: file.name };
+    const response = await createTestimonialRequest(dataWithImage);
+    setData({
+      client_name: "",
+      review: "",
+      stars: "",
+      field: "",
+      image: "",
+    });
+    response.status && getData();
+  };
+
+  const handleDeleteTestimonial = async (t_id) => {
+    const response = await deleteTestimonialRequest(t_id);
+    response?.status === 204 && getData();
   };
 
   const handleSubmit = (e) => {
@@ -22,50 +51,63 @@ export default function Testimonials() {
 
   useEffect(() => {
     getData();
-  },[])
+  }, []);
 
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Testimonials</h1>
       <form method="post" onSubmit={handleSubmit}>
         <textarea
-          name="message"
+          name="review"
           id=""
           col="30"
           rows="5"
+          value={data.review}
+          onChange={(e) => setData({ ...data, review: e.target.value })}
           placeholder="Client Review"
           required
         />
         <input
           type="text"
-          name="name"
+          name="client_name"
           id=""
+          value={data.client_name}
+          onChange={(e) => setData({ ...data, client_name: e.target.value })}
           placeholder="Client Name"
           required
         />
         <input
           type="text"
           name="field"
+          value={data.field}
+          onChange={(e) => setData({ ...data, field: e.target.value })}
           id=""
           placeholder="Field"
           required
         />
-        <select name="star" id="" required>
+        <select
+          name="star"
+          id=""
+          value={data.stars}
+          required
+          onChange={(e) => setData({ ...data, stars: e.target.value })}
+        >
           <option value="">Select Star...</option>
-          <option value="1 Star">1 Star</option>
-          <option value="2 Star">2 Stars</option>
-          <option value="3 Star">3 Stars</option>
-          <option value="4 Star">4 Stars</option>
-          <option value="5 Star">5 Stars</option>
+          <option value="1">1 Star</option>
+          <option value="2">2 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="5">5 Stars</option>
         </select>
         <input
           type="file"
           name="image"
           id=""
+          value=""
+          onChange={(e) => setFile(e.target.files[0])}
           accept="image/jpg, image/jpeg, image/png"
-          required
         />
-        <button>SUBMIT</button>
+        <button onClick={handleCreateTestimonial}>SUBMIT</button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
         <table className="table">
@@ -76,22 +118,27 @@ export default function Testimonials() {
               <th scope="col">FIELD</th>
               <th scope="col">STARS</th>
               <th scope="col">REVIEW</th>
+              <th scope="col">DELETE</th>
             </tr>
           </thead>
-          {testimonialData && testimonialData.map((i, index) => (
-            <tbody>
-              <tr>
-                <th scope="row">{index + 1}</th>
-                <td>{i.client_name}</td>
-                <td>{i.field}</td>
-                <td>{i.stars}</td>
-                <td>{i.review}</td>
-                <td className="delete_icon">
-                  <MdDelete />
-                </td>
-              </tr>
-            </tbody>
-          ))}
+          {testimonialData &&
+            testimonialData.map((i, index) => (
+              <tbody key={index}>
+                <tr>
+                  <th scope="row">{index + 1}</th>
+                  <td>{i.client_name}</td>
+                  <td>{i.field}</td>
+                  <td>{i.stars}</td>
+                  <td>{i.review}</td>
+                  <td
+                    className="delete_icon"
+                    onClick={() => handleDeleteTestimonial(i?._id)}
+                  >
+                    <MdDelete />
+                  </td>
+                </tr>
+              </tbody>
+            ))}
         </table>
       </div>
     </div>

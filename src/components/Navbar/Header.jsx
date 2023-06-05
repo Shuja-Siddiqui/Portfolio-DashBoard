@@ -3,6 +3,7 @@ import { FaBars, FaUserAlt, FaDiceD20, FaBox } from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
+import { MdLogout } from "react-icons/md";
 
 export default function Header({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,11 @@ export default function Header({ children }) {
       name: "Testiminials",
       icon: <GiNothingToSay />,
     },
+    {
+      path: "/logout",
+      name: "Logout",
+      icon: <MdLogout />
+    }
   ];
   return (
     <>
@@ -55,7 +61,7 @@ export default function Header({ children }) {
             </div>
           </div>
           <div className="menu">
-            {menuItem.map((item, index) => (
+            {menuItem?.map((item, index) => (
               <NavLink
                 to={item.path}
                 key={index}
