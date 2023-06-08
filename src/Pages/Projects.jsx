@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
-import { createProjectRequest, deleteProjectRequest } from "../api";
+import { MdDelete, MdEdit } from "react-icons/md";
+import EditProject from "../components/Projects/EditProject/EditProject";
+import {
+  createProjectRequest,
+  deleteProjectRequest,
+  getImageRequest,
+} from "../api";
+
+import { EditProjectImage } from "../components";
 
 export default function Projects() {
   const [projectData, setProjectData] = useState(null);
+  const [isImageEditing, setIsImageEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [modalData, setModalData] = useState(null);
   const [file, setFile] = useState("");
   const [data, setData] = useState({
     project_name: "",
     description: "",
     link: "",
-    image: "",
   });
 
   const getData = async () => {
@@ -19,14 +28,37 @@ export default function Projects() {
     setProjectData(res.data);
   };
 
+  const handleEditClick = (id) => {
+    const project = projectData.find((project) => project._id === id);
+    setIsEditing(true);
+    setModalData(project);
+  };
+
+  const handleCloseModal = () => {
+    setIsEditing(false);
+  };
+
+  const handleCloseImageModel = () => {
+    setIsImageEditing(false);
+  };
+
+  const handleImageEditClick = (id) => {
+    const project = projectData.find((project) => project._id === id);
+    setIsImageEditing(true);
+    setModalData(project);
+  };
+
   const handleCreateProject = async () => {
-    const dataWithImage = { ...data, image: file.name };
-    const response = await createProjectRequest(dataWithImage);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("project_name", data.project_name);
+    formData.append("description", data.description);
+    formData.append("link", data.link);
+    const response = await createProjectRequest(formData);
     setData({
       project_name: "",
       description: "",
       link: "",
-      image: "",
     });
     response?.status === 201 && getData();
   };
@@ -101,17 +133,37 @@ export default function Projects() {
               <th scope="col">PROJECT NAME</th>
               <th scope="col">DESCRIPTION</th>
               <th scope="col">LINK</th>
-              <th scope="col"></th>
+              <th scope="col">IMAGE</th>
+              <th scope="col">EDIT</th>
+              <th scope="col">DELETE</th>
             </tr>
           </thead>
           <tbody>
             {projectData &&
               projectData.map((i, index) => (
-                <tr>
+                <tr key={index}>
                   <th scope="row">{index + 1}</th>
                   <td>{i.project_name}</td>
                   <td>{i.description}</td>
                   <td>{i.link}</td>
+                  <td
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleImageEditClick(i?._id);
+                    }}
+                  >
+                    <img
+                      style={{ width: "40px", height: "40px" }}
+                      src={getImageRequest(i?.image)}
+                    />
+                  </td>
+                  <td
+                    style={{ cursor: "pointer" }}
+                    className="edit_icon"
+                    onClick={() => handleEditClick(i?._id)}
+                  >
+                    <MdEdit />
+                  </td>
                   <td
                     className="delete_icon"
                     onClick={() => handleDeleteProject(i?._id)}
@@ -123,6 +175,21 @@ export default function Projects() {
           </tbody>
         </table>
       </div>
+
+      {isEditing && (
+        <EditProject
+          data={modalData}
+          onClose={handleCloseModal}
+          getData={getData}
+        />
+      )}
+      {isImageEditing && (
+        <EditProjectImage
+          data={modalData}
+          onClose={handleCloseImageModel}
+          getData={getData}
+        />
+      )}
     </div>
   );
 }

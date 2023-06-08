@@ -1,21 +1,50 @@
 import { useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import {
   createTestimonialRequest,
   deleteTestimonialRequest,
+  getImageRequest,
   getTestimonialRequest,
 } from "../api";
+import { EditTestimonial, EditImage } from "../components";
 
 export default function Testimonials() {
   const [testimonialData, setTestimonialData] = useState(null);
   const [file, setFile] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isImageEditing, setIsImageEditing] = useState(false);
+  const [modalData, setModalData] = useState(null);
   const [data, setData] = useState({
     client_name: "",
     review: "",
     stars: "",
     field: "",
-    image: "",
   });
+
+  const handleCloseModal = () => {
+    setIsEditing(false);
+  };
+
+  const handleCloseImageModel = () => {
+    setIsImageEditing(false)
+  }
+
+  const handleEditClick = (id) => {
+    const testimonial = testimonialData.find(
+      (testimonial) => testimonial._id === id
+    );
+    setIsEditing(true);
+    setModalData(testimonial);
+  };
+
+  const handleImageEditClick = (id) => {
+    console.log("Id for image edit is", id)
+    const testimonial = testimonialData.find(
+      (testimonial) => testimonial._id === id
+    );
+    setIsImageEditing(true);
+    setModalData(testimonial);
+  };
 
   const getData = async () => {
     const { data } = await getTestimonialRequest();
@@ -23,16 +52,21 @@ export default function Testimonials() {
   };
 
   const handleCreateTestimonial = async () => {
-    const dataWithImage = { ...data, image: file.name };
-    const response = await createTestimonialRequest(dataWithImage);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("client_name", data.client_name);
+    formData.append("review", data.review);
+    formData.append("field", data.field);
+    formData.append("stars", data.stars);
+    const response = await createTestimonialRequest(formData);
     setData({
       client_name: "",
       review: "",
       stars: "",
       field: "",
-      image: "",
     });
-    response.status && getData();
+
+    response?.status && getData();
   };
 
   const handleDeleteTestimonial = async (t_id) => {
@@ -42,11 +76,6 @@ export default function Testimonials() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("field", testimonialData?.field);
-    formData.append("message", testimonialData?.message);
-    formData.append("image", testimonialData?.image);
-    formData.append("name", testimonialData?.url);
   };
 
   useEffect(() => {
@@ -118,6 +147,8 @@ export default function Testimonials() {
               <th scope="col">FIELD</th>
               <th scope="col">STARS</th>
               <th scope="col">REVIEW</th>
+              <th scope="col">IMAGE</th>
+              <th scope="col">EDIT</th>
               <th scope="col">DELETE</th>
             </tr>
           </thead>
@@ -131,6 +162,24 @@ export default function Testimonials() {
                   <td>{i.stars}</td>
                   <td>{i.review}</td>
                   <td
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleImageEditClick(i?._id);
+                    }}
+                  >
+                    <img
+                      style={{ width: "40px", height: "40px" }}
+                      src={getImageRequest(i?.image)}
+                    />
+                  </td>
+                  <td
+                    style={{ cursor: "pointer" }}
+                    className="edit_icon"
+                    onClick={() => handleEditClick(i?._id)}
+                  >
+                    <MdEdit />
+                  </td>
+                  <td
                     className="delete_icon"
                     onClick={() => handleDeleteTestimonial(i?._id)}
                   >
@@ -141,6 +190,20 @@ export default function Testimonials() {
             ))}
         </table>
       </div>
+      {isEditing && (
+        <EditTestimonial
+          data={modalData}
+          onClose={handleCloseModal}
+          getData={getData}
+        />
+      )}
+      {isImageEditing && (
+        <EditImage
+          data={modalData}
+          onClose={handleCloseImageModel}
+          getData={getData}
+        />
+      )}
     </div>
   );
 }

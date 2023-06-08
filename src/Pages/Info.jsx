@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { updateDeveloperInfoRequest } from "../api";
+import {
+  getDeveloperInfoRequest,
+  getImageRequest,
+  updateDeveloperInfoRequest,
+} from "../api";
+import { useNavigate } from "react-router-dom";
 const uid = localStorage.getItem("user_id");
 
 export default function Info() {
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [myData, setMyData] = useState(null);
   const [editMyData, setEditMyData] = useState(null);
-  // const [links, setLinks] = useState([{ title: "", path: "" }]);
-  const [links, setLinks] = useState([]);
+  const [file, setFile] = useState("");
+  const [image, setImage] = useState("");
+  // const [links, setLinks] = useState([]);
 
   const showForm = () => {
     setShow(true);
-    console.log(show);
   };
 
   const removeLink = (index) => {
@@ -41,12 +47,9 @@ export default function Info() {
   };
 
   const getData = async () => {
-    const res = await fetch(
-      `http://192.168.0.119:5000/developer_info/6450cb8a8eb415ba6bd72ae9`
-    ).then((res) => res.json());
-    setMyData(res.data);
-    setEditMyData(res.data);
-    console.log("data comming from backend for edit is", res.data);
+    const { data } = await getDeveloperInfoRequest();
+    setMyData(data?.data);
+    setEditMyData(data?.data);
   };
 
   useEffect(() => {
@@ -56,20 +59,20 @@ export default function Info() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("name", editMyData?.name);
-    formData.append("field", editMyData?.field);
-    formData.append("message", editMyData?.message);
-    formData.append("account", editMyData?.account);
-    formData.append("address", editMyData?.address);
-    formData.append("accountUrl", editMyData?.accountUrl);
-    formData.append("links", editMyData.links);
-    // formData.append("image", editMyData?.image);
   };
 
   const handleUpdateDeveloperInfoRequest = async () => {
-    console.log("Edit data inside updateRequest is", editMyData)
-    const response = await updateDeveloperInfoRequest(editMyData);
-    console.log("response for edit my data request", response);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("name", editMyData?.name);
+    formData.append("field", editMyData?.field);
+    formData.append("address", editMyData?.address);
+    formData.append("email", editMyData?.email);
+    formData.append("phone", editMyData?.phone);
+    formData.append("about", editMyData?.about);
+    formData.append("links", JSON.stringify(editMyData.links));
+    const response = await updateDeveloperInfoRequest(formData);
+    response?.status === 200 && navigate("/info");
   };
 
   return (
@@ -143,6 +146,7 @@ export default function Info() {
               id=""
               col="30"
               rows="10"
+              value={editMyData?.about}
               placeholder="About Yourself!"
               onChange={(e) =>
                 setEditMyData({ ...editMyData, about: e.target.value })
@@ -197,8 +201,9 @@ export default function Info() {
               type="file"
               name="image"
               id=""
-              value={links.path}
+              // value={editMyData?.image}
               accept="image/jpg, image/jpeg, image/png"
+              onChange={(e) => setFile(e.target.files[0])}
               required
             />
             <button onClick={handleUpdateDeveloperInfoRequest}>SUBMIT</button>
@@ -251,9 +256,9 @@ export default function Info() {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-4 col-sm-12">
+              <div className="col-lg-3 col-sm-12">
                 <img
-                  src={"https://i.imgur.com/TarFi3P.png"}
+                  src={getImageRequest(myData?.image?._id)}
                   alt=""
                   width={"100%"}
                 />

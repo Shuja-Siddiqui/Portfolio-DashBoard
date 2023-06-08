@@ -28,14 +28,14 @@ function App() {
               <Route path="/services" element={<Services />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/testimonials" element={<Testimonials />} />
-              <Route path="/logout" element={<Logout />} />
+              <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
             </Routes>
           </Container>
         </Header>
       ) : (
-        <Container fluid style={{ background: "teal", height: "100vh" }}>
+        <Container fluid style={{ background: "#2C2C36", height: "100vh" }}>
           <Routes>
-            <Route path="/" element={<Login setToken={setToken} />} />
+            <Route path="*" element={<Login setToken={setToken} />} />
           </Routes>
         </Container>
       )}
