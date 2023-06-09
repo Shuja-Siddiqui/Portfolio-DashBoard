@@ -7,8 +7,11 @@ import {
   getTestimonialRequest,
 } from "../api";
 import { EditTestimonial, EditImage } from "../components";
+import { Confirm } from "../common";
 
 export default function Testimonials() {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [testimonialId, setTestimonialId] = useState("");
   const [testimonialData, setTestimonialData] = useState(null);
   const [file, setFile] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -26,19 +29,27 @@ export default function Testimonials() {
   };
 
   const handleCloseImageModel = () => {
-    setIsImageEditing(false)
-  }
+    setIsImageEditing(false);
+  };
+
+  const handleDeleteClick = (id) => {
+    const testimonial = testimonialData.find(
+      (testimonial) => testimonial._id === id
+    );
+    setTestimonialId(id);
+    setShowConfirm(true);
+    setModalData(testimonial);
+  };
 
   const handleEditClick = (id) => {
     const testimonial = testimonialData.find(
       (testimonial) => testimonial._id === id
     );
-    setIsEditing(true);
+    setShowConfirm(true);
     setModalData(testimonial);
   };
 
   const handleImageEditClick = (id) => {
-    console.log("Id for image edit is", id)
     const testimonial = testimonialData.find(
       (testimonial) => testimonial._id === id
     );
@@ -69,9 +80,10 @@ export default function Testimonials() {
     response?.status && getData();
   };
 
-  const handleDeleteTestimonial = async (t_id) => {
-    const response = await deleteTestimonialRequest(t_id);
+  const handleDeleteTestimonial = async () => {
+    const response = await deleteTestimonialRequest(testimonialId);
     response?.status === 204 && getData();
+    setShowConfirm(false);
   };
 
   const handleSubmit = (e) => {
@@ -181,7 +193,9 @@ export default function Testimonials() {
                   </td>
                   <td
                     className="delete_icon"
-                    onClick={() => handleDeleteTestimonial(i?._id)}
+                    onClick={() => {
+                      handleDeleteClick(i?._id);
+                    }}
                   >
                     <MdDelete />
                   </td>
@@ -202,6 +216,13 @@ export default function Testimonials() {
           data={modalData}
           onClose={handleCloseImageModel}
           getData={getData}
+        />
+      )}
+      {showConfirm && (
+        <Confirm
+          data={modalData}
+          onClose={setShowConfirm}
+          onConfirm={handleDeleteTestimonial}
         />
       )}
     </div>

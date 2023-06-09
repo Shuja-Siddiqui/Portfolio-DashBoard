@@ -8,8 +8,11 @@ import {
 } from "../api";
 
 import { EditProjectImage } from "../components";
+import { Confirm } from "../common";
 
 export default function Projects() {
+  const [projectId, setProjectId] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
   const [projectData, setProjectData] = useState(null);
   const [isImageEditing, setIsImageEditing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -31,6 +34,12 @@ export default function Projects() {
   const handleEditClick = (id) => {
     const project = projectData.find((project) => project._id === id);
     setIsEditing(true);
+    setModalData(project);
+  };
+  const handleDeleteClick = (id) => {
+    const project = projectData.find((project) => project._id === id);
+    setProjectId(id);
+    setShowConfirm(true);
     setModalData(project);
   };
 
@@ -63,10 +72,10 @@ export default function Projects() {
     response?.status === 201 && getData();
   };
 
-  const handleDeleteProject = async (p_id) => {
-    const response = await deleteProjectRequest(p_id);
+  const handleDeleteProject = async () => {
+    const response = await deleteProjectRequest(projectId);
     response?.status === 204 && getData();
-    console.log("response for delete project request is", response);
+    setShowConfirm(false);
   };
 
   const handleSubmit = (e) => {
@@ -152,7 +161,8 @@ export default function Projects() {
                       handleImageEditClick(i?._id);
                     }}
                   >
-                    <img alt="project"
+                    <img
+                      alt="project"
                       style={{ width: "40px", height: "40px" }}
                       src={getImageRequest(i?.image)}
                     />
@@ -166,7 +176,9 @@ export default function Projects() {
                   </td>
                   <td
                     className="delete_icon"
-                    onClick={() => handleDeleteProject(i?._id)}
+                    onClick={() => {
+                      handleDeleteClick(i?._id);
+                    }}
                   >
                     <MdDelete />
                   </td>
@@ -188,6 +200,13 @@ export default function Projects() {
           data={modalData}
           onClose={handleCloseImageModel}
           getData={getData}
+        />
+      )}
+      {showConfirm && (
+        <Confirm
+          data={modalData}
+          onClose={setShowConfirm}
+          onConfirm={handleDeleteProject}
         />
       )}
     </div>

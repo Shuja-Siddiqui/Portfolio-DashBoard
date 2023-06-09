@@ -28,6 +28,13 @@ export default function Services() {
     setModalData(service);
   };
 
+  const handleDeleteClick = (id) => {
+    const service = serviceData.find((project) => project._id === id);
+    setServiceId(id);
+    setShowConfirm(true);
+    setModalData(service);
+  };
+
   const getData = async () => {
     const res = await fetch(
       `http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9`
@@ -44,12 +51,13 @@ export default function Services() {
     response.status === 201 && getData();
   };
 
-  const handleDeleteClick = () => {
-    setShowConfirm(true);
-  };
+  // const handleDeleteClick = () => {
+  //   setShowConfirm(true);
+  // };
 
   const handleDeleteService = async () => {
     const response = await deleteServiceRequest(serviceId);
+
     response?.status === 200 && getData();
     setShowConfirm(false);
   };
@@ -127,9 +135,7 @@ export default function Services() {
                   <td
                     className="delete_icon"
                     onClick={() => {
-                      setServiceId(i?._id);
-                      // handleDeleteService(i?._id);
-                      handleDeleteClick();
+                      handleDeleteClick(i?._id);
                     }}
                   >
                     <MdDelete />
@@ -154,7 +160,11 @@ export default function Services() {
         />
       )}
       {showConfirm && (
-        <Confirm onClose={setShowConfirm} onConfirm={handleDeleteService} />
+        <Confirm
+          data={modalData}
+          onClose={setShowConfirm}
+          onConfirm={handleDeleteService}
+        />
       )}
     </div>
   );
