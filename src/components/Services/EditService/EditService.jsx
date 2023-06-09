@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editServiceRequest } from "../../../api";
-const EditService = ({ data, onClose, getData }) => {
+export const EditService = ({ data, onClose, getData }) => {
   const [editData, setEditData] = useState(data);
-  const [file, setFile] = useState("");
 
   const handleEditService = async () => {
     const response = await editServiceRequest(editData);
@@ -69,4 +68,3 @@ const EditService = ({ data, onClose, getData }) => {
   );
 };
 
-export default EditService;

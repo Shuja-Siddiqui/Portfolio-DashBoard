@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editProjectRequest } from "../../../api";
-const EditProject = ({ data, onClose, getData }) => {
+export const EditProject = ({ data, onClose, getData }) => {
   const [editData, setEditData] = useState(data);
-  const [file, setFile] = useState("");
 
   const handleEditProject = async () => {
     const response = await editProjectRequest(editData);
@@ -78,4 +77,3 @@ const EditProject = ({ data, onClose, getData }) => {
   );
 };
 
-export default EditProject;

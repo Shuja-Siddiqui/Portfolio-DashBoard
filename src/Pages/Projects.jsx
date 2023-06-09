@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
-import EditProject from "../components/Projects/EditProject/EditProject";
+import { EditProject } from "../components";
 import {
   createProjectRequest,
   deleteProjectRequest,
@@ -152,7 +152,7 @@ export default function Projects() {
                       handleImageEditClick(i?._id);
                     }}
                   >
-                    <img
+                    <img alt="project"
                       style={{ width: "40px", height: "40px" }}
                       src={getImageRequest(i?.image)}
                     />

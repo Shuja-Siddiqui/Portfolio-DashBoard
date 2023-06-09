@@ -3,12 +3,10 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import {
   createServiceRequest,
   deleteServiceRequest,
-  editServiceRequest,
 } from "../api";
-import EditService from "../components/Services/EditService/EditService";
-// import EditService from "../components/Services/EditService";
-// import {EditService}
-const uid = localStorage.getItem("user_id");
+
+import { EditService } from "../components";
+// const uid = localStorage.getItem("user_id");
 
 export default function Services() {
   const [serviceData, setServiceData] = useState(null);
@@ -43,11 +41,6 @@ export default function Services() {
       description: "",
     });
     response.status === 201 && getData();
-  };
-
-  const handleEditService = async (s_id) => {
-    const response = await editServiceRequest(s_id);
-    console.log("Response for edit service request is", response);
   };
 
   const handleDeleteService = async (s_id) => {
