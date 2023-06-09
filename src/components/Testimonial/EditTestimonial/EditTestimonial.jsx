@@ -4,8 +4,6 @@ import { editTestimonialTextRequest } from "../../../api";
 export const EditTestimonial = ({ data, onClose, getData }) => {
   const [editData, setEditData] = useState(data);
 
-  console.log("Data", editData);
-
   const handleEditTestimonial = async () => {
     const response = await editTestimonialTextRequest(editData?._id, editData);
 

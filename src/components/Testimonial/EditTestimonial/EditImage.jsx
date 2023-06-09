@@ -26,7 +26,7 @@ export const EditImage = ({ data, onClose, getData }) => {
       <Modal.Body>
         <div>
           <p>Current Image</p>
-          <img src={getImageRequest(editData?.image)} />
+          <img src={getImageRequest(editData?.image)} alt="current"/>
           <Form.Group controlId="formFile" className="mb-3">
             <Form.Label>New Image</Form.Label>
             <Form.Control

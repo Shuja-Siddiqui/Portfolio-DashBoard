@@ -5,16 +5,13 @@ import {
   getImageRequest,
   updateDeveloperInfoRequest,
 } from "../api";
-import { useNavigate } from "react-router-dom";
-const uid = localStorage.getItem("user_id");
+// const uid = localStorage.getItem("user_id");
 
 export default function Info() {
-  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [myData, setMyData] = useState(null);
   const [editMyData, setEditMyData] = useState(null);
   const [file, setFile] = useState("");
-  const [image, setImage] = useState(getImageRequest(editMyData?.image?._id));
 
   const showForm = () => {
     setShow(true);
@@ -50,10 +47,7 @@ export default function Info() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
   };
-
-  console.log("Edit data is", editMyData);
 
   const handleUpdateDeveloperInfoRequest = async () => {
     const formData = new FormData();
