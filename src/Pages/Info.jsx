@@ -15,7 +15,6 @@ export default function Info() {
   const [editMyData, setEditMyData] = useState(null);
   const [file, setFile] = useState("");
   const [image, setImage] = useState(getImageRequest(editMyData?.image?._id));
-  // const [links, setLinks] = useState([]);
 
   const showForm = () => {
     setShow(true);

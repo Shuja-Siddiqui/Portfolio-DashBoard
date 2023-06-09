@@ -64,6 +64,14 @@ export const EditProject = ({ data, onClose, getData }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button
+          onClick={() => {
+            onClose();
+          }}
+          className="btn btn-sm btn-primary"
+        >
+          Cancel
+        </Button>
+        <Button
           className="btn btn-sm btn-secondary"
           onClick={() => {
             handleEditProject();
@@ -76,4 +84,3 @@ export const EditProject = ({ data, onClose, getData }) => {
     </Modal>
   );
 };
-

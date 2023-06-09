@@ -79,6 +79,14 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button
+          className="btn btn-sm btn-primary"
+          onClick={() => {
+            onClose();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
           className="btn btn-sm btn-secondary"
           onClick={() => {
             handleEditTestimonial();
