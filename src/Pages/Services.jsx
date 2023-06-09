@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
-import {
-  createServiceRequest,
-  deleteServiceRequest,
-} from "../api";
+import { createServiceRequest, deleteServiceRequest } from "../api";
 
 import { EditService } from "../components";
+import { Toaster, Confirm } from "../common";
 // const uid = localStorage.getItem("user_id");
 
 export default function Services() {
+  const [serviceId, setServiceId] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showToaster, setShowToaster] = useState(false);
   const [serviceData, setServiceData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [modalData, setModalData] = useState(null);
@@ -43,9 +44,14 @@ export default function Services() {
     response.status === 201 && getData();
   };
 
-  const handleDeleteService = async (s_id) => {
-    const response = await deleteServiceRequest(s_id);
+  const handleDeleteClick = () => {
+    setShowConfirm(true);
+  };
+
+  const handleDeleteService = async () => {
+    const response = await deleteServiceRequest(serviceId);
     response?.status === 200 && getData();
+    setShowConfirm(false);
   };
 
   const handleSubmit = (e) => {
@@ -120,7 +126,11 @@ export default function Services() {
                   </td>
                   <td
                     className="delete_icon"
-                    onClick={() => handleDeleteService(i?._id)}
+                    onClick={() => {
+                      setServiceId(i?._id);
+                      // handleDeleteService(i?._id);
+                      handleDeleteClick();
+                    }}
                   >
                     <MdDelete />
                   </td>
@@ -135,6 +145,16 @@ export default function Services() {
           onClose={handleCloseModal}
           getData={getData}
         />
+      )}
+      {showToaster && (
+        <Toaster
+          text="Service deleted"
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
+      {showConfirm && (
+        <Confirm onClose={setShowConfirm} onConfirm={handleDeleteService} />
       )}
     </div>
   );

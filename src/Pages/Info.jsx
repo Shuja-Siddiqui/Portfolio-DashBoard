@@ -5,9 +5,12 @@ import {
   getImageRequest,
   updateDeveloperInfoRequest,
 } from "../api";
+
+import { Toaster } from "../common";
 // const uid = localStorage.getItem("user_id");
 
 export default function Info() {
+  const [showToaster, setShowToaster] = useState(false);
   const [show, setShow] = useState(false);
   const [myData, setMyData] = useState(null);
   const [editMyData, setEditMyData] = useState(null);
@@ -62,6 +65,7 @@ export default function Info() {
     const response = await updateDeveloperInfoRequest(formData);
     response?.status === 200 && getData();
     setShow(false);
+    setShowToaster(true);
   };
 
   return (
@@ -204,6 +208,14 @@ export default function Info() {
             </>
             <button onClick={handleUpdateDeveloperInfoRequest}>SUBMIT</button>
           </form>
+
+          {showToaster && (
+            <Toaster
+              text="Developer added"
+              showToaster={showToaster}
+              setShowToaster={setShowToaster}
+            />
+          )}
 
           {/* Information */}
           <div className="container-fluid mb-4 mb-lg-2">
