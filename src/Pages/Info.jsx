@@ -14,7 +14,7 @@ export default function Info() {
   const [myData, setMyData] = useState(null);
   const [editMyData, setEditMyData] = useState(null);
   const [file, setFile] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(getImageRequest(editMyData?.image?._id));
   // const [links, setLinks] = useState([]);
 
   const showForm = () => {
@@ -39,13 +39,6 @@ export default function Info() {
     }));
   };
 
-  const [input, setInput] = useState(0);
-
-  const handleId = (e) => {
-    const value = e.target.value;
-    setInput(value);
-  };
-
   const getData = async () => {
     const { data } = await getDeveloperInfoRequest();
     setMyData(data?.data);
@@ -61,6 +54,8 @@ export default function Info() {
     const formData = new FormData();
   };
 
+  console.log("Edit data is", editMyData);
+
   const handleUpdateDeveloperInfoRequest = async () => {
     const formData = new FormData();
     formData.append("image", file);
@@ -72,7 +67,8 @@ export default function Info() {
     formData.append("about", editMyData?.about);
     formData.append("links", JSON.stringify(editMyData.links));
     const response = await updateDeveloperInfoRequest(formData);
-    response?.status === 200 && navigate("/info");
+    response?.status === 200 && getData();
+    setShow(false);
   };
 
   return (
@@ -196,16 +192,23 @@ export default function Info() {
             ))}
 
             <button onClick={addLink}>Add Social</button>
-
-            <input
-              type="file"
-              name="image"
-              id=""
-              // value={editMyData?.image}
-              accept="image/jpg, image/jpeg, image/png"
-              onChange={(e) => setFile(e.target.files[0])}
-              required
-            />
+            <>
+              {editMyData?.image?._id && (
+                <img
+                  style={{ width: "150px", height: "150px" }}
+                  src={getImageRequest(editMyData?.image?._id)}
+                  alt="Preview"
+                />
+              )}
+              <input
+                type="file"
+                name="image"
+                id=""
+                accept="image/jpg, image/jpeg, image/png"
+                onChange={(e) => setFile(e.target.files[0])}
+                required
+              />
+            </>
             <button onClick={handleUpdateDeveloperInfoRequest}>SUBMIT</button>
           </form>
 
