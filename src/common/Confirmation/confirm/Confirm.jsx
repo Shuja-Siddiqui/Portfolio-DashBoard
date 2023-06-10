@@ -1,15 +1,15 @@
 import { Modal, Button } from "react-bootstrap";
 export const Confirm = ({ data, onClose, onConfirm }) => {
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header>
-        <h2>Confirm!</h2>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
+      <Modal.Header style={{ backgroundColor: "#2C2C36" }}>
+        <h2>Confirmation!</h2>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         Are you sure to delete{" "}
         <b>{data?.client_name || data?.project_name || data?.name}</b>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
         <Button
           onClick={() => {
             onClose(false);

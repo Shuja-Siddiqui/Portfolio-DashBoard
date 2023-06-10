@@ -15,14 +15,17 @@ export const EditProjectImage = ({ data, onClose, getData }) => {
   };
 
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header closeButton>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
+      <Modal.Header closeButton style={{ backgroundColor: "#2C2C36" }}>
         <Modal.Title>Edit Project</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         <div>
           <p>Current Image</p>
-          <img src={getImageRequest(editData?.image)} />
+          <img
+            style={{ width: "150px", height: "150px" }}
+            src={getImageRequest(editData?.image)}
+          />
           <Form.Group controlId="formFile" className="mb-3">
             <Form.Label>New Image</Form.Label>
             <Form.Control
@@ -32,8 +35,9 @@ export const EditProjectImage = ({ data, onClose, getData }) => {
           </Form.Group>
         </div>
       </Modal.Body>
-      <Modal.Footer>
-        <Button className="btn btn-sm"
+      <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
+        <Button
+          className="btn btn-sm"
           onClick={() => {
             onClose();
           }}

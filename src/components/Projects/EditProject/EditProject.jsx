@@ -11,16 +11,17 @@ export const EditProject = ({ data, onClose, getData }) => {
   };
 
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header closeButton>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
+      <Modal.Header style={{ backgroundColor: "#2C2C36" }}>
         <Modal.Title>Edit Project</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         {editData && (
           <div>
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="project_name"
                 value={editData.project_name}
@@ -35,6 +36,7 @@ export const EditProject = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="textarea"
                 rows={5}
                 name="description"
@@ -49,6 +51,7 @@ export const EditProject = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Link</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="project_name"
                 value={editData.link}
@@ -62,7 +65,7 @@ export const EditProject = ({ data, onClose, getData }) => {
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
         <Button
           onClick={() => {
             onClose();

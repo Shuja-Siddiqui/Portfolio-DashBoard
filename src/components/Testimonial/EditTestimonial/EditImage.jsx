@@ -19,14 +19,18 @@ export const EditImage = ({ data, onClose, getData }) => {
   console.log("data is", data);
 
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Edit Testimonial</Modal.Title>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
+      <Modal.Header style={{ backgroundColor: "#2C2C36" }}>
+        <Modal.Title>Edit Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         <div>
           <p>Current Image</p>
-          <img src={getImageRequest(editData?.image)} alt="current"/>
+          <img
+            style={{ width: "150px", height: "150px" }}
+            src={getImageRequest(editData?.image)}
+            alt="current"
+          />
           <Form.Group controlId="formFile" className="mb-3">
             <Form.Label>New Image</Form.Label>
             <Form.Control
@@ -36,7 +40,7 @@ export const EditImage = ({ data, onClose, getData }) => {
           </Form.Group>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
         <Button
           className="btn btn-sm btn-primary"
           onClick={() => {

@@ -45,7 +45,7 @@ export default function Testimonials() {
     const testimonial = testimonialData.find(
       (testimonial) => testimonial._id === id
     );
-    setShowConfirm(true);
+    setIsEditing(true);
     setModalData(testimonial);
   };
 

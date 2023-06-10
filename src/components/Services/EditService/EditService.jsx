@@ -10,16 +10,17 @@ export const EditService = ({ data, onClose, getData }) => {
   };
 
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header closeButton>
+    <Modal show={true} onHide={onClose} style={{color: "white"}}>
+      <Modal.Header style={{ backgroundColor: "#2C2C36" }}>
         <Modal.Title>Edit Testimonial</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         {editData && (
           <div>
             <Form.Group>
               <Form.Label>Name</Form.Label>
-              <Form.Control
+              <Form.Control 
+              style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="select"
                 required
                 value={editData.name}
@@ -39,6 +40,7 @@ export const EditService = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control
+              style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="textarea"
                 rows={5}
                 name="description"
@@ -53,7 +55,7 @@ export const EditService = ({ data, onClose, getData }) => {
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
         <Button
           className="btn btn-sm btn-primary"
           onClick={() => {

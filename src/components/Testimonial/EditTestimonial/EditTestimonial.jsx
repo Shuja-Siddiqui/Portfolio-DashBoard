@@ -11,16 +11,17 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
   };
 
   return (
-    <Modal show={true} onHide={onClose}>
-      <Modal.Header closeButton>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
+      <Modal.Header style={{ backgroundColor: "#191923" }}>
         <Modal.Title>Edit Testimonial</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#191923" }}>
         {editData && (
           <div>
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="client_name"
                 value={editData.client_name}
@@ -35,6 +36,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Field</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="client_name"
                 value={editData.field}
@@ -48,6 +50,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Field</Form.Label>
               <Form.Control
+               style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="number"
                 name="stars"
                 value={editData.stars}
@@ -61,6 +64,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Review</Form.Label>
               <Form.Control
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="textarea"
                 rows={5}
                 name="description"
@@ -75,7 +79,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#191923" }}>
         <Button
           className="btn btn-sm btn-primary"
           onClick={() => {
