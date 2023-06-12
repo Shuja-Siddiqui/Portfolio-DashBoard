@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editProjectRequest } from "../../../api";
-export const EditProject = ({ data, onClose, getData }) => {
+export const EditProject = ({
+  data,
+  onClose,
+  getData,
+  setToasterMessage,
+  setShowToaster,
+}) => {
   const [editData, setEditData] = useState(data);
 
   const handleEditProject = async () => {
     const response = await editProjectRequest(editData);
+    setShowToaster(true);
+    setToasterMessage("project updated successfuly");
     response?.status === 200 && getData();
   };
 
@@ -20,7 +28,7 @@ export const EditProject = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="project_name"
                 value={editData.project_name}
@@ -35,7 +43,7 @@ export const EditProject = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="textarea"
                 rows={5}
                 name="description"
@@ -50,7 +58,7 @@ export const EditProject = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Link</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="project_name"
                 value={editData.link}
@@ -65,23 +73,21 @@ export const EditProject = ({ data, onClose, getData }) => {
         )}
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
-        <Button
+        <button
           onClick={() => {
             onClose();
           }}
-          className="btn btn-sm btn-primary"
         >
           Cancel
-        </Button>
-        <Button
-          className="btn btn-sm btn-secondary"
+        </button>
+        <button
           onClick={() => {
             handleEditProject();
             onClose();
           }}
         >
           Update
-        </Button>
+        </button>
       </Modal.Footer>
     </Modal>
   );

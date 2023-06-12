@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editTestimonialTextRequest } from "../../../api";
-export const EditTestimonial = ({ data, onClose, getData }) => {
+export const EditTestimonial = ({
+  data,
+  onClose,
+  getData,
+  setShowToaster,
+  setToasterMessage,
+}) => {
   const [editData, setEditData] = useState(data);
 
   const handleEditTestimonial = async () => {
     const response = await editTestimonialTextRequest(editData?._id, editData);
-
+    setShowToaster(true);
+    setToasterMessage("Testimonial updated succesfuly");
     response?.status === 200 && getData();
   };
 
@@ -21,7 +28,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="client_name"
                 value={editData.client_name}
@@ -36,7 +43,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Field</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="text"
                 name="client_name"
                 value={editData.field}
@@ -50,7 +57,7 @@ export const EditTestimonial = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Field</Form.Label>
               <Form.Control
-               style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 type="number"
                 name="stars"
                 value={editData.stars}

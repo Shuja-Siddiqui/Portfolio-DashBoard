@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editProjectImageRequest, getImageRequest } from "../../../api";
-export const EditProjectImage = ({ data, onClose, getData }) => {
+export const EditProjectImage = ({
+  data,
+  onClose,
+  getData,
+  setToasterMessage,
+  setShowToaster,
+}) => {
   const [editData, setEditData] = useState(data);
   const [file, setFile] = useState("");
 
@@ -10,8 +16,9 @@ export const EditProjectImage = ({ data, onClose, getData }) => {
     formData.append("image", file);
 
     const response = await editProjectImageRequest(data?._id, formData);
-
-    response?.status && getData();
+    response?.status === 200 && getData();
+    setShowToaster(true);
+    setToasterMessage("Image updated successfuly");
   };
 
   return (
@@ -36,23 +43,21 @@ export const EditProjectImage = ({ data, onClose, getData }) => {
         </div>
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
-        <Button
-          className="btn btn-sm"
+        <button
           onClick={() => {
             onClose();
           }}
         >
           Cancel
-        </Button>
-        <Button
-          className="btn btn-sm btn-secondary"
+        </button>
+        <button
           onClick={() => {
             handleEditProject();
             onClose();
           }}
         >
           Update
-        </Button>
+        </button>
       </Modal.Footer>
     </Modal>
   );

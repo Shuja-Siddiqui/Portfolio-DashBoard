@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editTestimonialImageRequest, getImageRequest } from "../../../api";
-export const EditImage = ({ data, onClose, getData }) => {
+export const EditImage = ({
+  data,
+  onClose,
+  getData,
+  setShowToaster,
+  setToasterMessage,
+}) => {
   const [editData, setEditData] = useState(data);
   const [file, setFile] = useState("");
-
-  console.log("data is", data);
 
   const handleEditTestimonial = async () => {
     const formData = new FormData();
@@ -13,10 +17,10 @@ export const EditImage = ({ data, onClose, getData }) => {
 
     const response = await editTestimonialImageRequest(data?._id, formData);
 
-    response?.status && getData();
+    response?.status === 200 && getData();
+    setShowToaster(true);
+    setToasterMessage("Image updated successfuly");
   };
-
-  console.log("data is", data);
 
   return (
     <Modal show={true} onHide={onClose} style={{ color: "white" }}>

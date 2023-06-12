@@ -13,6 +13,7 @@ export default function Services() {
   const [serviceData, setServiceData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [modalData, setModalData] = useState(null);
+  const [toasterMessage, setToasterMessage] = useState("");
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -49,16 +50,16 @@ export default function Services() {
       description: "",
     });
     response.status === 201 && getData();
+    setShowToaster(true);
+    setToasterMessage("Creation successful");
   };
-
-  // const handleDeleteClick = () => {
-  //   setShowConfirm(true);
-  // };
 
   const handleDeleteService = async () => {
     const response = await deleteServiceRequest(serviceId);
 
     response?.status === 200 && getData();
+    setShowToaster(true);
+    setToasterMessage("Deletion successful");
     setShowConfirm(false);
   };
 
@@ -150,11 +151,13 @@ export default function Services() {
           data={modalData}
           onClose={handleCloseModal}
           getData={getData}
+          setShowToaster={setShowToaster}
+          setToasterMessage={setToasterMessage}
         />
       )}
       {showToaster && (
         <Toaster
-          text="Service deleted"
+          text={toasterMessage}
           showToaster={showToaster}
           setShowToaster={setShowToaster}
         />

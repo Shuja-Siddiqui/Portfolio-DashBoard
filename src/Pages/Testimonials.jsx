@@ -7,7 +7,7 @@ import {
   getTestimonialRequest,
 } from "../api";
 import { EditTestimonial, EditImage } from "../components";
-import { Confirm } from "../common";
+import { Confirm, Toaster } from "../common";
 
 export default function Testimonials() {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -16,6 +16,8 @@ export default function Testimonials() {
   const [file, setFile] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isImageEditing, setIsImageEditing] = useState(false);
+  const [toasterMessage, setToasterMessage] = useState("");
+  const [showToaster, setShowToaster] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [data, setData] = useState({
     client_name: "",
@@ -83,6 +85,8 @@ export default function Testimonials() {
   const handleDeleteTestimonial = async () => {
     const response = await deleteTestimonialRequest(testimonialId);
     response?.status === 204 && getData();
+    setShowToaster(true);
+    setToasterMessage("Testimonial deleted successfuly");
     setShowConfirm(false);
   };
 
@@ -209,6 +213,15 @@ export default function Testimonials() {
           data={modalData}
           onClose={handleCloseModal}
           getData={getData}
+          setToasterMessage={setToasterMessage}
+          setShowToaster={setShowToaster}
+        />
+      )}
+      {showToaster && (
+        <Toaster
+          text={toasterMessage}
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
         />
       )}
       {isImageEditing && (
@@ -216,6 +229,8 @@ export default function Testimonials() {
           data={modalData}
           onClose={handleCloseImageModel}
           getData={getData}
+          setShowToaster={setShowToaster}
+          setToasterMessage={setToasterMessage}
         />
       )}
       {showConfirm && (

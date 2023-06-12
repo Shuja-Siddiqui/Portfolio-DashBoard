@@ -8,7 +8,7 @@ import {
 } from "../api";
 
 import { EditProjectImage } from "../components";
-import { Confirm } from "../common";
+import { Confirm, Toaster } from "../common";
 
 export default function Projects() {
   const [projectId, setProjectId] = useState("");
@@ -18,6 +18,9 @@ export default function Projects() {
   const [isEditing, setIsEditing] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [file, setFile] = useState("");
+  const [showToaster, setShowToaster] = useState(false);
+  const [toasterMessage, setToasterMessage] = useState("");
+
   const [data, setData] = useState({
     project_name: "",
     description: "",
@@ -70,12 +73,16 @@ export default function Projects() {
       link: "",
     });
     response?.status === 201 && getData();
+    setShowToaster(true);
+    setToasterMessage("project created successfuly");
   };
 
   const handleDeleteProject = async () => {
     const response = await deleteProjectRequest(projectId);
     response?.status === 204 && getData();
     setShowConfirm(false);
+    setShowToaster(true);
+    setToasterMessage("project deleted successfuly");
   };
 
   const handleSubmit = (e) => {
@@ -193,6 +200,15 @@ export default function Projects() {
           data={modalData}
           onClose={handleCloseModal}
           getData={getData}
+          setToasterMessage={setToasterMessage}
+          setShowToaster={setShowToaster}
+        />
+      )}
+      {showToaster && (
+        <Toaster
+          text={toasterMessage}
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
         />
       )}
       {isImageEditing && (
@@ -200,6 +216,8 @@ export default function Projects() {
           data={modalData}
           onClose={handleCloseImageModel}
           getData={getData}
+          setToasterMessage={setToasterMessage}
+          setShowToaster={setShowToaster}
         />
       )}
       {showConfirm && (

@@ -1,26 +1,34 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editServiceRequest } from "../../../api";
-export const EditService = ({ data, onClose, getData }) => {
+export const EditService = ({
+  data,
+  onClose,
+  getData,
+  setShowToaster,
+  setToasterMessage,
+}) => {
   const [editData, setEditData] = useState(data);
 
   const handleEditService = async () => {
     const response = await editServiceRequest(editData);
+    setShowToaster(true);
+    setToasterMessage("Updated successfuly");
     response?.status === 200 && getData();
   };
 
   return (
-    <Modal show={true} onHide={onClose} style={{color: "white"}}>
+    <Modal show={true} onHide={onClose} style={{ color: "white" }}>
       <Modal.Header style={{ backgroundColor: "#2C2C36" }}>
-        <Modal.Title>Edit Testimonial</Modal.Title>
+        <Modal.Title>Edit Service</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ backgroundColor: "#2C2C36" }}>
         {editData && (
           <div>
             <Form.Group>
               <Form.Label>Name</Form.Label>
-              <Form.Control 
-              style={{ backgroundColor: "#2C2C36", color: "white" }}
+              <Form.Control
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="select"
                 required
                 value={editData.name}
@@ -40,7 +48,7 @@ export const EditService = ({ data, onClose, getData }) => {
             <Form.Group>
               <Form.Label>Description</Form.Label>
               <Form.Control
-              style={{ backgroundColor: "#2C2C36", color: "white" }}
+                style={{ backgroundColor: "#2C2C36", color: "white" }}
                 as="textarea"
                 rows={5}
                 name="description"

@@ -10,22 +10,20 @@ export const Confirm = ({ data, onClose, onConfirm }) => {
         <b>{data?.client_name || data?.project_name || data?.name}</b>
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
-        <Button
+        <button
           onClick={() => {
             onClose(false);
           }}
-          className="btn btn-sm btn-primary"
         >
           Cancel
-        </Button>
-        <Button
-          className="btn btn-sm btn-secondary"
+        </button>
+        <button
           onClick={() => {
             onConfirm();
           }}
         >
           Confirm
-        </Button>
+        </button>
       </Modal.Footer>
     </Modal>
   );
