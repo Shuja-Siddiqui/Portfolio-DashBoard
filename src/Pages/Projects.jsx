@@ -101,6 +101,13 @@ export default function Projects() {
 
   return (
     <div>
+      {showToaster && (
+        <Toaster
+          text={toasterMessage}
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
       <h1 style={{ color: "white", textAlign: "center" }}>Projects</h1>
       <form method="post" onSubmit={handleSubmit}>
         <input
@@ -204,13 +211,7 @@ export default function Projects() {
           setShowToaster={setShowToaster}
         />
       )}
-      {showToaster && (
-        <Toaster
-          text={toasterMessage}
-          showToaster={showToaster}
-          setShowToaster={setShowToaster}
-        />
-      )}
+
       {isImageEditing && (
         <EditProjectImage
           data={modalData}

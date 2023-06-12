@@ -100,6 +100,13 @@ export default function Testimonials() {
 
   return (
     <div>
+      {showToaster && (
+        <Toaster
+          text={toasterMessage}
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
       <h1 style={{ color: "white", textAlign: "center" }}>Testimonials</h1>
       <form method="post" onSubmit={handleSubmit}>
         <textarea
@@ -217,13 +224,7 @@ export default function Testimonials() {
           setShowToaster={setShowToaster}
         />
       )}
-      {showToaster && (
-        <Toaster
-          text={toasterMessage}
-          showToaster={showToaster}
-          setShowToaster={setShowToaster}
-        />
-      )}
+
       {isImageEditing && (
         <EditImage
           data={modalData}

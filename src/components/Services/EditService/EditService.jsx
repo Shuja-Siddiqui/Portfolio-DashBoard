@@ -64,23 +64,21 @@ export const EditService = ({
         )}
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: "#2C2C36" }}>
-        <Button
-          className="btn btn-sm btn-primary"
+        <button
           onClick={() => {
             onClose();
           }}
         >
           Cancel
-        </Button>
-        <Button
-          className="btn btn-sm btn-secondary"
+        </button>
+        <button
           onClick={() => {
             handleEditService();
             onClose();
           }}
         >
           Update
-        </Button>
+        </button>
       </Modal.Footer>
     </Modal>
   );

@@ -75,6 +75,13 @@ export default function Services() {
   }, []);
   return (
     <div>
+      {showToaster && (
+        <Toaster
+          text={toasterMessage}
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
       <h1 style={{ color: "white", textAlign: "center" }}>SERVICES</h1>
       <form method="post" onSubmit={handleSubmit}>
         <select
@@ -155,13 +162,7 @@ export default function Services() {
           setToasterMessage={setToasterMessage}
         />
       )}
-      {showToaster && (
-        <Toaster
-          text={toasterMessage}
-          showToaster={showToaster}
-          setShowToaster={setShowToaster}
-        />
-      )}
+
       {showConfirm && (
         <Confirm
           data={modalData}
