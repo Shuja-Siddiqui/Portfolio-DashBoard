@@ -44,8 +44,6 @@ export default function Info() {
     setEditMyData(data?.data);
   };
 
-  console.log("Data for developer is", editMyData)
-
   useEffect(() => {
     getData();
   }, []);
