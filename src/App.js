@@ -23,7 +23,7 @@ function App() {
         <Header>
           <Container fluid>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              {/* <Route path="/" element={<Dashboard />} /> */}
               <Route path="/info" element={<Info />} />
               <Route path="/services" element={<Services />} />
               <Route path="/projects" element={<Projects />} />

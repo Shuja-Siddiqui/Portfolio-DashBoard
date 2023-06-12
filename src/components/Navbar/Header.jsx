@@ -10,11 +10,11 @@ export default function Header({ children }) {
   const toggle = () => setIsOpen(!isOpen);
 
   const menuItem = [
-    {
-      path: "/",
-      name: "Dashboard",
-      icon: <FaBox />,
-    },
+    // {
+    //   path: "/",
+    //   name: "Dashboard",
+    //   icon: <FaBox />,
+    // },
     {
       path: "/info",
       name: "Dev-Info",

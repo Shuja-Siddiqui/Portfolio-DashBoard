@@ -44,6 +44,8 @@ export default function Info() {
     setEditMyData(data?.data);
   };
 
+  console.log("Data for developer is", editMyData)
+
   useEffect(() => {
     getData();
   }, []);
@@ -266,7 +268,7 @@ export default function Info() {
               </div>
               <div className="col-lg-3 col-sm-12">
                 <img
-                  src={getImageRequest(myData?.image?._id)}
+                  src={getImageRequest(myData?.image)}
                   alt=""
                   width={"100%"}
                 />
