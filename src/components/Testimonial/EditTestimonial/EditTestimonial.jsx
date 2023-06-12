@@ -50,23 +50,27 @@ export const EditTestimonial = ({
                 onChange={(e) =>
                   setEditData({ ...editData, field: e.target.value })
                 }
-                placeholder="Project Name"
+                placeholder="Select field"
                 required
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Field</Form.Label>
-              <Form.Control
-                style={{ backgroundColor: "#2C2C36", color: "white" }}
-                type="number"
-                name="stars"
+              <Form.Select
+                name="star"
+                id=""
                 value={editData.stars}
+                required
                 onChange={(e) =>
                   setEditData({ ...editData, stars: e.target.value })
                 }
-                placeholder="Stars"
-                required
-              />
+              >
+                <option value="">Select Star...</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </Form.Select>
             </Form.Group>
             <Form.Group>
               <Form.Label>Review</Form.Label>
@@ -79,7 +83,7 @@ export const EditTestimonial = ({
                 onChange={(e) =>
                   setEditData({ ...editData, review: e.target.value })
                 }
-                placeholder="Project Description"
+                placeholder="Client review"
                 required
               />
             </Form.Group>

@@ -57,6 +57,7 @@ export const EditService = ({
                   setEditData({ ...editData, description: e.target.value })
                 }
                 placeholder="Project Description"
+                placeholde
                 required
               />
             </Form.Group>
