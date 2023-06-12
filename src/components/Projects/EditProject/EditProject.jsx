@@ -6,7 +6,6 @@ export const EditProject = ({ data, onClose, getData }) => {
 
   const handleEditProject = async () => {
     const response = await editProjectRequest(editData);
-
     response?.status === 200 && getData();
   };
 
