@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import { editTestimonialTextRequest } from "../../../api";
 export const EditTestimonial = ({
   data,
