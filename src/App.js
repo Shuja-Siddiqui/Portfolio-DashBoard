@@ -6,6 +6,7 @@ import Services from "./Pages/Services";
 import Info from "./Pages/Info";
 import Projects from "./Pages/Projects";
 import Testimonials from "./Pages/Testimonials";
+import Settings from "./Pages/Settings";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import Login from "./Pages/Login";
@@ -28,6 +29,8 @@ function App() {
               <Route path="/services" element={<Services />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/testimonials" element={<Testimonials />} />
+              <Route path="/settings" element={<Settings />} />
+
               <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
             </Routes>
           </Container>

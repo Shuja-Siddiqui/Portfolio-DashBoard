@@ -3,18 +3,13 @@ import { FaBars, FaUserAlt, FaDiceD20, FaBox } from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdSettings } from "react-icons/md";
 
 export default function Header({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
   const menuItem = [
-    // {
-    //   path: "/",
-    //   name: "Dashboard",
-    //   icon: <FaBox />,
-    // },
     {
       path: "/info",
       name: "Dev-Info",
@@ -37,9 +32,14 @@ export default function Header({ children }) {
       icon: <GiNothingToSay />,
     },
     {
+      path: "/settings",
+      name: "Settings",
+      icon: <MdSettings />,
+    },
+    {
       path: "/logout",
       name: "Logout",
-      icon: <MdLogout />
+      icon: <MdLogout />,
     }
   ];
   return (
@@ -80,7 +80,7 @@ export default function Header({ children }) {
           </div>
         </div>
       </div>
-      <main style={{minHeight: "100vh"}}>{children}</main>
+      <main style={{ minHeight: "100vh" }}>{children}</main>
     </>
   );
 }

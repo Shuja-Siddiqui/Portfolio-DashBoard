@@ -222,11 +222,15 @@ export const editTestimonialTextRequest = async (id, data) => {
 
 export const editTestimonialImageRequest = async (id, data) => {
   try {
-    const response = await axios.patch(`${BASE_URL}/testimonial/file/${id}`, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.patch(
+      `${BASE_URL}/testimonial/file/${id}`,
+      data,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     return response;
   } catch (error) {
@@ -250,4 +254,40 @@ export const deleteTestimonialRequest = async (t_id) => {
 
 export const getImageRequest = (i_id) => {
   return `${BASE_URL}/file/${i_id}`;
+};
+
+export const updateUserRequest = (data) => {
+  console.log("data inside API", data);
+  try {
+    const response = axios.patch(
+      `${BASE_URL}/user_info/6450cb8a8eb415ba6bd72ae9`,
+      data,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log("Error occurred", error?.message);
+  }
+};
+
+export const updateSettingsRequest = () => {
+  try {
+  } catch (error) {}
+};
+
+export const updateContactEmailRequest = async (data) => {
+  try {
+    const response = await axios.patch(`${BASE_URL}/settings`, data, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("Error occurred", error?.message);
+  }
 };
