@@ -16,14 +16,18 @@ function ControlledTabsExample() {
       activeKey={key}
       onSelect={(k) => setKey(k)}
       className="mb-3"
+      style={{
+        background: "lightgrey",
+        padding: "10px",
+      }}
     >
-      <Tab eventKey="username" title="Username">
+      <Tab eventKey="username" title="Username" className="text">
         <UpdateUserName />
       </Tab>
-      <Tab eventKey="password" title="Password">
+      <Tab eventKey="password" title="Password" className="text">
         <UpdatePassword />
       </Tab>
-      <Tab eventKey="contact_email" title="Contact email">
+      <Tab eventKey="contact_email" title="Contact email" className="text">
         <UpdateContactEmail />
       </Tab>
     </Tabs>

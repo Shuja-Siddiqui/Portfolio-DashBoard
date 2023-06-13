@@ -18,7 +18,7 @@ export const UpdatePassword = () => {
       });
   };
   return (
-    <form>
+    <form style={{ width: "100%", maxWidth: "100%" }}>
       <label>Current Password</label>
       <input
         type="password"

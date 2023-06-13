@@ -17,7 +17,7 @@ export const UpdateContactEmail = () => {
     console.log("Creating...", response);
   };
   return (
-    <form>
+    <form style={{ width: "100%", maxWidth: "100%" }}>
       <label>Current Email</label>
       <input
         type="email"

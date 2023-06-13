@@ -183,3 +183,11 @@ button:hover {
   background-color: #01be96;
   color: #2c2c36;
 }
+
+.nav-link {
+  padding: 0 !important;
+}
+
+.text{
+  color: white !important;
+}

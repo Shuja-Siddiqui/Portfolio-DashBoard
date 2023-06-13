@@ -17,7 +17,7 @@ export const UpdateUserName = () => {
   };
 
   return (
-    <form>
+    <form style={{width: '100%', maxWidth: '100%'}}>
       <label>Current Username</label>
       <input
         type="text"

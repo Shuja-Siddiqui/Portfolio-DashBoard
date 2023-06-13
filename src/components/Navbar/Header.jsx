@@ -66,7 +66,6 @@ export default function Header({ children }) {
                 to={item.path}
                 key={index}
                 className="link"
-                actviveclassName="active"
               >
                 <div className="icon">{item.icon}</div>
                 <div
