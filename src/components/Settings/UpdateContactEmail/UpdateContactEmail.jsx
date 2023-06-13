@@ -18,6 +18,7 @@ export const UpdateContactEmail = () => {
   };
   return (
     <form>
+      <label>Current Email</label>
       <input
         type="email"
         name="current_email"
@@ -27,6 +28,7 @@ export const UpdateContactEmail = () => {
         placeholder="Current email"
         required
       />
+      <label>New Email</label>
       <input
         type="email"
         name="new_email"
