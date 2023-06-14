@@ -72,16 +72,14 @@ export default function Projects() {
       description: "",
       link: "",
     });
-    response?.status === 201 && getData();
-    setShowToaster(true);
+    response?.status === 201 && getData() && setShowToaster(true);
     setToasterMessage("project created successfuly");
   };
 
   const handleDeleteProject = async () => {
     const response = await deleteProjectRequest(projectId);
-    response?.status === 204 && getData();
+    response?.status === 204 && getData() && setShowToaster(true);
     setShowConfirm(false);
-    setShowToaster(true);
     setToasterMessage("project deleted successfuly");
   };
 
@@ -146,7 +144,12 @@ export default function Projects() {
           placeholder="https//:"
           required
         />
-        <button onClick={handleCreateProject}>SUBMIT</button>
+        <button
+          disabled={!file || !data.project_name}
+          onClick={handleCreateProject}
+        >
+          SUBMIT
+        </button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
         <table className="table">

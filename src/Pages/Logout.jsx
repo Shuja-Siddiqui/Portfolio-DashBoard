@@ -5,8 +5,7 @@ function Logout({ setLoggedIn }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user_id");
+    localStorage.clear();
     setLoggedIn(false);
     navigate("/");
   }, []);

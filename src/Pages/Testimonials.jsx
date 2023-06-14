@@ -159,7 +159,12 @@ export default function Testimonials() {
           onChange={(e) => setFile(e.target.files[0])}
           accept="image/jpg, image/jpeg, image/png"
         />
-        <button onClick={handleCreateTestimonial}>SUBMIT</button>
+        <button
+          disabled={!file || !data.client_name || data.review}
+          onClick={handleCreateTestimonial}
+        >
+          SUBMIT
+        </button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
         <table className="table">

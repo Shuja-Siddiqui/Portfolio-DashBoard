@@ -257,7 +257,6 @@ export const getImageRequest = (i_id) => {
 };
 
 export const updateUserRequest = (data) => {
-  console.log("data inside API", data);
   try {
     const response = axios.patch(
       `${BASE_URL}/user_info/6450cb8a8eb415ba6bd72ae9`,
@@ -272,11 +271,6 @@ export const updateUserRequest = (data) => {
   } catch (error) {
     console.log("Error occurred", error?.message);
   }
-};
-
-export const updateSettingsRequest = () => {
-  try {
-  } catch (error) {}
 };
 
 export const updateContactEmailRequest = async (data) => {

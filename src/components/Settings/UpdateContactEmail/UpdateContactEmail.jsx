@@ -1,23 +1,32 @@
 import { useState } from "react";
 import { updateContactEmailRequest } from "../../../api";
+import { Toaster } from "../../../common";
 
 export const UpdateContactEmail = () => {
   const [data, setData] = useState({
     current_email: "",
     new_email: "",
   });
+  const [showToaster, setShowToaster] = useState(false);
 
   const handleCreateSettings = async () => {
     const response = await updateContactEmailRequest(data);
+    response?.status === 200 && setShowToaster(true);
     response?.status === 200 &&
       setData({
         current_email: "",
         new_email: "",
       });
-    console.log("Creating...", response);
   };
   return (
     <form style={{ width: "100%", maxWidth: "100%" }}>
+      {showToaster && (
+        <Toaster
+          text="Updated"
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
       <label>Current Email</label>
       <input
         type="email"
@@ -39,7 +48,11 @@ export const UpdateContactEmail = () => {
         required
       />
 
-      <button type="button" onClick={handleCreateSettings}>
+      <button
+        disabled={!data.current_email || !data.new_email}
+        type="button"
+        onClick={handleCreateSettings}
+      >
         Update
       </button>
     </form>

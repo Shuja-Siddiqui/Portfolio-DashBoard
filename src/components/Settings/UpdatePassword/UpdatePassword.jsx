@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateUserRequest } from "../../../api";
+import { Toaster } from "../../../common";
 
 export const UpdatePassword = () => {
   const [data, setData] = useState({
@@ -7,9 +8,11 @@ export const UpdatePassword = () => {
     new_password: "",
     confirm_password: "",
   });
+  const [showToaster, setShowToaster] = useState(false);
 
   const handleCreateSettings = async () => {
     const response = await updateUserRequest(data);
+    response?.status === 200 && setShowToaster(true);
     response?.status === 200 &&
       setData({
         password: "",
@@ -19,6 +22,13 @@ export const UpdatePassword = () => {
   };
   return (
     <form style={{ width: "100%", maxWidth: "100%" }}>
+      {showToaster && (
+        <Toaster
+          text="Updated"
+          showToaster={showToaster}
+          setShowToaster={setShowToaster}
+        />
+      )}
       <label>Current Password</label>
       <input
         type="password"
@@ -50,7 +60,11 @@ export const UpdatePassword = () => {
         required
       />
 
-      <button type="button" onClick={handleCreateSettings}>
+      <button
+        disabled={!data.confirm_password || !data.new_password}
+        type="button"
+        onClick={handleCreateSettings}
+      >
         Update
       </button>
     </form>

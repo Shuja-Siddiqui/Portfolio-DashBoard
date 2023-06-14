@@ -16,7 +16,9 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
-    token ? setLoggedIn(true) : setLoggedIn(false);
+    token && token !== "undefined"
+      ? setLoggedIn(true)
+      : setLoggedIn(false);
   }, [token]);
   return (
     <BrowserRouter>
@@ -31,7 +33,10 @@ function App() {
               <Route path="/testimonials" element={<Testimonials />} />
               <Route path="/settings" element={<Settings />} />
 
-              <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
+              <Route
+                path="/logout"
+                element={<Logout setLoggedIn={setLoggedIn} />}
+              />
             </Routes>
           </Container>
         </Header>
