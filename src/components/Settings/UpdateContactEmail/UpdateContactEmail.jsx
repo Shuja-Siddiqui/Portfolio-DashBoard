@@ -18,6 +18,12 @@ export const UpdateContactEmail = () => {
         new_email: "",
       });
   };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    return emailPattern.test(email);
+  };
+
   return (
     <form style={{ width: "100%", maxWidth: "100%" }}>
       {showToaster && (
@@ -31,7 +37,6 @@ export const UpdateContactEmail = () => {
       <input
         type="email"
         name="current_email"
-        id=""
         value={data.current_email}
         onChange={(e) => setData({ ...data, current_email: e.target.value })}
         placeholder="Current email"
@@ -43,13 +48,17 @@ export const UpdateContactEmail = () => {
         name="new_email"
         value={data.new_email}
         onChange={(e) => setData({ ...data, new_email: e.target.value })}
-        id=""
         placeholder="New email"
         required
       />
 
       <button
-        disabled={!data.current_email || !data.new_email}
+        disabled={
+          !data.current_email ||
+          !data.new_email ||
+          !validateEmail(data.current_email) ||
+          !validateEmail(data.new_email)
+        }
         type="button"
         onClick={handleCreateSettings}
       >

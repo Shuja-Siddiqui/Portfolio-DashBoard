@@ -11,7 +11,6 @@ export const UpdateUserName = () => {
 
   const handleCreateSettings = async () => {
     const response = await updateUserRequest(data);
-    console.log(response);
     response?.status === 200 && setShowToaster(true);
     setData({
       username: "",
