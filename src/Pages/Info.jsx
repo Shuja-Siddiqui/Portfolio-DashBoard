@@ -7,17 +7,29 @@ import {
 } from "../api";
 
 import { Toaster } from "../common";
+import { EditDeveloperImage } from "../components";
 // const uid = localStorage.getItem("user_id");
 
 export default function Info() {
   const [showToaster, setShowToaster] = useState(false);
+  const [toasterMessage, setToasterMessage] = useState("");
   const [show, setShow] = useState(false);
+  const [isImageEditing, setIsImageEditing] = useState(false);
   const [myData, setMyData] = useState(null);
+  const [modalData, setModalData] = useState(null);
   const [editMyData, setEditMyData] = useState(null);
   const [file, setFile] = useState("");
 
   const showForm = () => {
     setShow(true);
+  };
+
+  const handleCloseImageModel = () => {
+    setIsImageEditing(false);
+  };
+
+  const handleImageEditClick = () => {
+    setIsImageEditing(true);
   };
 
   const removeLink = (index) => {
@@ -53,16 +65,7 @@ export default function Info() {
   };
 
   const handleUpdateDeveloperInfoRequest = async () => {
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("name", editMyData?.name);
-    formData.append("field", editMyData?.field);
-    formData.append("address", editMyData?.address);
-    formData.append("email", editMyData?.email);
-    formData.append("phone", editMyData?.phone);
-    formData.append("about", editMyData?.about);
-    formData.append("links", JSON.stringify(editMyData.links));
-    const response = await updateDeveloperInfoRequest(formData);
+    const response = await updateDeveloperInfoRequest(editMyData);
     response?.status === 200 && getData();
     setShow(false);
     setShowToaster(true);
@@ -189,7 +192,7 @@ export default function Info() {
             ))}
 
             <button onClick={addLink}>Add Social</button>
-            <>
+            {/* <>
               {editMyData?.image?._id && (
                 <img
                   style={{ width: "150px", height: "150px" }}
@@ -205,7 +208,7 @@ export default function Info() {
                 onChange={(e) => setFile(e.target.files[0])}
                 required
               />
-            </>
+            </> */}
             <button onClick={handleUpdateDeveloperInfoRequest}>SUBMIT</button>
           </form>
 
@@ -264,7 +267,22 @@ export default function Info() {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3 col-sm-12">
+              <div
+                style={{ position: "relative" }}
+                className="col-lg-3 col-sm-12"
+              >
+                <button
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 12,
+                    borderRadius: 0,
+                  }}
+                  onClick={handleImageEditClick}
+                  className="btn btn-secondary"
+                >
+                  Update
+                </button>
                 <img
                   src={getImageRequest(myData?.image)}
                   alt=""
@@ -278,6 +296,15 @@ export default function Info() {
             <FaEdit /> EDIT
           </button>
         </div>
+      )}
+      {isImageEditing && (
+        <EditDeveloperImage
+          data={myData}
+          onClose={handleCloseImageModel}
+          getData={getData}
+          setToasterMessage={setToasterMessage}
+          setShowToaster={setShowToaster}
+        />
       )}
     </div>
   );

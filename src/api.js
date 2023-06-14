@@ -75,10 +75,27 @@ export const deleteServiceRequest = async (serviceId) => {
 };
 
 export const updateDeveloperInfoRequest = async (data) => {
-  console.log("Data going for updating the deve info", data);
   try {
-    const response = await axios.put(
+    const response = await axios.patch(
       `${BASE_URL}/developer_info/6450cb8a8eb415ba6bd72ae9`,
+      data,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.log("Error occured", error);
+  }
+};
+
+export const updateDeveloperImageRequest = async (data) => {
+  try {
+    const response = await axios.patch(
+      `${BASE_URL}/developer_info/file/6450cb8a8eb415ba6bd72ae9`,
       data,
       {
         headers: {
