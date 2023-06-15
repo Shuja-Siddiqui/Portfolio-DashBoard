@@ -67,11 +67,12 @@ export default function Projects() {
     formData.append("description", data.description);
     formData.append("link", data.link);
     const response = await createProjectRequest(formData);
-    setData({
-      project_name: "",
-      description: "",
-      link: "",
-    });
+    response?.status === 201 &&
+      setData({
+        project_name: "",
+        description: "",
+        link: "",
+      });
     response?.status === 201 && getData() && setShowToaster(true);
     setToasterMessage("project created successfuly");
   };

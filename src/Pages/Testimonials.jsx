@@ -160,7 +160,7 @@ export default function Testimonials() {
           accept="image/jpg, image/jpeg, image/png"
         />
         <button
-          disabled={!file || !data.client_name || data.review}
+          disabled={!file || !data.client_name || !data.review}
           onClick={handleCreateTestimonial}
         >
           SUBMIT

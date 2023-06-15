@@ -48,7 +48,11 @@ export const UpdateUserName = () => {
         required
       />
 
-      <button type="button" onClick={handleCreateSettings}>
+      <button
+        disabled={!data.new_username || !data.username}
+        type="button"
+        onClick={handleCreateSettings}
+      >
         Update
       </button>
     </form>
