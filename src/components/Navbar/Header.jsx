@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaBars, FaUserAlt, FaDiceD20, FaBox } from "react-icons/fa";
+import { FaBars, FaUserAlt, FaDiceD20, FaBox, FaDashcube } from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
@@ -10,6 +10,11 @@ export default function Header({ children }) {
   const toggle = () => setIsOpen(!isOpen);
 
   const menuItem = [
+    {
+      path: "/developers",
+      name: "Dashboard",
+      icon: <FaDashcube />,
+    },
     {
       path: "/info",
       name: "Dev-Info",

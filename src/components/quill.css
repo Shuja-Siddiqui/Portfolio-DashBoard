@@ -1,0 +1,21 @@
+.ql-toolbar {
+  background-color: #e4e0e0; /* Change to your desired color */
+  color: #3f3d3d; /* Change to your desired color */
+}
+
+/* Customize toolbar buttons */
+.ql-toolbar .ql-picker-label {
+  color: #333; /* Change to your desired color */
+}
+
+.ql-toolbar button {
+  color: #6352f5; /* Change to your desired color */
+}
+
+/* Customize active toolbar buttons */
+.ql-toolbar .ql-active {
+  color: #007bff; /* Change to your desired color */
+}
+.ql-editor{
+    background-color: #bbb;
+}
