@@ -1,1 +1,1 @@
-export * from "./EditInfo";
+export * from "./DeveloperDashboard";

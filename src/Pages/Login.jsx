@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginRequest } from "../api";
 import { useNavigate } from "react-router-dom";
 
-export default function Login({setToken}) {
-  const navigate = useNavigate();
+export default function Login() {
   const [data, setData] = useState({
     username: "",
     password: "",
   });
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -26,13 +28,21 @@ export default function Login({setToken}) {
 
   const handleLogin = async () => {
     const response = await loginRequest(data);
-    console.log("response for login is", response)
-    localStorage.setItem("token", response?.data?.data?.token);
-    localStorage.setItem('user_id', response?.data?.data?.user_id);
-    setToken(response?.data?.data?.token);
-    return response.status === 200 && navigate("/info");
+    if (response?.status == 200) {
+      navigate("/info");
+    }
+    return response;
   };
 
+  useEffect(() => {
+    localStorage.getItem("@token") !== "undefined"
+      ? setLoggedIn(true)
+      : setLoggedIn(false);
+  }, [localStorage.getItem("@token")]);
+  useEffect(() => {
+    if (loggedIn) navigate("/info");
+    setLoggedIn(false);
+  }, [loggedIn]);
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>

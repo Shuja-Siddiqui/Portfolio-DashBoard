@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { createServiceRequest, deleteServiceRequest } from "../api";
+import { deleteServiceRequest } from "../api";
 
 import { EditService } from "../components";
 import { Toaster, Confirm } from "../common";
@@ -41,17 +41,6 @@ export default function Services() {
       `http://localhost:5000/service/6450cb8a8eb415ba6bd72ae9`
     ).then((res) => res.json());
     setServiceData(res.data);
-  };
-
-  const handleCeateService = async () => {
-    const response = await createServiceRequest(data);
-    setData({
-      name: "",
-      description: "",
-    });
-    response.status === 201 && getData();
-    setShowToaster(true);
-    setToasterMessage("Creation successful");
   };
 
   const handleDeleteService = async () => {
@@ -108,12 +97,7 @@ export default function Services() {
           placeholder="Discription"
           required
         />
-        <button
-          disabled={!data?.name || !data?.description}
-          onClick={handleCeateService}
-        >
-          SUBMIT
-        </button>
+        <button disabled={!data?.name || !data?.description}>SUBMIT</button>
       </form>
       <div className="table-responsive-lg table-responsive-md table-responsive-sm">
         <table class="table">

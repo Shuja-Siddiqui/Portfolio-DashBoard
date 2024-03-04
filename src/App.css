@@ -72,10 +72,8 @@ form {
   display: block;
   background-color: #191923;
   box-shadow: 1px 1px 3px 2px #383838;
-  margin: 100px auto;
-  max-width: 600px;
-  padding: 30px 40px;
   border-radius: 2px;
+  padding: 2% 20% 2% 20%;
 }
 
 form input,
@@ -110,6 +108,14 @@ form button {
 @media only screen and (max-width: 345px) {
   form button {
     width: 100%;
+  }
+  form {
+    padding: 1rem 2rem;
+  }
+}
+@media only screen and (max-width: 720px) {
+  form {
+    padding: 10%;
   }
 }
 
@@ -188,6 +194,6 @@ button:hover {
   padding: 0 !important;
 }
 
-.text{
+.text {
   color: white !important;
 }
