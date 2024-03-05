@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { FaBars, FaUserAlt, FaDiceD20, FaBox, FaDashcube } from "react-icons/fa";
+import {
+  FaBars,
+  FaUserAlt,
+  FaDiceD20,
+  FaBox,
+  FaDashcube,
+} from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
@@ -11,28 +17,23 @@ export default function Header({ children }) {
 
   const menuItem = [
     {
-      path: "/developers",
-      name: "Dashboard",
-      icon: <FaDashcube />,
+      path: "/projectDashboard",
+      name: "Projects",
+      icon: <AiOutlineProject />,
     },
     {
-      path: "/info",
-      name: "Dev-Info",
+      path: "/developers",
+      name: "Developers",
       icon: <FaUserAlt />,
     },
     {
-      path: "/services",
+      path: "/servicesDashboard",
       name: "Services",
       icon: <FaDiceD20 />,
     },
-    {
-      path: "/projects",
-      name: "Project",
-      icon: <AiOutlineProject />,
-    },
 
     {
-      path: "/testimonials",
+      path: "/testimonialsDashboard",
       name: "Testiminials",
       icon: <GiNothingToSay />,
     },
@@ -45,7 +46,7 @@ export default function Header({ children }) {
       path: "/logout",
       name: "Logout",
       icon: <MdLogout />,
-    }
+    },
   ];
   return (
     <>
@@ -67,11 +68,7 @@ export default function Header({ children }) {
           </div>
           <div className="menu">
             {menuItem?.map((item, index) => (
-              <NavLink
-                to={item.path}
-                key={index}
-                className="link"
-              >
+              <NavLink to={item.path} key={index} className="link">
                 <div className="icon">{item.icon}</div>
                 <div
                   style={{ display: isOpen ? "block" : "none" }}

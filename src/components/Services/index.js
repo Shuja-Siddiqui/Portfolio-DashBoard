@@ -1,1 +1,1 @@
-export * from "./EditService";
+export * from "./ServicesDashboard";
