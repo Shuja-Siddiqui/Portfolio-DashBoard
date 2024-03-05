@@ -118,6 +118,73 @@ export const updateProject = async (data, id) => {
     console.log("Error occured", error?.message);
   }
 };
+export const addTestimonials = async (data) => {
+  try {
+    const response = await axios.post(`${baseURL}/testimonial`, data);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const fetchTestimonials = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/testimonial/all/testimonial`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const fetchTestimonial = async (id) => {
+  try {
+    const response = await axios.get(`${baseURL}/testimonial/${id}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const updateTestimonial = async (id, data) => {
+  try {
+    const response = await axios.put(`${baseURL}/testimonial/${id}`, data);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const addservice = async (data) => {
+  try {
+    const response = await axios.post(`${baseURL}/service`, data);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const fetchService = async (id) => {
+  try {
+    const response = await axios.get(`${baseURL}/service/${id}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const updateService = async (id, data) => {
+  try {
+    const response = await axios.put(`${baseURL}/service/${id}`, data);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+export const fetchservices = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/service/all/service`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+// OLD APIS
+
 export const editServiceRequest = async (data) => {
   const name = data?.name;
   const description = data?.description;

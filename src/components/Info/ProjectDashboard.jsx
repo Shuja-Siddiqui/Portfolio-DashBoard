@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { UserInfoCard } from "./UserInfoCard";
-import { getDevelopers } from "../../api";
+import { fetchProjects, getDevelopers } from "../../api";
 import { useNavigate } from "react-router-dom";
+import { ProjectInfoCard } from "./ProjectInfoCard";
 
-export const DeveloperDashboard = () => {
+export const ProjectDashboard = () => {
   const [data, setData] = useState();
   const navigate = useNavigate();
   const fetchDev = async () => {
-    const users = await getDevelopers();
+    const users = await fetchProjects();
     setData(users);
   };
   useEffect(() => {
@@ -24,10 +25,10 @@ export const DeveloperDashboard = () => {
     navigate(`view/${id}`);
   };
   const pureData = () => {
-    return data?.map(({ name, skills, devId }) => ({
-      name,
-      skills,
-      devId,
+    return data?.map(({ projectName, clientName, techStack }) => ({
+      projectName,
+      clientName,
+      techStack,
     }));
   };
   useEffect(() => {
@@ -43,17 +44,17 @@ export const DeveloperDashboard = () => {
           alignItems: "center",
         }}
       >
-        <h2 className="text-white">Developers</h2>
-        <button onClick={() => navigate("/info")}>+Add Developer</button>
+        <h2 className="text-white">Projects</h2>
+        <button onClick={() => navigate("/projects")}>+Add Project</button>
       </div>
       <Row xs={1} md={2} className="g-4">
         {data &&
-          data.map(({ name, skills, devId, _id }) => (
+          data.map(({ projectName, clientName, techStack, _id }) => (
             <div key={_id} className="col">
-              <UserInfoCard
-                name={name}
-                devId={devId}
-                skills={skills}
+              <ProjectInfoCard
+                projectName={projectName}
+                clientName={clientName}
+                techStack={techStack}
                 onEdit={() => handleEdit(_id)}
                 onView={() => onView(_id)}
                 id={_id}

@@ -8,7 +8,9 @@ export const UserInfoCard = ({ name, skills, devId, onEdit, onView }) => {
         <Col xs={12} sm={12} md={12} lg={12} xl={12}>
           <Card className="bg-dark rounded border-secondary text-white">
             <Card.Body>
-              <Card.Title className="text-white">User Information</Card.Title>
+              <Card.Title className="text-white">
+                Developer Information
+              </Card.Title>
               <strong>Name:</strong> {name}
               <br />
               <strong>Dev Id:</strong> {devId}

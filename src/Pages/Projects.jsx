@@ -37,7 +37,6 @@ export default function Projects() {
   const [images, setImages] = useState([]);
   const [preveiousImages, setPreveiousImages] = useState([]);
   const [imagesToShow, setImagesToShow] = useState([]);
-  const [hero, setHero] = useState("");
   const [heroToShow, setHeroToShow] = useState("");
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [view, setView] = useState(false);
@@ -65,7 +64,7 @@ export default function Projects() {
   const handleHero = (e) => {
     setFile(e.target.files[0]);
     const heroimage = URL.createObjectURL(e.target.files[0]);
-    setHero(heroimage);
+    setHeroToShow(heroimage);
   };
 
   const params = useParams();
@@ -76,9 +75,10 @@ export default function Projects() {
   const getProject = async () => {
     const res = await fetchProject(params?.id);
     if (res?.hero) {
-      setHeroToShow(`${baseURL}/file/${res?.hero}`);
+      const imageUrl = res.hero;
+      setHeroToShow(`${baseURL}/file/${imageUrl}`);
     }
-    setHero(res?.hero);
+    setFile(res?.hero);
     if (res?.gallery) {
       setPreveiousImages(res?.gallery);
       // Also set the image URLs to display them in the UI
@@ -92,7 +92,9 @@ export default function Projects() {
     setAllSkills(skills);
   };
   useEffect(() => {
-    getProject();
+    if (params?.id) getProject();
+  }, []);
+  useEffect(() => {
     getAllSkills();
   }, []);
 
@@ -130,7 +132,6 @@ export default function Projects() {
         const hero = await createImageId(file);
         formData["hero"] = hero;
       }
-      formData["hero"] = hero;
       if (images.length > 0 || imagesToDelete.length > 0) {
         if (images.length === 0 && imagesToDelete.length > 0) {
           const gallery = preveiousImages.filter(
@@ -147,7 +148,7 @@ export default function Projects() {
       res = await updateProject(formData, params?.id);
     }
     if (res?.status === 201 || res?.status === 200) {
-      navigate("/developers");
+      navigate("/projectDashboard");
     }
   };
 
@@ -160,6 +161,9 @@ export default function Projects() {
     setImagesToShow(newArr);
   };
 
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
   return (
     <div>
       {showToaster && (
@@ -209,7 +213,7 @@ export default function Projects() {
             required
           />
           <label htmlFor="techStack" className="text-white">
-            Duration:
+            Tech Stack:
           </label>
           <input
             type="text"
@@ -220,6 +224,7 @@ export default function Projects() {
             placeholder="Project techStack"
             required
           />
+
           <label htmlFor="hero" className="text-white">
             Hero Image:
           </label>
@@ -230,7 +235,7 @@ export default function Projects() {
             onChange={handleHero}
             accept="image/*"
           />
-          {hero && (
+          {imagesToShow && (
             <div
               style={{
                 backgroundImage: `url(${heroToShow})`,

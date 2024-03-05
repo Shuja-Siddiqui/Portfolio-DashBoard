@@ -10,14 +10,12 @@ import {
   getDeveloper,
   updateDeveloper,
   baseURL,
+  fetchTestimonials,
+  fetchservices,
 } from "../api";
 
 import { Toaster } from "../common";
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 
 // const uid = localStorage.getItem("user_id");
@@ -29,6 +27,8 @@ export default function Info() {
   const [bufferedFile, setBufferedFile] = useState("");
   const [skill, setSkill] = useState({ skillName: "" });
   const [allSkills, setAllSkills] = useState([]);
+  const [allServices, setAllServices] = useState([]);
+  const [allTestimonials, setAllTestimonials] = useState([]);
   const [allProjects, setAllProjects] = useState([]);
   const [view, setView] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,6 +41,8 @@ export default function Info() {
     skills: [],
     links: [{ title: "", url: "" }],
     projects: [],
+    testimonials: [],
+    services: [],
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,6 +57,19 @@ export default function Info() {
       };
     });
   };
+
+  // FOR STARS
+  function generateStars(numStars) {
+    const stars = [];
+    for (let i = 0; i < numStars; i++) {
+      stars.push(
+        <span key={i} style={{ color: "gold" }}>
+          &#9733;
+        </span>
+      ); // &#9733; is the Unicode for a star
+    }
+    return stars;
+  }
 
   // Add Skills
   const handleSkill = () => {
@@ -73,14 +88,26 @@ export default function Info() {
     const skills = await fetchSkills();
     setAllSkills(skills);
   };
+  const getallServices = async () => {
+    const skills = await fetchservices();
+    console.log(skills, "skills");
+    setAllServices(skills);
+  };
+  const getAlllTestimonials = async () => {
+    const testimonial = await fetchTestimonials();
+    setAllTestimonials(testimonial);
+  };
+
   const getAllProjects = async () => {
     const projects = await fetchProjects();
     setAllProjects(projects);
   };
 
   useEffect(() => {
+    getAlllTestimonials();
     getAllSkills();
     getAllProjects();
+    getallServices();
   }, []);
 
   // GET Single Developer To Edit
@@ -101,7 +128,6 @@ export default function Info() {
           skillName: skill.title.skillName,
         }));
         setFile(developer?.avatar);
-
         // Update formData with refined skills only
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -115,9 +141,25 @@ export default function Info() {
           ...formData,
           projects: refinedProjects,
         }));
+        // Update formData with refined Testimonials only
+        const refinedTestimonials = developer?.testimonials?.map(
+          (test) => test?._id
+        );
+        setFormData((formData) => ({
+          ...formData,
+          testimonials: refinedTestimonials,
+        }));
+        // Update formData with refined Services only
+        const refinedServices = developer?.services?.map(
+          (service) => service?._id
+        );
+        setFormData((formData) => ({
+          ...formData,
+          services: refinedServices,
+        }));
 
         // Keep the remaining fields unchanged
-        const { name, devId, residence, age, about, links } = developer;
+        const { name, devId, residence, age, about, links, avatar } = developer;
         const updatedFormData = {
           name,
           devId,
@@ -125,6 +167,7 @@ export default function Info() {
           age,
           about,
           links,
+          avatar,
         };
 
         // Update formData with the updated fields
@@ -160,15 +203,14 @@ export default function Info() {
       const fileId = await createImageId(file);
       formData["avatar"] = fileId;
       res = await createDeveloper(formData);
-      console.log(res);
     } else {
-      if (formData.avatar !== file) {
+      if (file !== formData?.avatar) {
+        console.log(file);
         const fileId = await createImageId(file);
         formData["avatar"] = fileId;
       }
-      formData["avatar"] = file;
+      formData["avatar"] = formData?.avatar;
       res = await updateDeveloper(formData, params?.id);
-      console.log(res);
     }
     if (res?.status === 201 || res?.status === 200) {
       navigate("/developers");
@@ -495,6 +537,116 @@ export default function Info() {
                     </div>
                   ))
                 : "No Project"}
+            </div>
+            <h5 className="mb-3 text-white">Testimonials</h5>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
+              {allTestimonials && allTestimonials.length > 0
+                ? allTestimonials.map((testimonial, index) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      key={index}
+                    >
+                      <input
+                        name="testimonial"
+                        id="testimonial"
+                        type="checkbox"
+                        style={{ width: "20px", padding: "0", margin: "0" }}
+                        value={testimonial._id}
+                        checked={formData?.testimonials?.some(
+                          (formTestimonial) =>
+                            formTestimonial === testimonial._id
+                        )}
+                        onChange={(e) => {
+                          const updatedTestimonials = [
+                            ...formData.testimonials,
+                          ];
+                          if (e.target.checked) {
+                            if (!updatedTestimonials.includes(e.target.value))
+                              updatedTestimonials.push(e.target.value);
+                          } else {
+                            updatedTestimonials.splice(
+                              updatedTestimonials.indexOf(e.target.value),
+                              1
+                            );
+                          }
+                          setFormData({
+                            ...formData,
+                            testimonials: updatedTestimonials,
+                          });
+                        }}
+                      />
+                      <label htmlFor="testimonial" className="text-white">
+                        {testimonial.clientName}
+                        <sup>{generateStars(testimonial?.stars)}</sup>
+                      </label>
+                    </div>
+                  ))
+                : "No Testimonials"}
+            </div>
+            <h5 className="mb-3 text-white">Services</h5>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
+              {allServices && allServices.length > 0
+                ? allServices.map((service, index) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      key={index}
+                    >
+                      <input
+                        name="service"
+                        id="service"
+                        type="checkbox"
+                        style={{ width: "20px", padding: "0", margin: "0" }}
+                        value={service._id}
+                        checked={formData?.services?.some(
+                          (formService) => formService === service._id
+                        )}
+                        onChange={(e) => {
+                          const updatedServices = [...formData.services];
+                          if (e.target.checked) {
+                            if (!updatedServices.includes(e.target.value))
+                              updatedServices.push(e.target.value);
+                          } else {
+                            updatedServices.splice(
+                              updatedServices.indexOf(e.target.value),
+                              1
+                            );
+                          }
+                          setFormData({
+                            ...formData,
+                            services: updatedServices,
+                          });
+                        }}
+                      />
+                      <label htmlFor="service" className="text-white">
+                        {service.name?.skillName}
+                      </label>
+                    </div>
+                  ))
+                : "No Testimonials"}
             </div>
             <div style={{ width: "100%", display: "flex" }}>
               <Button
