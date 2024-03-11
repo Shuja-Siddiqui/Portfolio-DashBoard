@@ -11,21 +11,25 @@ import {
   updateDeveloper,
   baseURL,
   fetchTestimonials,
-  fetchservices,
+  fetchServices,
+  addService,
 } from "../api";
 
 import { Toaster } from "../common";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
+import { spokenLanguages } from "../utils";
 
 // const uid = localStorage.getItem("user_id");
 
 export default function Info() {
   const [show, setShow] = useState(false);
   const [showLink, setShowLink] = useState(false);
+  const [showSerivce, setShowSerivce] = useState(false);
   const [file, setFile] = useState("");
   const [bufferedFile, setBufferedFile] = useState("");
   const [skill, setSkill] = useState({ skillName: "" });
+  const [service, setService] = useState({ name: "", description: "" });
   const [allSkills, setAllSkills] = useState([]);
   const [allServices, setAllServices] = useState([]);
   const [allTestimonials, setAllTestimonials] = useState([]);
@@ -43,6 +47,7 @@ export default function Info() {
     projects: [],
     testimonials: [],
     services: [],
+    languages: [],
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,6 +86,22 @@ export default function Info() {
       console.log("Title and path are required.");
     }
   };
+  // Add Service
+  const handleService = () => {
+    if (service) {
+      const res = addService({
+        name: service.name,
+        description: service?.description,
+      });
+      if (res?.status === 201 || res?.status === 200) {
+        getallServices;
+        setService({ name: "", description: "" });
+      }
+      handleCloseServiceModel();
+    } else {
+      console.log("Title and Description are required.");
+    }
+  };
 
   //Fetch all projects, skill
 
@@ -89,9 +110,8 @@ export default function Info() {
     setAllSkills(skills);
   };
   const getallServices = async () => {
-    const skills = await fetchservices();
-    console.log(skills, "skills");
-    setAllServices(skills);
+    const services = await fetchServices();
+    setAllServices(services);
   };
   const getAlllTestimonials = async () => {
     const testimonial = await fetchTestimonials();
@@ -159,8 +179,9 @@ export default function Info() {
         }));
 
         // Keep the remaining fields unchanged
-        const { name, devId, residence, age, about, links, avatar } = developer;
-        const updatedFormData = {
+        const { name, devId, residence, age, about, links, avatar, languages } =
+          developer;
+        const unchangedData = {
           name,
           devId,
           residence,
@@ -168,12 +189,13 @@ export default function Info() {
           about,
           links,
           avatar,
+          languages,
         };
 
         // Update formData with the updated fields
         setFormData((prevFormData) => ({
           ...prevFormData,
-          ...updatedFormData,
+          ...unchangedData,
         }));
       } else {
         console.error("Developer not found");
@@ -227,6 +249,8 @@ export default function Info() {
   const handleShow = () => setShow(true);
   const handleCloseLinkModel = () => setShowLink(false);
   const handleShowLinkModel = () => setShowLink(true);
+  const handleCloseServiceModel = () => setShowSerivce(false);
+  const handleShowServiceModel = () => setShowSerivce(true);
 
   // Function to update the links state
   const updateLinks = (index, field, value) => {
@@ -257,6 +281,19 @@ export default function Info() {
     console.log(formData, "formData");
   }, [formData]);
 
+  // LANGUAGES
+  const handleLanguageChange = (event) => {
+    const { value } = event.target;
+    let updatedLanguages = [...formData.languages];
+
+    if (updatedLanguages.includes(value)) {
+      updatedLanguages = updatedLanguages.filter((lang) => lang !== value);
+    } else {
+      updatedLanguages.push(value);
+    }
+
+    setFormData({ ...formData, languages: updatedLanguages });
+  };
   const renderLinksFields = () => {
     return formData?.links?.map((link, index) => (
       <div key={index}>
@@ -372,7 +409,31 @@ export default function Info() {
               onChange={handleChange}
               required
             />
-
+            <Form.Group style={{ width: "100%" }}>
+              <h5>Languages</h5>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  width: "100%",
+                }}
+              >
+                {spokenLanguages.map((language, index) => (
+                  <Form.Check
+                    style={{ width: "20%" }}
+                    key={index}
+                    type="checkbox"
+                    id={`language-checkbox-${index}`}
+                    label={language}
+                    value={language.toLowerCase()} // Lowercase the language for consistency
+                    checked={formData.languages.includes(
+                      language.toLowerCase()
+                    )}
+                    onChange={handleLanguageChange}
+                  />
+                ))}
+              </div>
+            </Form.Group>
             <div
               style={{
                 display: "flex",
@@ -481,7 +542,7 @@ export default function Info() {
                 Add developer skill
               </Button>
             </div>
-            <h5 className="mb-3 text-white">Developer Projects</h5>
+            <h5 className="mb-3 ">Developer Projects</h5>
             <div
               style={{
                 width: "100%",
@@ -538,7 +599,7 @@ export default function Info() {
                   ))
                 : "No Project"}
             </div>
-            <h5 className="mb-3 text-white">Testimonials</h5>
+            <h5 className="mb-3 ">Testimonials</h5>
             <div
               style={{
                 width: "100%",
@@ -595,7 +656,7 @@ export default function Info() {
                   ))
                 : "No Testimonials"}
             </div>
-            <h5 className="mb-3 text-white">Services</h5>
+            <h5 className="mb-3 ">Services</h5>
             <div
               style={{
                 width: "100%",
@@ -642,11 +703,20 @@ export default function Info() {
                         }}
                       />
                       <label htmlFor="service" className="text-white">
-                        {service.name?.skillName}
+                        {service.name}
                       </label>
                     </div>
                   ))
-                : "No Testimonials"}
+                : "No Service"}
+              <div style={{ width: "100%", display: "flex" }}>
+                <Button
+                  variant="primary"
+                  onClick={handleShowServiceModel}
+                  style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
+                >
+                  Add service
+                </Button>
+              </div>
             </div>
             <div style={{ width: "100%", display: "flex" }}>
               <Button
@@ -716,11 +786,11 @@ export default function Info() {
                     onChange={handleFileChange}
                   />
                 ) : (
-                  <h6 className="text-white">Profile picture</h6>
+                  <h5>Profile picture</h5>
                 )}
               </div>
             </div>
-            <h5 htmlFor="about" className="text-white mb-3">
+            <h5 htmlFor="about" className=" mb-3">
               About developer
             </h5>
             <textarea
@@ -784,7 +854,58 @@ export default function Info() {
             </Form>
           </Modal.Body>
         </Modal>
+        {/* Add Services Model */}
 
+        <Modal show={showSerivce} onHide={handleCloseServiceModel}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Services</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form
+              style={{ background: "white", padding: "2rem", margin: "2rem" }}
+            >
+              <Form.Group>
+                <Form.Label>Service Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter name"
+                  name="name"
+                  id="name"
+                  value={service?.name}
+                  onChange={(e) => setService({ name: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Service Description</Form.Label>
+                <Form.Control
+                  type="textarea"
+                  placeholder="Enter description"
+                  name="description"
+                  id="description"
+                  value={service.description} // Update this line
+                  onChange={(e) =>
+                    setService({ ...service, description: e.target.value })
+                  } // Update this line
+                />
+              </Form.Group>
+
+              <Button
+                variant="secondary"
+                onClick={handleCloseServiceModel}
+                style={{ marginRight: "10px", padding: "0" }}
+              >
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                style={{ marginRight: "10px", padding: "0" }}
+                onClick={handleService}
+              >
+                Save Changes
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
         {/* Add Social Link Model */}
 
         <Modal show={showLink} onHide={handleCloseLinkModel}>

@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { FaEye, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { fetchservices } from "../../api";
+import { fetchServices } from "../../api";
 
 export const ServicesDashboard = () => {
   const [formData, setFormData] = useState([]);
   const navigate = useNavigate();
 
   const getServices = async () => {
-    const data = await fetchservices();
+    const data = await fetchServices();
     if (data) {
       setFormData(data);
     }

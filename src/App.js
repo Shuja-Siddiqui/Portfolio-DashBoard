@@ -10,10 +10,12 @@ import { useEffect, useState } from "react";
 import Login from "./Pages/Login";
 import Logout from "./Pages/Logout";
 import { DeveloperDashboard } from "./components/Info/DeveloperDashboard";
-import { ProjectDashboard } from "./components/Info/ProjectDashboard";
 import { TestimonialsDashboard } from "./Pages/TestimonialsDashboard";
 import { Testimonials } from "./components/Testimonial/Testimonials";
-import { ServicesDashboard } from "./components";
+import { ProjectDashboard } from "./components";
+import { ServicesDashboard } from "./components/Services/ServicesDashboard";
+import { Education } from "./Pages/Education";
+import { Experience } from "./Pages/Experience";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
@@ -25,8 +27,8 @@ function App() {
   return (
     <BrowserRouter>
       {loggedIn ? (
-        <Header>
-          <Container fluid>
+        <Container fluid style={{ backgroundColor: "#191923", padding: "0" }}>
+          <Header>
             <Routes>
               {/* <Route path="/" element={<Dashboard />} /> */}
               <Route path="/info" element={<Info />} />
@@ -52,11 +54,17 @@ function App() {
               <Route path="/projects" element={<Projects />} />
               <Route path="/projectDashboard/view/:id" element={<Projects />} />
               <Route path="/projectDashboard/edit/:id" element={<Projects />} />
+              <Route path="/education" element={<Education />} />
+              <Route path="/education/edit/:id" element={<Education />} />
+              <Route path="/education/view/:id" element={<Education />} />
+              <Route path="/experience" element={<Experience />} />
+              <Route path="/experience/edit/:id" element={<Experience />} />
+              <Route path="/experience/view/:id" element={<Experience />} />
 
               <Route path="/logout" element={<Logout />} />
             </Routes>
-          </Container>
-        </Header>
+          </Header>
+        </Container>
       ) : (
         <Container fluid style={{ background: "#2C2C36", height: "100vh" }}>
           <Routes>
