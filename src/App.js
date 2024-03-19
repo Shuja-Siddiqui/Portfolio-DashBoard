@@ -4,7 +4,6 @@ import Header from "./components/Navbar/Header";
 import Services from "./Pages/Services";
 import Info from "./Pages/Info";
 import Projects from "./Pages/Projects";
-import Settings from "./Pages/Settings";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import Login from "./Pages/Login";
@@ -46,7 +45,6 @@ function App() {
               <Route path="/testimonials/edit/:id" element={<Testimonials />} />
               <Route path="/testimonials" element={<Testimonials />} />
               <Route path="/testimonials/view/:id" element={<Testimonials />} />
-              <Route path="/settings" element={<Settings />} />
               <Route path="/developers" element={<DeveloperDashboard />} />
               <Route path="/projectDashboard" element={<ProjectDashboard />} />
               <Route path="/developers/view/:id" element={<Info />} />

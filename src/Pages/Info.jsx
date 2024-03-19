@@ -18,7 +18,7 @@ import {
 import { Toaster } from "../common";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
-import { spokenLanguages } from "../utils";
+import { availability, spokenLanguages } from "../utils";
 
 // const uid = localStorage.getItem("user_id");
 
@@ -48,6 +48,7 @@ export default function Info() {
     testimonials: [],
     services: [],
     languages: [],
+    availability: [],
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,7 +95,7 @@ export default function Info() {
         description: service?.description,
       });
       if (res?.status === 201 || res?.status === 200) {
-        getallServices;
+        getallServices();
         setService({ name: "", description: "" });
       }
       handleCloseServiceModel();
@@ -179,8 +180,17 @@ export default function Info() {
         }));
 
         // Keep the remaining fields unchanged
-        const { name, devId, residence, age, about, links, avatar, languages } =
-          developer;
+        const {
+          name,
+          devId,
+          residence,
+          age,
+          about,
+          links,
+          avatar,
+          languages,
+          availability,
+        } = developer;
         const unchangedData = {
           name,
           devId,
@@ -190,6 +200,7 @@ export default function Info() {
           links,
           avatar,
           languages,
+          availability,
         };
 
         // Update formData with the updated fields
@@ -216,8 +227,7 @@ export default function Info() {
     if (params?.id) {
       fetchDeveloper();
     }
-  }, [params]);
-
+  }, [params]);;
   const handleSubmit = async (e) => {
     e.preventDefault();
     let res;
@@ -226,8 +236,7 @@ export default function Info() {
       formData["avatar"] = fileId;
       res = await createDeveloper(formData);
     } else {
-      if (file !== formData?.avatar) {
-        console.log(file);
+      if (file !== formData?.avatar) {;
         const fileId = await createImageId(file);
         formData["avatar"] = fileId;
       }
@@ -293,6 +302,20 @@ export default function Info() {
     }
 
     setFormData({ ...formData, languages: updatedLanguages });
+  };
+  const handleAvailabilityChange = (event) => {
+    const { value } = event.target;
+    let updatedAvailability = [...formData.availability];
+
+    if (updatedAvailability.includes(value)) {
+      updatedAvailability = updatedAvailability.filter(
+        (lang) => lang !== value
+      );
+    } else {
+      updatedAvailability.push(value);
+    }
+
+    setFormData({ ...formData, availability: updatedAvailability });
   };
   const renderLinksFields = () => {
     return formData?.links?.map((link, index) => (
@@ -430,6 +453,31 @@ export default function Info() {
                       language.toLowerCase()
                     )}
                     onChange={handleLanguageChange}
+                  />
+                ))}
+              </div>
+            </Form.Group>
+            <Form.Group style={{ width: "100%" }}>
+              <h5>Availability</h5>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  width: "100%",
+                }}
+              >
+                {availability.map((availability, index) => (
+                  <Form.Check
+                    style={{ width: "20%" }}
+                    key={index}
+                    type="checkbox"
+                    id={`availability-checkbox-${index}`}
+                    label={availability}
+                    value={availability.toLowerCase()}
+                    checked={formData.availability.includes(
+                      availability.toLowerCase()
+                    )}
+                    onChange={handleAvailabilityChange}
                   />
                 ))}
               </div>

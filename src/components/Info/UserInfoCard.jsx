@@ -126,12 +126,12 @@ export const UserInfoCard = ({
                           {timeSpan?.endYear}
                         </p>
                         <button
-                          onClick={() => navigate(`/education/edit/${_id}`)}
+                          onClick={() => navigate(`/education/edit/${devId}`)}
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => navigate(`/education/view/${_id}`)}
+                          onClick={() => navigate(`/education/view/${devId}`)}
                         >
                           View
                         </button>

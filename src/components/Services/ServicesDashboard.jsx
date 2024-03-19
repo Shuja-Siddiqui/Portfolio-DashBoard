@@ -18,7 +18,6 @@ export const ServicesDashboard = () => {
   useEffect(() => {
     getServices();
   }, []);
-  useEffect(() => console.log(formData), [formData]);
   return (
     <div className="container">
       <div
@@ -49,7 +48,7 @@ export const ServicesDashboard = () => {
               style={{ width: "100%" }}
             >
               <td className="text-white border-0" style={{ width: "10%" }}>
-                {name?.skillName}
+                {name}
               </td>
               <td className="text-white border-0" style={{ width: "40%" }}>
                 {description.length > 20

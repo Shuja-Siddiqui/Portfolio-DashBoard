@@ -44,11 +44,6 @@ export default function Header({ children }) {
       icon: <GiGraduateCap />,
     },
     {
-      path: "/settings",
-      name: "Settings",
-      icon: <MdSettings />,
-    },
-    {
       path: "/logout",
       name: "Logout",
       icon: <MdLogout />,
