@@ -14,8 +14,7 @@ export const DeveloperDashboard = () => {
   useEffect(() => {
     fetchDev();
   }, []);
-  // console.log(data);
-  // Example event handlers
+
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
   };
@@ -31,8 +30,11 @@ export const DeveloperDashboard = () => {
     }));
   };
   useEffect(() => {
-    pureData();
-  }, []);
+    if (data) pureData();
+  }, [data]);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   return (
     <div style={{ width: "100%" }}>
@@ -48,7 +50,7 @@ export const DeveloperDashboard = () => {
       </div>
       <Row xs={1} md={2} className="g-4">
         {data &&
-          data.map(({ name, skills, devId, _id }) => (
+          data.map(({ name, skills, devId, _id, education, experience }) => (
             <div key={_id} className="col">
               <UserInfoCard
                 name={name}
@@ -57,6 +59,8 @@ export const DeveloperDashboard = () => {
                 onEdit={() => handleEdit(_id)}
                 onView={() => onView(_id)}
                 id={_id}
+                education={education}
+                experience={experience}
               />
             </div>
           ))}

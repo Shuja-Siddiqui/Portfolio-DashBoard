@@ -15,8 +15,6 @@ export const ProjectDashboard = () => {
   useEffect(() => {
     fetchDev();
   }, []);
-  // console.log(data);
-  // Example event handlers
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
   };

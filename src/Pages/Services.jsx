@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { addservice, fetchService, fetchSkills, updateService } from "../api";
+import { addService, fetchService, fetchSkills, updateService } from "../api";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 export default function Services() {
@@ -54,7 +54,7 @@ export default function Services() {
     try {
       let res;
       if (!id) {
-        res = await addservice(formData);
+        res = await addService(formData);
       } else {
         formData["name"] = formData?.name?._id;
         res = await updateService(id, formData);

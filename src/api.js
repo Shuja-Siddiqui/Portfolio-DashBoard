@@ -27,6 +27,14 @@ export const updateDeveloper = async (data, id) => {
     console.log("Error occured", error?.message);
   }
 };
+export const fetchAllDevelopers = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/developer/all/developers`);
+    return response?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
 export const addSkill = async (skillName) => {
   try {
     const response = await axios.post(`${baseURL}/skill`, skillName);
@@ -150,10 +158,10 @@ export const updateTestimonial = async (id, data) => {
     console.log("Error occured", error?.message);
   }
 };
-export const addservice = async (data) => {
+export const addService = async (data) => {
   try {
     const response = await axios.post(`${baseURL}/service`, data);
-    return response;
+    return response?.data;
   } catch (error) {
     console.log("Error occured", error?.message);
   }
@@ -174,7 +182,7 @@ export const updateService = async (id, data) => {
     console.log("Error occured", error?.message);
   }
 };
-export const fetchservices = async () => {
+export const fetchServices = async () => {
   try {
     const response = await axios.get(`${baseURL}/service/all/service`);
     return response?.data?.data;
@@ -182,146 +190,68 @@ export const fetchservices = async () => {
     console.log("Error occured", error?.message);
   }
 };
-
-// OLD APIS
-
-export const editServiceRequest = async (data) => {
-  const name = data?.name;
-  const description = data?.description;
-
+export const addEducation = async (data) => {
   try {
-    const response = await axios.put(
-      `${baseURL}/service/${data?._id}`,
-      {
-        name,
-        description,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response;
+    const response = await axios.post(`${baseURL}/education`, data);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const deleteServiceRequest = async (serviceId) => {
+export const fetchEducation = async (id) => {
   try {
-    const response = await axios.delete(`${baseURL}/service/${serviceId}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
+    const response = await axios.get(`${baseURL}/education/${id}`);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const createProjectRequest = async (data) => {
+export const updateEducation = async (id, data) => {
   try {
-    const response = await axios.post(
-      `${baseURL}/project/6450cb8a8eb415ba6bd72ae9`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response;
+    const response = await axios.put(`${baseURL}/education/${id}`, data);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const editProjectImageRequest = async (id, data) => {
+export const fetchEducations = async () => {
   try {
-    const response = await axios.patch(`${baseURL}/project/file/${id}`, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
+    const response = await axios.get(`${baseURL}/education/all/education`);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const editProjectRequest = async (data) => {
-  const project_name = data?.project_name;
-  const description = data?.description;
-  const link = data?.link;
-
+export const addExperience = async (data) => {
   try {
-    const response = await axios.patch(
-      `${baseURL}/project/${data?._id}`,
-      {
-        project_name,
-        description,
-        link,
-        // image,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response;
+    const response = await axios.post(`${baseURL}/experience`, data);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const deleteProjectRequest = async (projectId) => {
+export const fetchExperience = async (id) => {
   try {
-    const response = await axios.delete(`${baseURL}/project/${projectId}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
+    const response = await axios.get(`${baseURL}/experience/${id}`);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const getTestimonialRequest = async () => {
+export const updateExperience = async (id, data) => {
   try {
-    const response = await axios.get(
-      `${baseURL}/testimonial/6450cb8a8eb415ba6bd72ae9`
-    );
-    return response;
+    const response = await axios.put(`${baseURL}/experience/${id}`, data);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error?.message);
+    console.log("Error occured", error?.message);
   }
 };
-
-export const createTestimonialRequest = async (data) => {
+export const fetchExperiences = async () => {
   try {
-    const response = await axios.post(
-      `${baseURL}/testimonial/6450cb8a8eb415ba6bd72ae9`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response;
+    const response = await axios.get(`${baseURL}/experience/all/experience`);
+    return response?.data;
   } catch (error) {
-    console.log("Error occurred", error);
+    console.log("Error occured", error?.message);
   }
 };
 
@@ -344,52 +274,7 @@ export const getDeveloper = async (id) => {
   }
 };
 
-export const editTestimonialTextRequest = async (id, data) => {
-  try {
-    const response = await axios.patch(`${baseURL}/testimonial/${id}`, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
-  } catch (error) {
-    console.log("Error occurred", error?.message);
-  }
-};
-
-export const editTestimonialImageRequest = async (id, data) => {
-  try {
-    const response = await axios.patch(
-      `${baseURL}/testimonial/file/${id}`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response;
-  } catch (error) {
-    console.log("Error occurred", error?.message);
-  }
-};
-
-export const deleteTestimonialRequest = async (t_id) => {
-  try {
-    const response = await axios.delete(`${baseURL}/testimonial/${t_id}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response;
-  } catch (error) {
-    console.log("Error occurred", error?.message);
-  }
-};
-
+// OLD APIS
 export const getImageRequest = (i_id) => {
   return `${baseURL}/file/${i_id}`;
 };
