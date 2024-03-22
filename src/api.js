@@ -3,6 +3,7 @@ const token = localStorage.getItem("@token");
 export const baseURL = process.env.REACT_APP_PUBLIC_URL;
 export const loginRequest = async (data) => {
   try {
+    console.log(baseURL)
     const response = await axios.post(`${baseURL}/auth/login`, data);
     localStorage.setItem("@token", response?.data?.data?.token);
     localStorage.setItem("@id", response?.data?.data?.userExist?.username);

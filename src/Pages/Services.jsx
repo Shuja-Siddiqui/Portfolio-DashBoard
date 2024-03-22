@@ -7,7 +7,6 @@ export default function Services() {
     name: "",
     description: "",
   });
-  const [selectedSkill, setSelectedSkill] = useState("");
   const [allskills, setAllSkills] = useState([]);
   const [view, setView] = useState(false);
   const [id, setId] = useState("");
@@ -35,7 +34,6 @@ export default function Services() {
     const service = await fetchService(id);
     if (service) {
       setFormData(service);
-      setSelectedSkill(service.name?._id);
     }
   };
 
@@ -56,7 +54,6 @@ export default function Services() {
       if (!id) {
         res = await addservice(formData);
       } else {
-        formData["name"] = formData?.name?._id;
         res = await updateService(id, formData);
       }
       if (res) {
@@ -75,43 +72,32 @@ export default function Services() {
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Add Service</h1>
       <form onSubmit={handleSubmit}>
-        {!id && (
-          <select
-            name="name"
-            id=""
-            required
-            value={selectedSkill} // Use selectedSkill to set value
-            onChange={(e) => {
-              setSelectedSkill(e.target.value);
-              setFormData({ ...formData, name: { _id: e.target.value } }); // Set _id to formData
-            }}
-          >
-            <option value="">Select...</option>
-            {allskills?.map(({ skillName, _id, index }) => (
-              <option key={index} value={_id}>
-                {skillName}
-              </option>
-            ))}
-          </select>
-        )}
-        {id && (
-          <input name="name" id="" value={formData?.name?.skillName} readOnly />
-        )}
-        <textarea
-          name="description"
-          id=""
-          value={formData?.description}
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
           onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
+            setFormData({ ...formData, name: e.target.value })
           }
-          col="30"
-          rows="5"
-          placeholder="Discription"
+          placeholder="Name"
           required
           readOnly={view}
           className="mb-3"
         />
-        <button>SUBMIT</button>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+          cols="30"
+          rows="5"
+          placeholder="Description"
+          required
+          readOnly={view}
+          className="mb-3"
+        />
+        <button type="submit">SUBMIT</button>
       </form>
     </div>
   );
