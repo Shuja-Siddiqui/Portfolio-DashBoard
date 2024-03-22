@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { FaEye, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { fetchservices } from "../../api";
+import { fetchServices } from "../../api";
 
 export const ServicesDashboard = () => {
   const [formData, setFormData] = useState([]);
   const navigate = useNavigate();
 
   const getServices = async () => {
-    const data = await fetchservices();
+    const data = await fetchServices();
     if (data) {
       setFormData(data);
     }
@@ -18,7 +18,6 @@ export const ServicesDashboard = () => {
   useEffect(() => {
     getServices();
   }, []);
-  useEffect(() => console.log(formData), [formData]);
   return (
     <div className="container">
       <div
@@ -49,7 +48,7 @@ export const ServicesDashboard = () => {
               style={{ width: "100%" }}
             >
               <td className="text-white border-0" style={{ width: "10%" }}>
-                {name?.skillName}
+                {name}
               </td>
               <td className="text-white border-0" style={{ width: "40%" }}>
                 {description.length > 20

@@ -10,7 +10,8 @@ import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
 import { MdLogout, MdSettings } from "react-icons/md";
-
+import { GiGraduateCap } from "react-icons/gi";
+import logo from "../../assets/img/logo.png";
 export default function Header({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -38,9 +39,9 @@ export default function Header({ children }) {
       icon: <GiNothingToSay />,
     },
     {
-      path: "/settings",
-      name: "Settings",
-      icon: <MdSettings />,
+      path: "/education",
+      name: "Education",
+      icon: <GiGraduateCap />,
     },
     {
       path: "/logout",
@@ -49,22 +50,34 @@ export default function Header({ children }) {
     },
   ];
   return (
-    <>
-      <div
-        className="container_div"
-        style={{ position: "fixed", height: "100%", left: 0, top: 0 }}
-      >
-        <div style={{ width: isOpen ? "300px" : "50px" }} className="sidebar">
+    <div style={{ display: "flex", width: "100%" }}>
+      <div className="container_div" style={{ height: "100vh" }}>
+        <div
+          style={{
+            width: isOpen ? "250px" : "50px",
+          }}
+          className="sidebar"
+        >
           <div className="top_section">
-            <h1 style={{ display: isOpen ? "block" : "none" }} className="logo">
-              Logo
-            </h1>
-            <div
-              style={{ marginLeft: isOpen ? "50px" : "0px" }}
-              className="bars"
-            >
-              <FaBars onClick={toggle} />
-            </div>
+            {isOpen && (
+              <div
+                onClick={toggle}
+                style={{
+                  marginLeft: "0px",
+                  backgroundImage: `url(${logo})`, // Set background image
+                  backgroundSize: "cover", // Cover the entire container
+                  backgroundPosition: "center", // Center the background image
+                  width: "100px", // Set width
+                  height: "100px", // Set height
+                }}
+              ></div>
+            )}
+            {!isOpen && (
+              <button onClick={toggle} style={{ padding: "0", margin: "0" }}>
+                {" "}
+                <FaBars />
+              </button>
+            )}
           </div>
           <div className="menu">
             {menuItem?.map((item, index) => (
@@ -81,7 +94,14 @@ export default function Header({ children }) {
           </div>
         </div>
       </div>
-      <main style={{ minHeight: "100vh" }}>{children}</main>
-    </>
+      <main
+        style={{
+          minHeight: "100vh",
+          width: isOpen ? "calc(100%-250px)" : "calc(100%-50px)",
+        }}
+      >
+        {children}
+      </main>
+    </div>
   );
 }

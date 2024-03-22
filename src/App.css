@@ -11,13 +11,11 @@
 main {
   width: 100%;
   padding: 20px;
-  padding-left: 70px;
   background: #2c2c36;
 }
 .sidebar {
   background: #191923;
   color: #fff;
-  height: 355vh;
   transition: all 0.5s;
 }
 .top_section {
@@ -184,8 +182,11 @@ button {
   cursor: pointer;
   display: block;
   margin: 0 auto;
+  padding: 0;
 }
-
+h5 {
+  color: #01be96 !important;
+}
 button:hover {
   background-color: #01be96;
   color: #2c2c36;
@@ -197,4 +198,17 @@ button:hover {
 
 .text {
   color: white !important;
+}
+::-webkit-scrollbar {
+  width: 0px; /* Set a width for the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #191923; /* Set the background color of the thumb */
+  border-radius: 6px; /* Set border-radius to round the corners of the thumb */
+}
+
+/* Optional: You can also style the track (the area the thumb moves along) */
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Set the background color of the track */
 }
