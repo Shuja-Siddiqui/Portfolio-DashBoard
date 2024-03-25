@@ -1,6 +1,6 @@
 import axios from "axios";
 const token = localStorage.getItem("@token");
-export const baseURL = process.env.REACT_APP_PUBLIC_URL;
+export const baseURL = "http://localhost:5000/api/v1";
 export const loginRequest = async (data) => {
   try {
     console.log(baseURL)
