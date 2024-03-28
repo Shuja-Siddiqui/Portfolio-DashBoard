@@ -40,6 +40,9 @@ export default function Info() {
     devId: "",
     residence: "",
     age: "",
+    email: "",
+    phoneNo: "",
+    skype: "",
     about: "",
     avatar: "",
     skills: [],
@@ -185,6 +188,9 @@ export default function Info() {
           devId,
           residence,
           age,
+          email,
+          phoneNo,
+          skype,
           about,
           links,
           avatar,
@@ -196,6 +202,9 @@ export default function Info() {
           devId,
           residence,
           age,
+          email,
+          phoneNo,
+          skype,
           about,
           links,
           avatar,
@@ -227,7 +236,7 @@ export default function Info() {
     if (params?.id) {
       fetchDeveloper();
     }
-  }, [params]);;
+  }, [params]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     let res;
@@ -236,7 +245,7 @@ export default function Info() {
       formData["avatar"] = fileId;
       res = await createDeveloper(formData);
     } else {
-      if (file !== formData?.avatar) {;
+      if (file !== formData?.avatar) {
         const fileId = await createImageId(file);
         formData["avatar"] = fileId;
       }
@@ -406,6 +415,42 @@ export default function Info() {
               placeholder="DevId"
               required
               value={formData.devId}
+              onChange={handleChange}
+            />
+            <label htmlFor="devId" className="text-white">
+              Email
+            </label>
+            <input
+              type="text"
+              name="email"
+              id="email"
+              placeholder="Email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <label htmlFor="devId" className="text-white">
+              Phone No.
+            </label>
+            <input
+              type="text"
+              name="phoneNo"
+              id="phoneNo"
+              placeholder="Phone No"
+              required
+              value={formData.phoneNo}
+              onChange={handleChange}
+            />
+            <label htmlFor="devId" className="text-white">
+              Skype Id:
+            </label>
+            <input
+              type="text"
+              name="skype"
+              id="skype"
+              placeholder="Skype Id"
+              required
+              value={formData.skype}
               onChange={handleChange}
             />
             <label htmlFor="residence" className="text-white">
