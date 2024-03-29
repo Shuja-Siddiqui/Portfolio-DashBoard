@@ -162,7 +162,7 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    console.log(formData);
+    
   }, [formData]);
   return (
     <div>
