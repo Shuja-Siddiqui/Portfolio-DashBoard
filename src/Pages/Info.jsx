@@ -44,6 +44,7 @@ export default function Info() {
     phoneNo: "",
     skype: "",
     about: "",
+    intro:"",
     avatar: "",
     skills: [],
     links: [{ title: "", url: "" }],
@@ -192,6 +193,7 @@ export default function Info() {
           phoneNo,
           skype,
           about,
+          intro,
           links,
           avatar,
           languages,
@@ -203,6 +205,7 @@ export default function Info() {
           residence,
           age,
           email,
+          intro,
           phoneNo,
           skype,
           about,
@@ -898,6 +901,22 @@ export default function Info() {
               required
             >
               {formData?.about}
+            </textarea>
+            <h5 htmlFor="about" className=" mb-3">
+            Developer Introduction
+            </h5>
+            <textarea
+              style={{ marginBottom: "1rem" }}
+              name="intro"
+              id="intro"
+              col="30"
+              rows="10"
+              placeholder="Developer Introduction!"
+              value={formData.intro}
+              onChange={handleChange}
+              required
+            >
+              {formData?.intro}
             </textarea>
             {!view && (
               <button>
