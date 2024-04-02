@@ -1,6 +1,6 @@
 import axios from "axios";
 const token = localStorage.getItem("@token");
-export const baseURL = "http://localhost:5000/api/v1";
+export const baseURL = "https://portfolio-api-delta-one.vercel.app/api/v1";
 export const loginRequest = async (data) => {
   try {
     console.log(baseURL)
