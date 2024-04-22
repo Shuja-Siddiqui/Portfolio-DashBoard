@@ -7,6 +7,7 @@ export default function Services() {
     name: "",
     description: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [allskills, setAllSkills] = useState([]);
   const [view, setView] = useState(false);
   const [id, setId] = useState("");
@@ -49,6 +50,7 @@ export default function Services() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       let res;
       if (!id) {
@@ -62,6 +64,7 @@ export default function Services() {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -76,9 +79,7 @@ export default function Services() {
           type="text"
           name="name"
           value={formData.name}
-          onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Name"
           required
           readOnly={view}
@@ -97,7 +98,18 @@ export default function Services() {
           readOnly={view}
           className="mb-3"
         />
-        <button type="submit">SUBMIT</button>
+        {/* <button type="submit">SUBMIT</button> */}
+        {location.pathname.split("/")[2] === "view" ? (
+          <></>
+        ) : (
+          <button type="submit" disabled={isLoading}>
+            {isLoading
+              ? "Loading..."
+              : location.pathname.split("/")[2] === "edit"
+              ? "UPDATE"
+              : "SUBMIT"}
+          </button>
+        )}
       </form>
     </div>
   );

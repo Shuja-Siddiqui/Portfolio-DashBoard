@@ -50,19 +50,28 @@ export const TestimonialsDashboard = () => {
           {formData?.map(
             ({ clientName, clientReview, stars, index, _id, clientImage }) => (
               <tr
-                className="text-white border-0  "
+                className="text-white border-success-subtle  "
                 key={index}
                 style={{ width: "100%" }}
               >
-                <td className="text-white border-0" style={{ width: "10%" }}>
+                <td
+                  className="text-white border-success-subtle"
+                  style={{ width: "10%" }}
+                >
                   {clientName}
                 </td>
-                <td className="text-white border-0" style={{ width: "40%" }}>
+                <td
+                  className="text-white border-success-subtle"
+                  style={{ width: "40%" }}
+                >
                   {clientReview.length > 20
                     ? clientReview.substring(0, 20) + "..."
                     : clientReview}
                 </td>
-                <td className="text-white border-0" style={{ width: "10%" }}>
+                <td
+                  className="text-white border-success-subtle"
+                  style={{ width: "10%" }}
+                >
                   {stars}
                 </td>
                 <td style={{ width: "20%" }}>
@@ -77,30 +86,23 @@ export const TestimonialsDashboard = () => {
                     }}
                   ></div>
                 </td>
-                <td
-                  style={{
-                    display: "flex",
-                    width: "auto",
-                    gap: "1rem",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <button
-                    className="border-0 p-0 m-0"
-                    style={{ width: "100%", background: "transparent" }}
-                    onClick={() => navigate(`/testimonials/view/${_id}`)}
-                  >
-                    <FaEye />
-                  </button>
-                  <button
-                    className="border-0 p-0 m-0"
-                    style={{ width: "100%", background: "transparent" }}
-                    onClick={() => navigate(`/testimonials/edit/${_id}`)}
-                  >
-                    <FaPen />
-                  </button>
+                <td className="border-success-subtle">
+                  <div style={{ display: "flex", width: "auto" }}>
+                    <button
+                      className="border-0 p-0 m-0"
+                      style={{ width: "100%", background: "transparent" }}
+                      onClick={() => navigate(`/testimonials/view/${_id}`)}
+                    >
+                      <FaEye />
+                    </button>
+                    <button
+                      className="border-0 p-0 m-0"
+                      style={{ width: "100%", background: "transparent" }}
+                      onClick={() => navigate(`/testimonials/edit/${_id}`)}
+                    >
+                      <FaPen />
+                    </button>
+                  </div>
                 </td>
               </tr>
             )

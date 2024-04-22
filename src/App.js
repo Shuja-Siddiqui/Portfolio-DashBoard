@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Navbar/Header";
 import Services from "./Pages/Services";
@@ -15,13 +15,21 @@ import { ProjectDashboard } from "./components";
 import { ServicesDashboard } from "./components/Services/ServicesDashboard";
 import { Education } from "./Pages/Education";
 import { Experience } from "./Pages/Experience";
+import { EducationDashboard } from "./components/Info/EducationDashboard";
+import { ExperienceDashboard } from "./components/Info/ExperienceDashboard";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const token = localStorage.getItem("@token");
+
   useEffect(() => {
-    if (localStorage.getItem("@token")) {
+    if (token != null) {
       setLoggedIn(true);
     }
-  });
+  }, [token]);
+
+  useEffect(() => {
+    console.log("loggedIn", loggedIn);
+  }, [loggedIn]);
 
   return (
     <BrowserRouter>
@@ -58,15 +66,29 @@ function App() {
               <Route path="/experience" element={<Experience />} />
               <Route path="/experience/edit/:id" element={<Experience />} />
               <Route path="/experience/view/:id" element={<Experience />} />
+              <Route
+                path="/educationDashboard"
+                element={<EducationDashboard />}
+              />
+              <Route
+                path="/experienceDashboard"
+                element={<ExperienceDashboard />}
+              />
 
-              <Route path="/logout" element={<Logout />} />
+              <Route
+                path="/logout"
+                element={<Logout setLoggedIn={setLoggedIn} />}
+              />
             </Routes>
           </Header>
         </Container>
       ) : (
         <Container fluid style={{ background: "#2C2C36", height: "100vh" }}>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route
+              path="/"
+              element={<Login loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
+            />
           </Routes>
         </Container>
       )}

@@ -35,36 +35,53 @@ export const UserInfoCard = ({
                   Developer Information
                 </h5>
               </Card.Title>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <strong>
-                  Name: <span style={{ fontSize: "14px" }}>{name}</span>
-                </strong>
-                <strong>
-                  Dev Id: <span style={{ fontSize: "14px" }}>{devId}</span>
-                </strong>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  marginBottom: "10px",
+                }}
+              >
+                <div style={{ width: "48%" }}>
+                  <strong style={{ color: "grey" }}>Name: </strong>
+                  <span style={{ fontSize: "14px" }}>{name}</span>
+                </div>
+                <div style={{ width: "48%" }}>
+                  <strong style={{ color: "grey" }}>Dev Id: </strong>
+                  <span style={{ fontSize: "14px" }}>{devId}</span>
+                </div>
               </div>
 
-              <div style={{ width: "100%", flexDirection: "column" }}>
-                <strong>Major skills:</strong>
+              <div
+                style={{
+                  width: "100%",
+                  flexDirection: "column",
+                  marginBottom: "10px",
+                }}
+              >
+                <strong style={{ color: "grey" }}>Major skills: </strong>
                 <div
                   style={{
                     width: "100%",
                     display: "flex",
                     gap: "10px",
+                    flexWrap: "wrap",
+                    // justifyContent: ''
                   }}
                 >
                   {skills?.map(({ title, ratings, index, ...skills }) => (
                     <div
                       style={{
-                        maxWidth: "20%",
                         display: "flex",
-                        gap: "10px",
+                        // gap: "10px",
                       }}
                     >
-                      <strong className="text-white" key={index}>
-                        {title?.skillName}
-                      </strong>
-                      <p>{ratings}</p>
+                      <span className="text-white" key={index}>
+                        {title?.skillName}_
+                        <span style={{ color: "grey" }}>{ratings}%,</span>
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -105,7 +122,7 @@ export const UserInfoCard = ({
                           gap: "10px",
                         }}
                       >
-                        <strong className="text-white" key={index}>
+                        <strong style={{ color: "grey" }} key={index}>
                           {major}
                         </strong>
                         {/* <p>{timeSpan?.startYear}</p>
@@ -118,23 +135,27 @@ export const UserInfoCard = ({
                           gap: "10px",
                         }}
                       >
-                        <p style={{ padding: "0", margin: "0" }}>
-                          {timeSpan?.startYear}
-                        </p>
-                        -
-                        <p style={{ padding: "0", margin: "0" }}>
-                          {timeSpan?.endYear}
-                        </p>
-                        <button
-                          onClick={() => navigate(`/education/edit/${devId}`)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => navigate(`/education/view/${devId}`)}
-                        >
-                          View
-                        </button>
+                        <div style={{ display: "flex", width: "48%" }}>
+                          <p style={{ padding: "0", margin: "0" }}>
+                            {timeSpan?.startYear}
+                          </p>
+                          -
+                          <p style={{ padding: "0", margin: "0" }}>
+                            {timeSpan?.endYear}
+                          </p>
+                        </div>
+                        <div style={{ display: "flex", width: "48%" }}>
+                          <button
+                            onClick={() => navigate(`/education/edit/${_id}`)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => navigate(`/education/view/${_id}`)}
+                          >
+                            View
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -176,7 +197,7 @@ export const UserInfoCard = ({
                           gap: "10px",
                         }}
                       >
-                        <strong className="text-white" key={index}>
+                        <strong style={{ color: "grey" }} key={index}>
                           {company}
                         </strong>
                         {/* <p>{timeSpan?.startYear}</p>
@@ -189,23 +210,27 @@ export const UserInfoCard = ({
                           gap: "10px",
                         }}
                       >
-                        <p style={{ padding: "0", margin: "0" }}>
-                          {timeSpan?.startYear}
-                        </p>
-                        -
-                        <p style={{ padding: "0", margin: "0" }}>
-                          {timeSpan?.endYear}
-                        </p>
-                        <button
-                          onClick={() => navigate(`/education/edit/${_id}`)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => navigate(`/education/view/${_id}`)}
-                        >
-                          View
-                        </button>
+                        <div style={{ display: "flex", width: "48%" }}>
+                          <p style={{ padding: "0", margin: "0" }}>
+                            {timeSpan?.startYear}
+                          </p>
+                          -
+                          <p style={{ padding: "0", margin: "0" }}>
+                            {timeSpan?.endYear}
+                          </p>
+                        </div>
+                        <div style={{ display: "flex", width: "48%" }}>
+                          <button
+                            onClick={() => navigate(`/experience/edit/${_id}`)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => navigate(`/experience/view/${_id}`)}
+                          >
+                            View
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

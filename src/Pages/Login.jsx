@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { loginRequest } from "../api";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Login({ loggedIn, setLoggedIn }) {
   const [data, setData] = useState({
     username: "",
     password: "",
   });
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -29,20 +29,12 @@ export default function Login() {
   const handleLogin = async () => {
     const response = await loginRequest(data);
     if (response?.status == 200) {
-      navigate("/info");
+      setLoggedIn(true)
+      navigate("/developers");
     }
     return response;
   };
 
-  useEffect(() => {
-    localStorage.getItem("@token") !== "undefined"
-      ? setLoggedIn(true)
-      : setLoggedIn(false);
-  }, [localStorage.getItem("@token")]);
-  useEffect(() => {
-    if (loggedIn) navigate("/info");
-    setLoggedIn(false);
-  }, [loggedIn]);
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>

@@ -43,14 +43,14 @@ export const ServicesDashboard = () => {
         <tbody style={{ width: "100%" }}>
           {formData?.map(({ name, description, _id, index }) => (
             <tr
-              className="text-white border-0  "
+              className="text-white border-success-subtle"
               key={index}
               style={{ width: "100%" }}
             >
-              <td className="text-white border-0" style={{ width: "10%" }}>
+              <td className="text-white border-success-subtle" style={{ width: "10%" }}>
                 {name}
               </td>
-              <td className="text-white border-0" style={{ width: "40%" }}>
+              <td className="text-white border-success-subtle" style={{ width: "40%" }}>
                 {description.length > 20
                   ? description.substring(0, 20) + "..."
                   : description}

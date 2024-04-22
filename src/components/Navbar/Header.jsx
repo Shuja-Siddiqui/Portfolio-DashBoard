@@ -11,6 +11,7 @@ import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
 import { MdLogout, MdSettings } from "react-icons/md";
 import { GiGraduateCap } from "react-icons/gi";
+import { IoNewspaperOutline } from "react-icons/io5";
 import logo from "../../assets/img/logo.png";
 export default function Header({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,15 +19,16 @@ export default function Header({ children }) {
 
   const menuItem = [
     {
-      path: "/projectDashboard",
-      name: "Projects",
-      icon: <AiOutlineProject />,
-    },
-    {
       path: "/developers",
       name: "Developers",
       icon: <FaUserAlt />,
     },
+    {
+      path: "/projectDashboard",
+      name: "Projects",
+      icon: <AiOutlineProject />,
+    },
+
     {
       path: "/servicesDashboard",
       name: "Services",
@@ -39,14 +41,14 @@ export default function Header({ children }) {
       icon: <GiNothingToSay />,
     },
     {
-      path: "/education",
+      path: "/educationDashboard",
       name: "Education",
       icon: <GiGraduateCap />,
     },
     {
-      path: "/experience",
-      name: "Experiance",
-      icon: <GiGraduateCap />,
+      path: "/experienceDashboard",
+      name: "Experience",
+      icon: <IoNewspaperOutline />
     },
     {
       path: "/logout",
@@ -56,7 +58,7 @@ export default function Header({ children }) {
   ];
   return (
     <div style={{ display: "flex", width: "100%" }}>
-      <div className="container_div" style={{ height: "100vh" }}>
+      <div className="container_div" style={{ height: "auto" }}>
         <div
           style={{
             width: isOpen ? "250px" : "50px",
