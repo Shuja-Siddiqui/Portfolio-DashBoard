@@ -46,9 +46,9 @@ export const DeveloperDashboard = () => {
         }}
       >
         <h2 className="text-white">Developers</h2>
-        <button onClick={() => navigate("/info")}>+Add Developer</button>
+        {/* <button onClick={() => navigate("/info")}>+Add Developer</button> */}
       </div>
-      <Row xs={1} md={2} className="g-4">
+      <Row xs={1} md={1} className="g-4">
         {data &&
           data.map(({ name, skills, devId, _id, education, experience }) => (
             <div key={_id} className="col">

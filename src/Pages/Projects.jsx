@@ -18,6 +18,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 export default function Projects() {
   const [file, setFile] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showToaster, setShowToaster] = useState(false);
   const [toasterMessage, setToasterMessage] = useState("");
   const [allSkills, setAllSkills] = useState([]);
@@ -120,6 +121,8 @@ export default function Projects() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Start loading
+    setIsLoading(true);
     let res;
     if (!params?.id) {
       const hero = await createImageId(file);
@@ -149,7 +152,11 @@ export default function Projects() {
     }
     if (res?.status === 201 || res?.status === 200) {
       navigate("/projectDashboard");
+      // Alert
+      alert("Project updated successfully!");
     }
+    // End loading
+    setIsLoading(false);
   };
 
   const handleImagesChange = (id) => {
@@ -161,9 +168,7 @@ export default function Projects() {
     setImagesToShow(newArr);
   };
 
-  useEffect(() => {
-    
-  }, [formData]);
+  useEffect(() => {}, [formData]);
   return (
     <div>
       {showToaster && (
@@ -417,9 +422,17 @@ export default function Projects() {
             placeholder="https//:"
             required
           />
-          <button>
-            {location.pathname.split("/")[2] === "edit" ? "UPDATE" : "SUBMIT"}
-          </button>
+          {location.pathname.split("/")[2] === "edit" ? (
+            <button type="submit" disabled={isLoading}>
+              {isLoading
+                ? "Loading..."
+                : location.pathname.split("/")[2] === "edit"
+                ? "UPDATE"
+                : "SUBMIT"}
+            </button>
+          ) : (
+            <></>
+          )}
         </fieldset>
       </form>
 

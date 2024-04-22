@@ -12,6 +12,7 @@ export const Education = () => {
   const [developers, setDevelopers] = useState([]);
   const [view, setView] = useState(false);
   const [id, setId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     devId: "",
     institution: "",
@@ -82,6 +83,8 @@ export const Education = () => {
   }, [id]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Start loading
+    setIsLoading(true);
     try {
       let res;
       if (!id) {
@@ -116,12 +119,16 @@ export const Education = () => {
         }
       }
       if (res) {
-        // navigate("/servicesDashboard");
+        navigate("/developers");
+        alert("Education updated successfully!");
       }
     } catch (error) {
       console.log(error);
     }
+    // End loading
+    setIsLoading(false);
   };
+
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -210,9 +217,17 @@ export const Education = () => {
         />
       </Form.Group>
 
-      <button variant="primary" type="submit">
-        {location.pathname.split("/")[2] === "edit" ? "UPDATE" : "SUBMIT"}
-      </button>
+      {location.pathname.split("/")[2] === "edit" ? (
+        <button variant="primary" type="submit">
+          {isLoading
+            ? "Loading..."
+            : location.pathname.split("/")[2] === "edit"
+            ? "UPDATE"
+            : "SUBMIT"}
+        </button>
+      ) : (
+        <></>
+      )}
     </Form>
   );
 };

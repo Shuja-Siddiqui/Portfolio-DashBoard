@@ -23,6 +23,7 @@ import { availability, spokenLanguages } from "../utils";
 // const uid = localStorage.getItem("user_id");
 
 export default function Info() {
+  console.log("info");
   const [show, setShow] = useState(false);
   const [showLink, setShowLink] = useState(false);
   const [showSerivce, setShowSerivce] = useState(false);
@@ -44,7 +45,7 @@ export default function Info() {
     phoneNo: "",
     skype: "",
     about: "",
-    intro:"",
+    intro: "",
     avatar: "",
     skills: [],
     links: [{ title: "", url: "" }],
@@ -256,6 +257,7 @@ export default function Info() {
       res = await updateDeveloper(formData, params?.id);
     }
     if (res?.status === 201 || res?.status === 200) {
+      alert("Updated successfully!");
       navigate("/developers");
     }
   };
@@ -903,7 +905,7 @@ export default function Info() {
               {formData?.about}
             </textarea>
             <h5 htmlFor="about" className=" mb-3">
-            Developer Introduction
+              Developer Introduction
             </h5>
             <textarea
               style={{ marginBottom: "1rem" }}

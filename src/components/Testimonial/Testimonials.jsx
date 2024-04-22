@@ -31,7 +31,7 @@ export const Testimonials = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let res;
-    if (!id) {
+    if (!params?.id) {
       let hero = await createImageId(file);
       formData["clientImage"] = hero;
       res = await addTestimonials(formData);

@@ -116,7 +116,8 @@ export const Experience = () => {
         }
       }
       if (res) {
-        // navigate("/servicesDashboard");
+        navigate("/developers");
+        alert("Update Successfully!");
       }
     } catch (error) {
       console.log(error);

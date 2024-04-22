@@ -1,10 +1,10 @@
 import React from "react";
 import { Card, Container, Row, Col } from "react-bootstrap";
 
-export const ProjectInfoCard = ({
-  projectName,
-  clientName,
-  techStack,
+export const EducationInfoCard = ({
+  description,
+  institution,
+  major,
   onEdit,
   onView,
 }) => {
@@ -15,22 +15,17 @@ export const ProjectInfoCard = ({
           <Card className="bg-dark rounded border-secondary text-white">
             <Card.Body>
               <Card.Title>
-                <h5>Project Information</h5>
+                <h5>Education</h5>
               </Card.Title>
-              <strong style={{ color: "grey" }}>Project Name:</strong>{" "}
-              {projectName}
+              <strong style={{ color: "grey" }}>Description:</strong> {description}
               <br />
-              <strong style={{ color: "grey" }}>ClientName:</strong>{" "}
-              {clientName}
+              <strong style={{ color: "grey" }}>Institution:</strong> {institution}
               <br />
-              <strong style={{ color: "grey" }}>Tech Stack:</strong> {techStack}
+              <strong style={{ color: "grey" }}>Major:</strong> {major}
               <br />
-              <div
-                style={{ marginTop: "10px" }}
-                className="d-flex justify-content-between justify-items-center"
-              >
+              <div className="d-flex justify-content-between justify-items-center">
                 <button onClick={onEdit}>Edit</button>{" "}
-                <button onClick={onView}>View Details</button>{" "}
+                {/* <button onClick={onView}>View Details</button>{" "} */}
               </div>
             </Card.Body>
           </Card>
