@@ -40,16 +40,16 @@ export default function Header({ children }) {
       name: "Testiminials",
       icon: <GiNothingToSay />,
     },
-    {
-      path: "/educationDashboard",
-      name: "Education",
-      icon: <GiGraduateCap />,
-    },
-    {
-      path: "/experienceDashboard",
-      name: "Experience",
-      icon: <IoNewspaperOutline />
-    },
+    // {
+    //   path: "/educationDashboard",
+    //   name: "Education",
+    //   icon: <GiGraduateCap />,
+    // },
+    // {
+    //   path: "/experienceDashboard",
+    //   name: "Experience",
+    //   icon: <IoNewspaperOutline />
+    // },
     {
       path: "/logout",
       name: "Logout",

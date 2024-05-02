@@ -10,6 +10,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export const Experience = () => {
   const [developers, setDevelopers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [view, setView] = useState(false);
   const [id, setId] = useState("");
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export const Experience = () => {
       endYear: "",
     },
     description: "",
+    summary: "",
   });
 
   const navigate = useNavigate();
@@ -82,6 +84,7 @@ export const Experience = () => {
   }, [id]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       let res;
       if (!id) {
@@ -122,12 +125,27 @@ export const Experience = () => {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
   useEffect(() => {
     console.log(formData);
   }, [formData]);
   return (
     <Form onSubmit={handleSubmit}>
+      <Form.Group>
+        <Form.Label>Summary</Form.Label>
+        <Form.Control
+          required
+          as="textarea"
+          className="mb-3"
+          rows={3}
+          placeholder="Enter summary"
+          name="summary"
+          value={formData?.summary}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
       <Form.Group>
         <Form.Label>Developer ID</Form.Label>
         <Form.Control
@@ -205,8 +223,12 @@ export const Experience = () => {
         />
       </Form.Group>
 
-      <button variant="primary" type="submit">
-        {location.pathname.split("/")[2] === "edit" ? "UPDATE" : "SUBMIT"}
+      <button variant="primary" type="submit" disabled={isLoading}>
+        {isLoading
+          ? "Loading..."
+          : location.pathname.split("/")[2] === "edit"
+          ? "UPDATE"
+          : "SUBMIT"}
       </button>
     </Form>
   );

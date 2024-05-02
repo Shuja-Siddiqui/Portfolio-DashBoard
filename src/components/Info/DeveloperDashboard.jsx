@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { UserInfoCard } from "./UserInfoCard";
-import { getDevelopers } from "../../api";
+import { getDevelopers, removeEducation, removeExperience } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 export const DeveloperDashboard = () => {
@@ -17,6 +17,16 @@ export const DeveloperDashboard = () => {
 
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
+  };
+
+  const handleDeleteEducation = async (id) => {
+    await removeEducation(id);
+    await fetchDev();
+  };
+
+  const handleDeleteExperience = async (id) => {
+    await removeExperience(id);
+    await fetchDev();
   };
 
   const onView = (id) => {
@@ -46,7 +56,8 @@ export const DeveloperDashboard = () => {
         }}
       >
         <h2 className="text-white">Developers</h2>
-        {/* <button onClick={() => navigate("/info")}>+Add Developer</button> */}
+        <button onClick={() => navigate("/education")}>+Add Education</button>
+        <button onClick={() => navigate("/experience")}>+Add Experience</button>
       </div>
       <Row xs={1} md={1} className="g-4">
         {data &&
@@ -58,6 +69,8 @@ export const DeveloperDashboard = () => {
                 skills={skills}
                 onEdit={() => handleEdit(_id)}
                 onView={() => onView(_id)}
+                onRemove={handleDeleteEducation}
+                onExpRemove={handleDeleteExperience}
                 id={_id}
                 education={education}
                 experience={experience}

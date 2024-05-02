@@ -13,6 +13,7 @@ import {
   fetchTestimonials,
   fetchServices,
   addService,
+  removeSkill,
 } from "../api";
 
 import { Toaster } from "../common";
@@ -23,7 +24,6 @@ import { availability, spokenLanguages } from "../utils";
 // const uid = localStorage.getItem("user_id");
 
 export default function Info() {
-  console.log("info");
   const [show, setShow] = useState(false);
   const [showLink, setShowLink] = useState(false);
   const [showSerivce, setShowSerivce] = useState(false);
@@ -39,7 +39,8 @@ export default function Info() {
   const [formData, setFormData] = useState({
     name: "",
     devId: "",
-    residence: "",
+    country: "",
+    city: "",
     age: "",
     email: "",
     phoneNo: "",
@@ -83,24 +84,37 @@ export default function Info() {
   }
 
   // Add Skills
-  const handleSkill = () => {
+  const handleSkill = async () => {
     const skillName = skill;
     if (skillName) {
-      addSkill({ skillName: skillName });
+      const res = await addSkill({ skillName: skillName });
+      await getAllSkills();
       handleClose();
     } else {
       console.log("Title and path are required.");
     }
   };
+
+  //
+  const handleDeleteSkill = async (id, e) => {
+    e.preventDefault();
+    try {
+      console.log("delete", id);
+      await removeSkill(id);
+      await getAllSkills();
+    } catch (error) {
+      console.log("Error occurred while deleting skill:", error?.message);
+    }
+  };
   // Add Service
-  const handleService = () => {
+  const handleService = async () => {
     if (service) {
-      const res = addService({
+      const res = await addService({
         name: service.name,
         description: service?.description,
       });
       if (res?.status === 201 || res?.status === 200) {
-        getallServices();
+        await getallServices();
         setService({ name: "", description: "" });
       }
       handleCloseServiceModel();
@@ -151,7 +165,7 @@ export default function Info() {
         const refinedSkills = developer.skills.map((skill) => ({
           ratings: skill?.ratings,
           title: skill?.title?._id,
-          skillName: skill.title.skillName,
+          skillName: skill?.title?.skillName,
         }));
         setFile(developer?.avatar);
         // Update formData with refined skills only
@@ -188,7 +202,8 @@ export default function Info() {
         const {
           name,
           devId,
-          residence,
+          country,
+          city,
           age,
           email,
           phoneNo,
@@ -203,7 +218,8 @@ export default function Info() {
         const unchangedData = {
           name,
           devId,
-          residence,
+          country,
+          city,
           age,
           email,
           intro,
@@ -241,6 +257,7 @@ export default function Info() {
       fetchDeveloper();
     }
   }, [params]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let res;
@@ -300,9 +317,10 @@ export default function Info() {
       return { ...prevData, links: newLinks };
     });
   };
-  useEffect(() => {
-    console.log(formData, "formData");
-  }, [formData]);
+
+  // useEffect(() => {
+  //   console.log(formData, "formData");
+  // }, [formData]);
 
   // LANGUAGES
   const handleLanguageChange = (event) => {
@@ -331,16 +349,22 @@ export default function Info() {
 
     setFormData({ ...formData, availability: updatedAvailability });
   };
+
   const renderLinksFields = () => {
-    return formData?.links?.map((link, index) => (
-      <div key={index}>
+    const lastIndex = formData?.links?.length - 1;
+    const lastLink = formData?.links?.[lastIndex];
+
+    if (!lastLink) return null; // If there's no last link, return null
+
+    return (
+      <div>
         <Form.Group>
           <Form.Label>Platform Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter name"
-            value={link.title}
-            onChange={(e) => updateLinks(index, "title", e.target.value)}
+            value={lastLink.title}
+            onChange={(e) => updateLinks(lastIndex, "title", e.target.value)}
           />
         </Form.Group>
         <Form.Group>
@@ -348,19 +372,19 @@ export default function Info() {
           <Form.Control
             type="text"
             placeholder="Enter URL"
-            value={link.url}
-            onChange={(e) => updateLinks(index, "url", e.target.value)}
+            value={lastLink.url}
+            onChange={(e) => updateLinks(lastIndex, "url", e.target.value)}
           />
         </Form.Group>
         <Button
-          variant="danger"
-          className="p-0 mb-2"
-          onClick={() => removeLink(index)}
+          variant="primary"
+          onClick={handleCloseLinkModel}
+          className="p-0"
         >
-          Remove
+          Add
         </Button>
       </div>
-    ));
+    );
   };
 
   // File change and set file
@@ -458,15 +482,27 @@ export default function Info() {
               value={formData.skype}
               onChange={handleChange}
             />
-            <label htmlFor="residence" className="text-white">
-              Residence:
+            <label htmlFor="country" className="text-white">
+              country:
             </label>
             <input
               type="text"
-              name="residence"
-              id="residence"
-              placeholder="Residence"
-              value={formData.residence}
+              name="country"
+              id="country"
+              placeholder="country"
+              value={formData.country}
+              onChange={handleChange}
+              required
+            />
+            <label htmlFor="city" className="text-white">
+              city:
+            </label>
+            <input
+              type="text"
+              name="city"
+              id="city"
+              placeholder="city"
+              value={formData.city}
               onChange={handleChange}
               required
             />
@@ -507,6 +543,8 @@ export default function Info() {
                 ))}
               </div>
             </Form.Group>
+
+            {/* Availability */}
             <Form.Group style={{ width: "100%" }}>
               <h5>Availability</h5>
               <div
@@ -532,6 +570,8 @@ export default function Info() {
                 ))}
               </div>
             </Form.Group>
+
+            {/* Developer Skill */}
             <div
               style={{
                 display: "flex",
@@ -627,6 +667,14 @@ export default function Info() {
                         (formDataSkill) => formDataSkill?.title === skill?._id
                       )?.ratings || 0}
                     </span>
+
+                    {/* Delete button for removing the skill */}
+                    <button
+                      onClick={(e) => handleDeleteSkill(skill._id, e)}
+                      style={{ padding: "0", margin: "0" }}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))) ||
                 "NoSkill"}
@@ -640,6 +688,8 @@ export default function Info() {
                 Add developer skill
               </Button>
             </div>
+
+            {/* Developer Projects */}
             <h5 className="mb-3 ">Developer Projects</h5>
             <div
               style={{
@@ -667,26 +717,35 @@ export default function Info() {
                         style={{ width: "20px", padding: "0", margin: "0" }}
                         value={project._id}
                         checked={formData?.projects?.some(
-                          (formProject) =>
-                            formProject.id === project._id ||
-                            formProject === project._id
+                          (formProject) => formProject.id === project._id
                         )}
                         onChange={(e) => {
-                          const updatedProjects = [...formData.projects];
-                          if (e.target.checked) {
-                            if (!updatedProjects.includes(e.target.value))
-                              updatedProjects.push({
-                                id: e.target.value,
-                              });
-                          } else {
-                            updatedProjects.splice(
-                              updatedProjects.indexOf(e.target.value),
-                              1
-                            );
-                          }
-                          setFormData({
-                            ...formData,
-                            projects: updatedProjects,
+                          const checkedProjectId = e.target.value;
+                          setFormData((prevFormData) => {
+                            const prevProjects = prevFormData.projects || [];
+                            let updatedProjects;
+                            if (e.target.checked) {
+                              if (
+                                !prevProjects.some(
+                                  (proj) => proj.id === checkedProjectId
+                                )
+                              ) {
+                                updatedProjects = [
+                                  ...prevProjects,
+                                  { id: checkedProjectId },
+                                ];
+                              } else {
+                                updatedProjects = prevProjects;
+                              }
+                            } else {
+                              updatedProjects = prevProjects.filter(
+                                (proj) => proj.id !== checkedProjectId
+                              );
+                            }
+                            return {
+                              ...prevFormData,
+                              projects: updatedProjects,
+                            };
                           });
                         }}
                       />
@@ -697,6 +756,8 @@ export default function Info() {
                   ))
                 : "No Project"}
             </div>
+
+            {/* Testimonials */}
             <h5 className="mb-3 ">Testimonials</h5>
             <div
               style={{
@@ -728,21 +789,32 @@ export default function Info() {
                             formTestimonial === testimonial._id
                         )}
                         onChange={(e) => {
-                          const updatedTestimonials = [
-                            ...formData.testimonials,
-                          ];
-                          if (e.target.checked) {
-                            if (!updatedTestimonials.includes(e.target.value))
-                              updatedTestimonials.push(e.target.value);
-                          } else {
-                            updatedTestimonials.splice(
-                              updatedTestimonials.indexOf(e.target.value),
-                              1
-                            );
-                          }
-                          setFormData({
-                            ...formData,
-                            testimonials: updatedTestimonials,
+                          const checkedTestimonialId = e.target.value;
+                          setFormData((prevFormData) => {
+                            const prevTestimonials =
+                              prevFormData.testimonials || [];
+                            let updatedTestimonials;
+                            if (e.target.checked) {
+                              if (
+                                !prevTestimonials.includes(checkedTestimonialId)
+                              ) {
+                                updatedTestimonials = [
+                                  ...prevTestimonials,
+                                  checkedTestimonialId,
+                                ];
+                              } else {
+                                updatedTestimonials = prevTestimonials;
+                              }
+                            } else {
+                              updatedTestimonials = prevTestimonials.filter(
+                                (testimonialId) =>
+                                  testimonialId !== checkedTestimonialId
+                              );
+                            }
+                            return {
+                              ...prevFormData,
+                              testimonials: updatedTestimonials,
+                            };
                           });
                         }}
                       />
@@ -754,6 +826,8 @@ export default function Info() {
                   ))
                 : "No Testimonials"}
             </div>
+
+            {/* Services */}
             <h5 className="mb-3 ">Services</h5>
             <div
               style={{
@@ -784,19 +858,28 @@ export default function Info() {
                           (formService) => formService === service._id
                         )}
                         onChange={(e) => {
-                          const updatedServices = [...formData.services];
-                          if (e.target.checked) {
-                            if (!updatedServices.includes(e.target.value))
-                              updatedServices.push(e.target.value);
-                          } else {
-                            updatedServices.splice(
-                              updatedServices.indexOf(e.target.value),
-                              1
-                            );
-                          }
-                          setFormData({
-                            ...formData,
-                            services: updatedServices,
+                          const checkedServiceId = e.target.value;
+                          setFormData((prevFormData) => {
+                            const prevServices = prevFormData.services || [];
+                            let updatedServices;
+                            if (e.target.checked) {
+                              if (!prevServices.includes(checkedServiceId)) {
+                                updatedServices = [
+                                  ...prevServices,
+                                  checkedServiceId,
+                                ];
+                              } else {
+                                updatedServices = prevServices;
+                              }
+                            } else {
+                              updatedServices = prevServices.filter(
+                                (serviceId) => serviceId !== checkedServiceId
+                              );
+                            }
+                            return {
+                              ...prevFormData,
+                              services: updatedServices,
+                            };
                           });
                         }}
                       />
@@ -816,10 +899,15 @@ export default function Info() {
                 </Button>
               </div>
             </div>
+
+            {/* Social Links */}
             <div style={{ width: "100%", display: "flex" }}>
               <Button
                 variant="primary"
-                onClick={handleShowLinkModel}
+                onClick={() => {
+                  handleShowLinkModel();
+                  addNewLink();
+                }}
                 style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
               >
                 Add social links
@@ -929,8 +1017,7 @@ export default function Info() {
             )}
           </fieldset>
         </form>
-        {/* Add Skill Model */}
-
+        {/* Add Skill Modal */}
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Add Skill</Modal.Title>
@@ -968,8 +1055,8 @@ export default function Info() {
             </Form>
           </Modal.Body>
         </Modal>
-        {/* Add Services Model */}
 
+        {/* Add Services Model */}
         <Modal show={showSerivce} onHide={handleCloseServiceModel}>
           <Modal.Header closeButton>
             <Modal.Title>Add Services</Modal.Title>
@@ -1020,8 +1107,8 @@ export default function Info() {
             </Form>
           </Modal.Body>
         </Modal>
-        {/* Add Social Link Model */}
 
+        {/* Add Social Link Model */}
         <Modal show={showLink} onHide={handleCloseLinkModel}>
           <Modal.Header closeButton>
             <Modal.Title>Add social link</Modal.Title>
@@ -1032,9 +1119,9 @@ export default function Info() {
             >
               <Form.Group>
                 {renderLinksFields()}
-                <Button variant="primary" onClick={addNewLink} className="p-0">
+                {/* <Button variant="primary" onClick={addNewLink} className="p-0">
                   Add Link
-                </Button>
+                </Button> */}
               </Form.Group>
             </Form>
           </Modal.Body>

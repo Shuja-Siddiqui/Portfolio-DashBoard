@@ -33,8 +33,8 @@ export const ExperienceDashboard = () => {
           alignItems: "center",
         }}
       >
-        <h2 className="text-white">Educations</h2>
-        <button onClick={() => navigate("/education")}>+Add Education</button>
+        <h2 className="text-white">Experience</h2>
+        <button onClick={() => navigate("/experience")}>+Add Experience</button>
       </div>
       {console.log("data.length", data.length)}
       <Row xs={1} md={2} className="g-4">

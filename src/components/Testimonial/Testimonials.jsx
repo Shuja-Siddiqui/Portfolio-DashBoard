@@ -32,11 +32,13 @@ export const Testimonials = () => {
     e.preventDefault();
     let res;
     if (!params?.id) {
-      let hero = await createImageId(file);
-      formData["clientImage"] = hero;
+      if (file !== "") {
+        let hero = await createImageId(file);
+        formData["clientImage"] = hero;
+      }
       res = await addTestimonials(formData);
     } else {
-      if (formData.clientImage !== file) {
+      if (formData.clientImage !== file && file !== "") {
         let hero = await createImageId(file);
         formData["clientImage"] = hero;
       }
