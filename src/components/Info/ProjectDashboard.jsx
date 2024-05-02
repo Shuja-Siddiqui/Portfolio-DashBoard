@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { UserInfoCard } from "./UserInfoCard";
-import { fetchProjects, getDevelopers } from "../../api";
+import { fetchProjects, getDevelopers, removeProject } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { ProjectInfoCard } from "./ProjectInfoCard";
 
 export const ProjectDashboard = () => {
   const [data, setData] = useState();
   const navigate = useNavigate();
+  
+  // Fetch
   const fetchDev = async () => {
     const users = await fetchProjects();
     setData(users);
   };
-  useEffect(() => {
-    fetchDev();
-  }, []);
+  // Edit
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
   };
-
+  // View
   const onView = (id) => {
     navigate(`view/${id}`);
   };
+  // Delete
+  const handleDelete = async (id) => {
+    await removeProject(id);
+    await fetchDev();
+  };
+
   const pureData = () => {
     return data?.map(({ projectName, clientName, techStack }) => ({
       projectName,
@@ -29,6 +35,11 @@ export const ProjectDashboard = () => {
       techStack,
     }));
   };
+
+  useEffect(() => {
+    fetchDev();
+  }, []);
+
   useEffect(() => {
     pureData();
   }, []);
@@ -55,6 +66,7 @@ export const ProjectDashboard = () => {
                 techStack={techStack}
                 onEdit={() => handleEdit(_id)}
                 onView={() => onView(_id)}
+                onRemove={() => handleDelete(_id)}
                 id={_id}
               />
             </div>

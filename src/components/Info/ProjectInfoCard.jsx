@@ -7,6 +7,7 @@ export const ProjectInfoCard = ({
   techStack,
   onEdit,
   onView,
+  onRemove,
 }) => {
   return (
     <Container fluid>
@@ -31,6 +32,7 @@ export const ProjectInfoCard = ({
               >
                 <button onClick={onEdit}>Edit</button>{" "}
                 <button onClick={onView}>View Details</button>{" "}
+                <button onClick={onRemove}>Delete</button>{" "}
               </div>
             </Card.Body>
           </Card>

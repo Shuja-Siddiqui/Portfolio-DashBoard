@@ -8,6 +8,7 @@ import {
   createImageIds,
   fetchProject,
   baseURL,
+  removeSkill,
 } from "../api";
 
 import { Toaster } from "../common";
@@ -26,6 +27,7 @@ export default function Projects() {
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState({
     projectName: "",
+    thumbNail: "",
     clientName: "",
     duration: "",
     description: "",
@@ -113,6 +115,17 @@ export default function Projects() {
     }
   };
 
+  // Delete Skill
+  const handleDeleteSkill = async (id, e) => {
+    e.preventDefault();
+    try {
+      await removeSkill(id);
+      await getAllSkills();
+    } catch (error) {
+      console.log("Error occurred while deleting skill:", error?.message);
+    }
+  };
+
   // SET VALUES IN THE FORM
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -127,8 +140,10 @@ export default function Projects() {
     if (!params?.id) {
       const hero = await createImageId(file);
       formData["hero"] = hero;
-      const fileId = await createImageIds(images);
-      formData["gallery"] = fileId;
+      if (images.length > 0) {
+        const fileId = await createImageIds(images);
+        formData["gallery"] = fileId;
+      }
       res = await createProject(formData);
     } else {
       if (formData.hero !== file) {
@@ -168,7 +183,10 @@ export default function Projects() {
     setImagesToShow(newArr);
   };
 
-  useEffect(() => {}, [formData]);
+  // useEffect(() => {
+  //   console.log("formData", formData);
+  // }, [formData]);
+
   return (
     <div>
       {showToaster && (
@@ -191,6 +209,18 @@ export default function Projects() {
             value={formData?.projectName}
             onChange={handleChange}
             placeholder="Project Name"
+            required
+          />
+          <label htmlFor="thumbNail" className="text-white">
+            ThumbNail:
+          </label>
+          <input
+            type="text"
+            name="thumbNail"
+            id="thumbNail"
+            value={formData?.thumbNail}
+            onChange={handleChange}
+            placeholder="Project thumbNail"
             required
           />
           <label htmlFor="clientName" className="text-white">
@@ -298,6 +328,8 @@ export default function Projects() {
               ))}
             </div>
           </div>
+
+          {/* Developer Skill */}
           <div
             style={{
               display: "flex",
@@ -393,6 +425,14 @@ export default function Projects() {
                       (formDataSkill) => formDataSkill?.name === skill?._id
                     )?.level || 0}
                   </span>
+
+                  {/* Delete button for removing the skill */}
+                  <button
+                    onClick={(e) => handleDeleteSkill(skill._id, e)}
+                    style={{ padding: "0", margin: "0" }}
+                  >
+                    Delete
+                  </button>
                 </div>
               ))) ||
               "NoSkill"}
@@ -422,7 +462,9 @@ export default function Projects() {
             placeholder="https//:"
             required
           />
-          {location.pathname.split("/")[2] === "edit" ? (
+          {location.pathname.split("/")[2] === "view" ? (
+            <></>
+          ) : (
             <button type="submit" disabled={isLoading}>
               {isLoading
                 ? "Loading..."
@@ -430,8 +472,6 @@ export default function Projects() {
                 ? "UPDATE"
                 : "SUBMIT"}
             </button>
-          ) : (
-            <></>
           )}
         </fieldset>
       </form>

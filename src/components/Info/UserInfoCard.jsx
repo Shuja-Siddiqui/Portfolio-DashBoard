@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import "./index.css";
 
 export const UserInfoCard = ({
   name,
@@ -8,9 +9,12 @@ export const UserInfoCard = ({
   devId,
   onEdit,
   onView,
+  onRemove,
+  onExpRemove,
   education,
   experience,
 }) => {
+  const [deleteClicked, setDeleteClicked] = useState(null);
   const navigate = useNavigate();
   return (
     <Container fluid>
@@ -155,6 +159,7 @@ export const UserInfoCard = ({
                           >
                             View
                           </button>
+                          <button onClick={() => onRemove(_id)}>Delete</button>
                         </div>
                       </div>
                     </div>
@@ -229,6 +234,18 @@ export const UserInfoCard = ({
                             onClick={() => navigate(`/experience/view/${_id}`)}
                           >
                             View
+                          </button>
+                          <button
+                            className={
+                              deleteClicked === _id ? "delete-button" : ""
+                            }
+                            onClick={() => {
+                              onExpRemove(_id);
+                              setDeleteClicked(_id);
+                            }}
+                            disabled={deleteClicked === _id}
+                          >
+                            Delete
                           </button>
                         </div>
                       </div>

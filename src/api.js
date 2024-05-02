@@ -309,3 +309,39 @@ export const updateContactEmailRequest = async (data) => {
     console.log("Error occurred", error?.message);
   }
 };
+
+export const removeSkill = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/skill/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const removeProject = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/project/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const removeEducation = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/education/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const removeExperience = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/experience/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};

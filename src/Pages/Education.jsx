@@ -217,7 +217,9 @@ export const Education = () => {
         />
       </Form.Group>
 
-      {location.pathname.split("/")[2] === "edit" ? (
+      {location.pathname.split("/")[2] === "view" ? (
+        <></>
+      ) : (
         <button variant="primary" type="submit">
           {isLoading
             ? "Loading..."
@@ -225,8 +227,6 @@ export const Education = () => {
             ? "UPDATE"
             : "SUBMIT"}
         </button>
-      ) : (
-        <></>
       )}
     </Form>
   );
