@@ -15,6 +15,7 @@ export const Testimonials = () => {
   const [heroToShow, setHeroToShow] = useState("");
   const [formData, setFormData] = useState({
     clientName: "",
+    clientDesignation: "",
     clientReview: "",
     stars: 1,
     clientImage: "",
@@ -68,6 +69,16 @@ export const Testimonials = () => {
   useEffect(() => {
     console.log(formData);
   }, [formData]);
+
+  const handleClientReviewChange = (e) => {
+    const text = e.target.value;
+    const wordLimit = 27; // Adjust the word limit as needed
+    const words = text.trim().split(/\s+/);
+    if (words.length <= wordLimit) {
+      setFormData({ ...formData, clientReview: text });
+    }
+  };
+
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Testimonials</h1>
@@ -83,9 +94,7 @@ export const Testimonials = () => {
             col="30"
             rows="5"
             value={formData.clientReview}
-            onChange={(e) =>
-              setFormData({ ...formData, clientReview: e.target.value })
-            }
+            onChange={handleClientReviewChange}
             placeholder="Client Review"
             required
           />
@@ -101,6 +110,22 @@ export const Testimonials = () => {
             value={formData.clientName}
             onChange={(e) =>
               setFormData({ ...formData, clientName: e.target.value })
+            }
+            placeholder="Client Name"
+            required
+          />
+          <label className="mb-3" htmlFor="clientDesignation">
+            Designation
+          </label>
+
+          <input
+            className="mb-3 mt-0"
+            type="text"
+            name="clientDesignation"
+            id=""
+            value={formData.clientDesignation}
+            onChange={(e) =>
+              setFormData({ ...formData, clientDesignation: e.target.value })
             }
             placeholder="Client Name"
             required

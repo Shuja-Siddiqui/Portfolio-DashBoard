@@ -105,10 +105,11 @@ export default function Projects() {
   const handleShow = () => setShow(true);
 
   // Add Skills
-  const handleSkill = () => {
+  const handleSkill = async () => {
     const skillName = skill;
     if (skillName) {
-      addSkill({ skillName: skillName });
+      const res = await addSkill({ skillName: skillName });
+      await getAllSkills();
       handleClose();
     } else {
       console.log("Title and path are required.");
@@ -121,6 +122,15 @@ export default function Projects() {
     try {
       await removeSkill(id);
       await getAllSkills();
+
+      setFormData((prevData) => {
+        const updatedSkills = [...prevData.skills];
+        updatedSkills.splice(index, 1);
+        return {
+          ...prevData,
+          skills: updatedSkills,
+        };
+      });
     } catch (error) {
       console.log("Error occurred while deleting skill:", error?.message);
     }
@@ -428,7 +438,7 @@ export default function Projects() {
 
                   {/* Delete button for removing the skill */}
                   <button
-                    onClick={(e) => handleDeleteSkill(skill._id, e)}
+                    onClick={(e) => handleDeleteSkill(skill?._id, e)}
                     style={{ padding: "0", margin: "0" }}
                   >
                     Delete
@@ -446,13 +456,27 @@ export default function Projects() {
               Add developer skill
             </Button>
           </div>
-          <ProjectDescription
+          <label htmlFor="description" className="text-white">
+            Project Description:
+          </label>
+          <textarea
+            type="text"
+            name="description"
+            id="description"
+            col="30"
+            rows="5"
+            value={formData?.description}
+            onChange={handleChange}
+            placeholder="Project description"
+            required
+          />
+          {/* <ProjectDescription
             theme="snow"
             placeholder="Project Description"
             style={{ color: "white" }}
             setFormData={setFormData}
             formData={formData}
-          />
+          /> */}
           <input
             type="url"
             name="projectLink"

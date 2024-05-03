@@ -54,7 +54,7 @@ export default function Info() {
     testimonials: [],
     services: [],
     languages: [],
-    availability: [],
+    availability: "",
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,9 +99,17 @@ export default function Info() {
   const handleDeleteSkill = async (id, e) => {
     e.preventDefault();
     try {
-      console.log("delete", id);
       await removeSkill(id);
       await getAllSkills();
+
+      setFormData((prevData) => {
+        const updatedSkills = [...prevData.skills];
+        updatedSkills.splice(index, 1);
+        return {
+          ...prevData,
+          skills: updatedSkills,
+        };
+      });
     } catch (error) {
       console.log("Error occurred while deleting skill:", error?.message);
     }
@@ -337,7 +345,7 @@ export default function Info() {
   };
   const handleAvailabilityChange = (event) => {
     const { value } = event.target;
-    let updatedAvailability = [...formData.availability];
+    let updatedAvailability = formData.availability;
 
     if (updatedAvailability.includes(value)) {
       updatedAvailability = updatedAvailability.filter(
@@ -554,18 +562,24 @@ export default function Info() {
                   width: "100%",
                 }}
               >
-                {availability.map((availability, index) => (
+                {availability.map((availabilityItem, index) => (
                   <Form.Check
                     style={{ width: "20%" }}
                     key={index}
                     type="checkbox"
                     id={`availability-checkbox-${index}`}
-                    label={availability}
-                    value={availability.toLowerCase()}
-                    checked={formData.availability.includes(
-                      availability.toLowerCase()
-                    )}
-                    onChange={handleAvailabilityChange}
+                    label={availabilityItem}
+                    value={availabilityItem.toLowerCase()}
+                    checked={
+                      formData.availability === availabilityItem.toLowerCase()
+                    }
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData({
+                        ...formData,
+                        availability: value.toLowerCase(),
+                      });
+                    }}
                   />
                 ))}
               </div>
@@ -593,7 +607,7 @@ export default function Info() {
               </h5>
               {(allSkills &&
                 allSkills.length > 0 &&
-                allSkills?.map((skill) => (
+                allSkills?.map((skill, index) => (
                   <div
                     key={skill._id}
                     style={{
@@ -667,10 +681,10 @@ export default function Info() {
                         (formDataSkill) => formDataSkill?.title === skill?._id
                       )?.ratings || 0}
                     </span>
-
+                    {console.log(index, "index")}
                     {/* Delete button for removing the skill */}
                     <button
-                      onClick={(e) => handleDeleteSkill(skill._id, e)}
+                      onClick={(e) => handleDeleteSkill(skill?._id, e)}
                       style={{ padding: "0", margin: "0" }}
                     >
                       Delete
@@ -712,7 +726,7 @@ export default function Info() {
                     >
                       <input
                         name="project"
-                        id="project"
+                        id={`project-${index}`}
                         type="checkbox"
                         style={{ width: "20px", padding: "0", margin: "0" }}
                         value={project._id}
@@ -722,25 +736,18 @@ export default function Info() {
                         onChange={(e) => {
                           const checkedProjectId = e.target.value;
                           setFormData((prevFormData) => {
-                            const prevProjects = prevFormData.projects || [];
-                            let updatedProjects;
+                            const updatedProjects = [
+                              ...(prevFormData.projects || []),
+                            ];
                             if (e.target.checked) {
-                              if (
-                                !prevProjects.some(
-                                  (proj) => proj.id === checkedProjectId
-                                )
-                              ) {
-                                updatedProjects = [
-                                  ...prevProjects,
-                                  { id: checkedProjectId },
-                                ];
-                              } else {
-                                updatedProjects = prevProjects;
-                              }
+                              updatedProjects.push({ id: checkedProjectId });
                             } else {
-                              updatedProjects = prevProjects.filter(
-                                (proj) => proj.id !== checkedProjectId
+                              const indexToRemove = updatedProjects.findIndex(
+                                (proj) => proj.id === checkedProjectId
                               );
+                              if (indexToRemove !== -1) {
+                                updatedProjects.splice(indexToRemove, 1);
+                              }
                             }
                             return {
                               ...prevFormData,
@@ -749,7 +756,10 @@ export default function Info() {
                           });
                         }}
                       />
-                      <label htmlFor="project" className="text-white">
+                      <label
+                        htmlFor={`project-${index}`}
+                        className="text-white"
+                      >
                         {project.projectName}
                       </label>
                     </div>
@@ -818,7 +828,10 @@ export default function Info() {
                           });
                         }}
                       />
-                      <label htmlFor="testimonial" className="text-white">
+                      <label
+                        htmlFor={`testimonial-${index}`}
+                        className="text-white"
+                      >
                         {testimonial.clientName}
                         <sup>{generateStars(testimonial?.stars)}</sup>
                       </label>
@@ -883,7 +896,10 @@ export default function Info() {
                           });
                         }}
                       />
-                      <label htmlFor="service" className="text-white">
+                      <label
+                        htmlFor={`service-${index}`}
+                        className="text-white"
+                      >
                         {service.name}
                       </label>
                     </div>

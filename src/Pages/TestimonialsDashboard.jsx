@@ -40,6 +40,7 @@ export const TestimonialsDashboard = () => {
         <thead>
           <tr className="border-0">
             <th className="border-0">Client Name</th>
+            <th className="border-0">Client Designation</th>
             <th className="border-0">Client Review</th>
             <th className="border-0">Stars</th>
             <th className="border-0">Image</th>
@@ -48,7 +49,7 @@ export const TestimonialsDashboard = () => {
         </thead>
         <tbody style={{ width: "100%" }}>
           {formData?.map(
-            ({ clientName, clientReview, stars, index, _id, clientImage }) => (
+            ({ clientName,clientDesignation, clientReview, stars, index, _id, clientImage }) => (
               <tr
                 className="text-white border-success-subtle  "
                 key={index}
@@ -59,6 +60,12 @@ export const TestimonialsDashboard = () => {
                   style={{ width: "10%" }}
                 >
                   {clientName}
+                </td>
+                <td
+                  className="text-white border-success-subtle"
+                  style={{ width: "10%" }}
+                >
+                  {clientDesignation}
                 </td>
                 <td
                   className="text-white border-success-subtle"

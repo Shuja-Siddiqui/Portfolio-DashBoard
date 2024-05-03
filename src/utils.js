@@ -19,4 +19,4 @@ export const spokenLanguages = [
   "Tamil",
   "Punjabi",
 ];
-export const availability=["part", "full", "internship", "job"]
+export const availability=["Part Time", "Full Time", "Internship"]

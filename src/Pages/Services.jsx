@@ -71,6 +71,15 @@ export default function Services() {
     console.log(formData);
   }, [formData]);
 
+  const handleDescriptionChange = (e) => {
+    const text = e.target.value;
+    const wordLimit = 30; // Adjust the word limit as needed
+    const words = text.trim().split(/\s+/);
+    if (words.length <= wordLimit) {
+      setFormData({ ...formData, description: text });
+    }
+  };
+
   return (
     <div>
       <h1 style={{ color: "white", textAlign: "center" }}>Add Service</h1>
@@ -88,9 +97,7 @@ export default function Services() {
         <textarea
           name="description"
           value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          onChange={handleDescriptionChange}
           cols="30"
           rows="5"
           placeholder="Description"
