@@ -96,7 +96,7 @@ export default function Info() {
   };
 
   //
-  const handleDeleteSkill = async (id, e) => {
+  const handleDeleteSkill = async (id, e, index) => {
     e.preventDefault();
     try {
       await removeSkill(id);
@@ -684,7 +684,7 @@ export default function Info() {
                     {console.log(index, "index")}
                     {/* Delete button for removing the skill */}
                     <button
-                      onClick={(e) => handleDeleteSkill(skill?._id, e)}
+                      onClick={(e) => handleDeleteSkill(skill?._id, e, index)}
                       style={{ padding: "0", margin: "0" }}
                     >
                       Delete

@@ -117,7 +117,7 @@ export default function Projects() {
   };
 
   // Delete Skill
-  const handleDeleteSkill = async (id, e) => {
+  const handleDeleteSkill = async (id, e, index) => {
     e.preventDefault();
     try {
       await removeSkill(id);
@@ -125,7 +125,7 @@ export default function Projects() {
 
       setFormData((prevData) => {
         const updatedSkills = [...prevData.skills];
-        updatedSkills.splice(index, 1);
+        updatedSkills.splice(index,1);
         return {
           ...prevData,
           skills: updatedSkills,
@@ -438,7 +438,7 @@ export default function Projects() {
 
                   {/* Delete button for removing the skill */}
                   <button
-                    onClick={(e) => handleDeleteSkill(skill?._id, e)}
+                    onClick={(e) => handleDeleteSkill(skill?._id, e, index)}
                     style={{ padding: "0", margin: "0" }}
                   >
                     Delete
