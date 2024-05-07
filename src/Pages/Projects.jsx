@@ -361,7 +361,7 @@ export default function Projects() {
             </h5>
             {(allSkills &&
               allSkills.length > 0 &&
-              allSkills?.map((skill) => (
+              allSkills?.map((skill, index) => (
                 <div
                   key={skill._id}
                   style={{
