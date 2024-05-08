@@ -124,12 +124,14 @@ export default function Projects() {
       await getAllSkills();
 
       setFormData((prevData) => {
-        const updatedSkills = [...prevData.skills];
-        updatedSkills.splice(index,1);
-        return {
-          ...prevData,
-          skills: updatedSkills,
-        };
+        if (prevData?.length>0) {
+          const updatedSkills = [...prevData.skills];
+          updatedSkills.splice(index, 1);
+          return {
+            ...prevData,
+            skills: updatedSkills,
+          };
+        }
       });
     } catch (error) {
       console.log("Error occurred while deleting skill:", error?.message);
