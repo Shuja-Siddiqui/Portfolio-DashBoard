@@ -16,7 +16,6 @@ import {
   removeSkill,
 } from "../api";
 
-import { Toaster } from "../common";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 import { availability, spokenLanguages } from "../utils";
@@ -42,6 +41,7 @@ export default function Info() {
     country: "",
     city: "",
     age: "",
+    devCV: "",
     email: "",
     phoneNo: "",
     skype: "",
@@ -213,6 +213,7 @@ export default function Info() {
           country,
           city,
           age,
+          devCV,
           email,
           phoneNo,
           skype,
@@ -229,6 +230,7 @@ export default function Info() {
           country,
           city,
           age,
+          devCV,
           email,
           intro,
           phoneNo,
@@ -525,6 +527,17 @@ export default function Info() {
               value={formData.age}
               onChange={handleChange}
               required
+            />
+             <label htmlFor="devCV" className="text-white">
+              CV:
+            </label>
+            <input
+              type="text"
+              name="devCV"
+              id="devCV"
+              placeholder="devCV"
+              value={formData.devCV}
+              onChange={handleChange}
             />
             <Form.Group style={{ width: "100%" }}>
               <h5>Languages</h5>
