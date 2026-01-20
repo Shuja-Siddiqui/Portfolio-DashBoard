@@ -43,28 +43,25 @@ export const Testimonials = () => {
         let hero = await createImageId(file);
         formData["clientImage"] = hero;
       }
-      formData["clientImage"] = formData?.clientImage;
       res = await updateTestimonial(id, formData);
     }
     if (res) navigate("/testimonialsDashboard");
   };
   useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  }, [params]);
-  const getTestimonial = async () => {
-    const res = await fetchTestimonial(id);
-    if (res) {
-      setHeroToShow(`${baseURL}/file/${res?.clientImage}`);
-      setFormData(res);
-    }
-  };
+    if (params?.id) setId(params.id);
+    else setId("");
+
+    setView(location.pathname.split("/")[2] === "view");
+  }, [params?.id, location.pathname]);
   useEffect(() => {
-    if (id) getTestimonial();
+    if (!id) return;
+    (async () => {
+      const res = await fetchTestimonial(id);
+      if (res) {
+        setHeroToShow(`${baseURL}/file/${res?.clientImage}`);
+        setFormData(res);
+      }
+    })();
   }, [id]);
   useEffect(() => {
     console.log(formData);

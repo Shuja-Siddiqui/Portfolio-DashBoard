@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import {
   addExperience,
   fetchAllDevelopers,
@@ -28,13 +28,6 @@ export const Experience = () => {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  //   GET ALL DEVS
-  const getAllDevelopers = async () => {
-    const devs = await fetchAllDevelopers();
-    if (devs?.status === 200) {
-      setDevelopers(devs?.data);
-    }
-  };
 
   //   HANDLE FORM STATE
   const handleChange = (e) => {
@@ -51,36 +44,38 @@ export const Experience = () => {
     }
   };
 
-  const getExperience = async () => {
-    try {
-      const res = await fetchExperience(id);
-      console.log(res);
-      if (res?.status === 200) {
-        setFormData(res?.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   // USE EFFECT TO CHECK IF ITs EDIT/VIEW REQ
 
   useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  }, [params]);
+    if (params?.id) setId(params.id);
+    else setId("");
+
+    setView(location.pathname.split("/")[2] === "view");
+  }, [params?.id, location.pathname]);
 
   // USEFFECT FOR DEVS
   useEffect(() => {
-    getAllDevelopers();
+    (async () => {
+      const devs = await fetchAllDevelopers();
+      if (devs?.status === 200) {
+        setDevelopers(devs?.data);
+      }
+    })();
   }, []);
 
   //   GET EXPERIENCE TO EDIT
   useEffect(() => {
-    if (id) getExperience();
+    if (!id) return;
+    (async () => {
+      try {
+        const res = await fetchExperience(id);
+        if (res?.status === 200) {
+          setFormData(res?.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, [id]);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,7 +149,9 @@ export const Experience = () => {
           name="devId"
           value={formData?.devId}
           onChange={handleChange}
-          disabled={location.pathname.split("/")[2] === "edit" ? true : false}
+          disabled={
+            location.pathname.split("/")[2] === "edit" || view ? true : false
+          }
         >
           <option value="">Select Developer ID</option>
           {developers.map((developer) => (
@@ -174,6 +171,7 @@ export const Experience = () => {
           name="company"
           value={formData?.company}
           onChange={handleChange}
+          readOnly={view}
         />
       </Form.Group>
 
@@ -186,6 +184,7 @@ export const Experience = () => {
           name="startYear"
           value={formData?.timeSpan?.startYear}
           onChange={handleChange}
+          readOnly={view}
         />
         <Form.Control
           required
@@ -194,6 +193,7 @@ export const Experience = () => {
           name="endYear"
           value={formData?.timeSpan?.endYear}
           onChange={handleChange}
+          readOnly={view}
         />
       </Form.Group>
 
@@ -206,6 +206,7 @@ export const Experience = () => {
           name="role"
           value={formData?.role}
           onChange={handleChange}
+          readOnly={view}
         />
       </Form.Group>
 
@@ -220,16 +221,21 @@ export const Experience = () => {
           name="description"
           value={formData?.description}
           onChange={handleChange}
+          readOnly={view}
         />
       </Form.Group>
 
-      <button variant="primary" type="submit" disabled={isLoading}>
-        {isLoading
-          ? "Loading..."
-          : location.pathname.split("/")[2] === "edit"
-          ? "UPDATE"
-          : "SUBMIT"}
-      </button>
+      {location.pathname.split("/")[2] === "view" ? (
+        <></>
+      ) : (
+        <button variant="primary" type="submit" disabled={isLoading}>
+          {isLoading
+            ? "Loading..."
+            : location.pathname.split("/")[2] === "edit"
+            ? "UPDATE"
+            : "SUBMIT"}
+        </button>
+      )}
     </Form>
   );
 };

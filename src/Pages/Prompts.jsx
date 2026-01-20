@@ -15,23 +15,20 @@ export default function Prompts() {
   const location = useLocation();
 
   useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  }, [params, location]);
+    if (params?.id) setId(params.id);
+    else setId("");
 
-  const getPrompt = async () => {
-    const prompt = await fetchPrompt(id);
-    if (prompt) {
-      setFormData(prompt);
-    }
-  };
+    setView(location.pathname.split("/")[2] === "view");
+  }, [params?.id, location.pathname]);
 
   useEffect(() => {
-    if (id) getPrompt();
+    if (!id) return;
+    (async () => {
+      const prompt = await fetchPrompt(id);
+      if (prompt) {
+        setFormData(prompt);
+      }
+    })();
   }, [id]);
 
   const handleSubmit = async (e) => {

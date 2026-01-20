@@ -13,7 +13,6 @@ import {
 
 import { Toaster } from "../common";
 import "react-quill/dist/quill.snow.css";
-import ProjectDescription from "../components/ProjectDescription";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
@@ -21,7 +20,7 @@ export default function Projects() {
   const [file, setFile] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showToaster, setShowToaster] = useState(false);
-  const [toasterMessage, setToasterMessage] = useState("");
+  const [toasterMessage] = useState("");
   const [allSkills, setAllSkills] = useState([]);
   const [skill, setSkill] = useState({ skillName: "" });
   const [show, setShow] = useState(false);
@@ -46,10 +45,8 @@ export default function Projects() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  });
+    setView(location.pathname.split("/")[2] === "view");
+  }, [location.pathname]);
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     const files = event.target.files;
@@ -75,30 +72,28 @@ export default function Projects() {
 
   //Fetch  project, skills
 
-  const getProject = async () => {
-    const res = await fetchProject(params?.id);
-    if (res?.hero) {
-      const imageUrl = res.hero;
-      setHeroToShow(`${baseURL}/file/${imageUrl}`);
-    }
-    setFile(res?.hero);
-    if (res?.gallery) {
-      setPreveiousImages(res?.gallery);
-      // Also set the image URLs to display them in the UI
-      setImagesToShow(res.gallery.map((img) => `${baseURL}/file/${img}`));
-    }
-    setFormData(res);
-  };
-
-  const getAllSkills = async () => {
-    const skills = await fetchSkills();
-    setAllSkills(skills);
-  };
   useEffect(() => {
-    if (params?.id) getProject();
-  }, []);
+    if (!params?.id) return;
+    (async () => {
+      const res = await fetchProject(params?.id);
+      if (res?.hero) {
+        const imageUrl = res.hero;
+        setHeroToShow(`${baseURL}/file/${imageUrl}`);
+      }
+      setFile(res?.hero);
+      if (res?.gallery) {
+        setPreveiousImages(res?.gallery);
+        // Also set the image URLs to display them in the UI
+        setImagesToShow(res.gallery.map((img) => `${baseURL}/file/${img}`));
+      }
+      setFormData(res);
+    })();
+  }, [params?.id]);
   useEffect(() => {
-    getAllSkills();
+    (async () => {
+      const skills = await fetchSkills();
+      setAllSkills(skills);
+    })();
   }, []);
 
   const handleClose = () => setShow(false);
@@ -108,8 +103,9 @@ export default function Projects() {
   const handleSkill = async () => {
     const skillName = skill;
     if (skillName) {
-      const res = await addSkill({ skillName: skillName });
-      await getAllSkills();
+      await addSkill({ skillName: skillName });
+      const skills = await fetchSkills();
+      setAllSkills(skills);
       handleClose();
     } else {
       console.log("Title and path are required.");
@@ -121,18 +117,8 @@ export default function Projects() {
     e.preventDefault();
     try {
       await removeSkill(id);
-      await getAllSkills();
-
-      setFormData((prevData) => {
-        if (prevData?.length>0) {
-          const updatedSkills = [...prevData.skills];
-          updatedSkills.splice(index, 1);
-          return {
-            ...prevData,
-            skills: updatedSkills,
-          };
-        }
-      });
+      const skills = await fetchSkills();
+      setAllSkills(skills);
     } catch (error) {
       console.log("Error occurred while deleting skill:", error?.message);
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import {
   addEducation,
   fetchAllDevelopers,
@@ -27,13 +27,6 @@ export const Education = () => {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  //   GET ALL DEVS
-  const getAllDevelopers = async () => {
-    const devs = await fetchAllDevelopers();
-    if (devs?.status === 200) {
-      setDevelopers(devs?.data);
-    }
-  };
 
   //   HANDLE FORM STATE
   const handleChange = (e) => {
@@ -50,36 +43,38 @@ export const Education = () => {
     }
   };
 
-  const getEducation = async () => {
-    try {
-      const res = await fetchEducation(id);
-      console.log(res);
-      if (res?.status === 200) {
-        setFormData(res?.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   // USE EFFECT TO CHECK IF ITs EDIT/VIEW REQ
 
   useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  }, [params]);
+    if (params?.id) setId(params.id);
+    else setId("");
+
+    setView(location.pathname.split("/")[2] === "view");
+  }, [params?.id, location.pathname]);
 
   // USEFFECT FOR DEVS
   useEffect(() => {
-    getAllDevelopers();
+    (async () => {
+      const devs = await fetchAllDevelopers();
+      if (devs?.status === 200) {
+        setDevelopers(devs?.data);
+      }
+    })();
   }, []);
 
   //   GET EDUCATION TO EDIT
   useEffect(() => {
-    if (id) getEducation();
+    if (!id) return;
+    (async () => {
+      try {
+        const res = await fetchEducation(id);
+        if (res?.status === 200) {
+          setFormData(res?.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, [id]);
   const handleSubmit = async (e) => {
     e.preventDefault();

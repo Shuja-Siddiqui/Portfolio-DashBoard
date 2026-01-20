@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { addService, fetchService, fetchSkills, updateService } from "../api";
+import { addService, fetchService, updateService } from "../api";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 export default function Services() {
@@ -8,7 +8,6 @@ export default function Services() {
     description: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [allskills, setAllSkills] = useState([]);
   const [view, setView] = useState(false);
   const [id, setId] = useState("");
   const navigate = useNavigate();
@@ -16,36 +15,20 @@ export default function Services() {
   const location = useLocation();
 
   useEffect(() => {
-    if (params?.id) {
-      setId(params.id);
-    }
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  }, [params]);
+    if (params?.id) setId(params.id);
+    else setId("");
 
-  const getSkills = async () => {
-    const skills = await fetchSkills();
-    if (skills) {
-      setAllSkills(skills);
-    }
-  };
-
-  const getService = async () => {
-    const service = await fetchService(id);
-    if (service) {
-      setFormData(service);
-    }
-  };
+    setView(location.pathname.split("/")[2] === "view");
+  }, [params?.id, location.pathname]);
 
   useEffect(() => {
-    if (!id) {
-      getSkills();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (id) getService();
+    if (!id) return;
+    (async () => {
+      const service = await fetchService(id);
+      if (service) {
+        setFormData(service);
+      }
+    })();
   }, [id]);
 
   const handleSubmit = async (e) => {

@@ -5,7 +5,6 @@ import { FaEye, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router";
 
 export const TestimonialsDashboard = () => {
-  const [heroToShow, setHeroToShow] = useState("");
   const [formData, setFormData] = useState([]);
   const navigate = useNavigate();
 
@@ -49,10 +48,10 @@ export const TestimonialsDashboard = () => {
         </thead>
         <tbody style={{ width: "100%" }}>
           {formData?.map(
-            ({ clientName,clientDesignation, clientReview, stars, index, _id, clientImage }) => (
+            ({ clientName, clientDesignation, clientReview, stars, _id, clientImage }) => (
               <tr
                 className="text-white border-success-subtle  "
-                key={index}
+                key={_id}
                 style={{ width: "100%" }}
               >
                 <td

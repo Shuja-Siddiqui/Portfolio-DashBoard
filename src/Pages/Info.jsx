@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { FaCrosshairs, FaEdit } from "react-icons/fa";
+import { useCallback, useEffect, useState } from "react";
 import { Modal, Button, Form, Badge } from "react-bootstrap";
 import {
   createDeveloper,
@@ -87,7 +86,7 @@ export default function Info() {
   const handleSkill = async () => {
     const skillName = skill;
     if (skillName) {
-      const res = await addSkill({ skillName: skillName });
+      await addSkill({ skillName: skillName });
       await getAllSkills();
       handleClose();
     } else {
@@ -133,43 +132,41 @@ export default function Info() {
 
   //Fetch all projects, skill
 
-  const getAllSkills = async () => {
+  const getAllSkills = useCallback(async () => {
     const skills = await fetchSkills();
     setAllSkills(skills);
-  };
-  const getallServices = async () => {
+  }, []);
+  const getallServices = useCallback(async () => {
     const services = await fetchServices();
     setAllServices(services);
-  };
-  const getAlllTestimonials = async () => {
+  }, []);
+  const getAlllTestimonials = useCallback(async () => {
     const testimonial = await fetchTestimonials();
     setAllTestimonials(testimonial);
-  };
+  }, []);
 
-  const getAllProjects = async () => {
+  const getAllProjects = useCallback(async () => {
     const projects = await fetchProjects();
     setAllProjects(projects);
-  };
+  }, []);
 
   useEffect(() => {
     getAlllTestimonials();
     getAllSkills();
     getAllProjects();
     getallServices();
-  }, []);
+  }, [getAllProjects, getAllSkills, getAlllTestimonials, getallServices]);
 
   // GET Single Developer To Edit
   const params = useParams();
   useEffect(() => {
-    if (location.pathname.split("/")[2] === "view") {
-      setView(true);
-    }
-  });
-  const fetchDeveloper = async () => {
-    if (params?.id) {
-      const id = params.id;
-      const developer = await getDeveloper(id);
-      if (developer) {
+    setView(location.pathname.split("/")[2] === "view");
+  }, [location.pathname]);
+  const fetchDeveloper = useCallback(async () => {
+    if (!params?.id) return;
+    const id = params.id;
+    const developer = await getDeveloper(id);
+    if (developer) {
         const refinedSkills = developer.skills.map((skill) => ({
           ratings: skill?.ratings,
           title: skill?.title?._id,
@@ -247,26 +244,20 @@ export default function Info() {
           ...prevFormData,
           ...unchangedData,
         }));
-      } else {
-        console.error("Developer not found");
-      }
     } else {
-      console.error("No developer ID provided");
+      console.error("Developer not found");
     }
-  };
-  const fetchAndSetAvatar = async () => {
-    if (file) {
+  }, [params?.id]);
+  useEffect(() => {
+    if (!file) return;
+    // Only auto-build a URL when it's an existing stored filename/id
+    if (typeof file === "string") {
       setBufferedFile(`${baseURL}/file/${file}`);
     }
-  };
-  useEffect(() => {
-    fetchAndSetAvatar();
   }, [file]);
   useEffect(() => {
-    if (params?.id) {
-      fetchDeveloper();
-    }
-  }, [params]);
+    if (params?.id) fetchDeveloper();
+  }, [params?.id, fetchDeveloper]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -280,7 +271,6 @@ export default function Info() {
         const fileId = await createImageId(file);
         formData["avatar"] = fileId;
       }
-      formData["avatar"] = formData?.avatar;
       res = await updateDeveloper(formData, params?.id);
     }
     if (res?.status === 201 || res?.status === 200) {
@@ -320,14 +310,6 @@ export default function Info() {
   };
 
   // Function to remove a link
-  const removeLink = (index) => {
-    setFormData((prevData) => {
-      const newLinks = [...prevData.links];
-      newLinks.splice(index, 1);
-      return { ...prevData, links: newLinks };
-    });
-  };
-
   // useEffect(() => {
   //   console.log(formData, "formData");
   // }, [formData]);
@@ -344,20 +326,6 @@ export default function Info() {
     }
 
     setFormData({ ...formData, languages: updatedLanguages });
-  };
-  const handleAvailabilityChange = (event) => {
-    const { value } = event.target;
-    let updatedAvailability = formData.availability;
-
-    if (updatedAvailability.includes(value)) {
-      updatedAvailability = updatedAvailability.filter(
-        (lang) => lang !== value
-      );
-    } else {
-      updatedAvailability.push(value);
-    }
-
-    setFormData({ ...formData, availability: updatedAvailability });
   };
 
   const renderLinksFields = () => {

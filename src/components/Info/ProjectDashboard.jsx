@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
-import { UserInfoCard } from "./UserInfoCard";
-import { fetchProjects, getDevelopers, removeProject } from "../../api";
+import { fetchProjects, removeProject } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { ProjectInfoCard } from "./ProjectInfoCard";
 
@@ -10,10 +9,10 @@ export const ProjectDashboard = () => {
   const navigate = useNavigate();
   
   // Fetch
-  const fetchDev = async () => {
+  const fetchDev = useCallback(async () => {
     const users = await fetchProjects();
     setData(users);
-  };
+  }, []);
   // Edit
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
@@ -28,21 +27,9 @@ export const ProjectDashboard = () => {
     await fetchDev();
   };
 
-  const pureData = () => {
-    return data?.map(({ projectName, clientName, techStack }) => ({
-      projectName,
-      clientName,
-      techStack,
-    }));
-  };
-
   useEffect(() => {
     fetchDev();
-  }, []);
-
-  useEffect(() => {
-    pureData();
-  }, []);
+  }, [fetchDev]);
 
   return (
     <div style={{ width: "100%" }}>

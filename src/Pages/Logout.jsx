@@ -8,7 +8,7 @@ function Logout({ setLoggedIn }) {
     localStorage.clear();
     setLoggedIn(false);
     navigate("/");
-  }, []);
+  }, [navigate, setLoggedIn]);
 
   return;
 }

@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
-import { UserInfoCard } from "./UserInfoCard";
-import { fetchEducations, fetchProjects, getDevelopers } from "../../api";
+import { fetchEducations } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { EducationInfoCard } from "./EducationInfoCard";
 
 export const EducationDashboard = () => {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
-  const fetchEducation = async () => {
+
+  const fetchEducation = useCallback(async () => {
     const users = await fetchEducations();
     setData(users.data);
-  };
+  }, []);
 
   useEffect(() => {
     fetchEducation();
-  }, []);
+  }, [fetchEducation]);
 
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
@@ -37,7 +37,6 @@ export const EducationDashboard = () => {
         <h2 className="text-white">Educations</h2>
         <button onClick={() => navigate("/education")}>+Add Education</button>
       </div>
-      {console.log("data.length", data.length)}
       <Row xs={1} md={2} className="g-4">
         {data &&
           data.map(({ description, institution, major, _id }) => (

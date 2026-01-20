@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import { UserInfoCard } from "./UserInfoCard";
 import { getDevelopers, removeEducation, removeExperience } from "../../api";
@@ -7,13 +7,15 @@ import { useNavigate } from "react-router-dom";
 export const DeveloperDashboard = () => {
   const [data, setData] = useState();
   const navigate = useNavigate();
-  const fetchDev = async () => {
+
+  const fetchDev = useCallback(async () => {
     const users = await getDevelopers();
     setData(users);
-  };
+  }, []);
+
   useEffect(() => {
     fetchDev();
-  }, []);
+  }, [fetchDev]);
 
   const handleEdit = (id) => {
     navigate(`edit/${id}`);
@@ -32,16 +34,6 @@ export const DeveloperDashboard = () => {
   const onView = (id) => {
     navigate(`view/${id}`);
   };
-  const pureData = () => {
-    return data?.map(({ name, skills, devId }) => ({
-      name,
-      skills,
-      devId,
-    }));
-  };
-  useEffect(() => {
-    if (data) pureData();
-  }, [data]);
   useEffect(() => {
     console.log(data);
   }, [data]);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { loginRequest } from "../api";
 import { useNavigate } from "react-router-dom";
 
@@ -28,8 +28,8 @@ export default function Login({ loggedIn, setLoggedIn }) {
 
   const handleLogin = async () => {
     const response = await loginRequest(data);
-    if (response?.status == 200) {
-      setLoggedIn(true)
+    if (response?.status === 200) {
+      setLoggedIn(true);
       navigate("/developers");
     }
     return response;
@@ -44,7 +44,7 @@ export default function Login({ loggedIn, setLoggedIn }) {
           name="username"
           id=""
           onChange={handleChange}
-          value={data.name}
+          value={data.username}
           placeholder="UserName"
           required
         />
