@@ -2,6 +2,7 @@ import axios from "axios";
 const token = localStorage.getItem("@token");
 export const baseURL = process.env.REACT_APP_URL;
 export const loginRequest = async (data) => {
+  console.log(baseURL,"bae");
   try {
     console.log(baseURL);
     const response = await axios.post(`${baseURL}/auth/login`, data);
@@ -328,6 +329,52 @@ export const removeProject = async (id) => {
   }
 };
 
+// Video API functions
+export const fetchVideos = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/video/all/videos`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const fetchVideo = async (id) => {
+  try {
+    const response = await axios.get(`${baseURL}/video/${id}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const createVideo = async (data) => {
+  try {
+    const response = await axios.post(`${baseURL}/video`, data);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const updateVideo = async (data, id) => {
+  try {
+    const response = await axios.put(`${baseURL}/video/${id}`, data);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const removeVideo = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/video/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
 export const removeEducation = async (id) => {
   try {
     const response = await axios.delete(`${baseURL}/education/${id}`);
@@ -340,6 +387,52 @@ export const removeEducation = async (id) => {
 export const removeExperience = async (id) => {
   try {
     const response = await axios.delete(`${baseURL}/experience/${id}`);
+    return response;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+// Prompt API functions
+export const addPrompt = async (data) => {
+  try {
+    const response = await axios.post(`${baseURL}/prompt`, data);
+    return response?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const fetchPrompt = async (id) => {
+  try {
+    const response = await axios.get(`${baseURL}/prompt/${id}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const updatePrompt = async (id, data) => {
+  try {
+    const response = await axios.put(`${baseURL}/prompt/${id}`, data);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const fetchPrompts = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/prompt/all/prompts`);
+    return response?.data?.data;
+  } catch (error) {
+    console.log("Error occured", error?.message);
+  }
+};
+
+export const removePrompt = async (id) => {
+  try {
+    const response = await axios.delete(`${baseURL}/prompt/${id}`);
     return response;
   } catch (error) {
     console.log("Error occured", error?.message);

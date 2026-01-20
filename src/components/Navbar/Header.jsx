@@ -3,15 +3,13 @@ import {
   FaBars,
   FaUserAlt,
   FaDiceD20,
-  FaBox,
-  FaDashcube,
+  FaVideo,
 } from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
 import { GiNothingToSay } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
-import { MdLogout, MdSettings } from "react-icons/md";
-import { GiGraduateCap } from "react-icons/gi";
-import { IoNewspaperOutline } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
+import { BsFileText } from "react-icons/bs";
 import logo from "../../assets/img/logo.png";
 export default function Header({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +37,16 @@ export default function Header({ children }) {
       path: "/testimonialsDashboard",
       name: "Testiminials",
       icon: <GiNothingToSay />,
+    },
+    {
+      path: "/promptsDashboard",
+      name: "Prompts",
+      icon: <BsFileText />,
+    },
+    {
+      path: "/videosDashboard",
+      name: "Videos",
+      icon: <FaVideo />,
     },
     // {
     //   path: "/educationDashboard",

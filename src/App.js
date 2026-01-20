@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Navbar/Header";
 import Services from "./Pages/Services";
@@ -17,6 +17,10 @@ import { Education } from "./Pages/Education";
 import { Experience } from "./Pages/Experience";
 import { EducationDashboard } from "./components/Info/EducationDashboard";
 import { ExperienceDashboard } from "./components/Info/ExperienceDashboard";
+import { PromptsDashboard } from "./components/Prompts/PromptsDashboard";
+import Prompts from "./Pages/Prompts";
+import { VideosDashboard } from "./components/Info/VideosDashboard";
+import Videos from "./Pages/Videos";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const token = localStorage.getItem("@token");
@@ -74,6 +78,20 @@ function App() {
                 path="/experienceDashboard"
                 element={<ExperienceDashboard />}
               />
+              <Route
+                path="/promptsDashboard"
+                element={<PromptsDashboard />}
+              />
+              <Route path="/prompts" element={<Prompts />} />
+              <Route path="/prompts/view/:id" element={<Prompts />} />
+              <Route path="/prompts/edit/:id" element={<Prompts />} />
+              <Route
+                path="/videosDashboard"
+                element={<VideosDashboard />}
+              />
+              <Route path="/videos" element={<Videos />} />
+              <Route path="/videos/view/:id" element={<Videos />} />
+              <Route path="/videos/edit/:id" element={<Videos />} />
 
               <Route
                 path="/logout"
