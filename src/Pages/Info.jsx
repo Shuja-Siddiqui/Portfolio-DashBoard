@@ -45,6 +45,7 @@ export default function Info() {
     skype: "",
     about: "",
     intro: "",
+    introVideo: "",
     avatar: "",
     skills: [],
     links: [],
@@ -233,6 +234,7 @@ export default function Info() {
           skype,
           about,
           intro,
+          introVideo,
           links,
           avatar,
           languages,
@@ -246,6 +248,7 @@ export default function Info() {
           devCV,
           email,
           intro,
+          introVideo: introVideo || "",
           phoneNo,
           skype,
           about,
@@ -1000,6 +1003,20 @@ export default function Info() {
             >
               {formData?.intro}
             </textarea>
+            <label htmlFor="introVideo" className="text-white">
+              Intro YouTube Video (optional):
+            </label>
+            <input
+              type="url"
+              name="introVideo"
+              id="introVideo"
+              placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+              value={formData.introVideo || ""}
+              onChange={handleChange}
+            />
+            <p className="text-white" style={{ fontSize: "12px", marginTop: "-0.5rem", marginBottom: "1rem", opacity: 0.7 }}>
+              If set, the portfolio hero shows this video. If empty, a custom animation is shown instead.
+            </p>
             {!view && (
               <button>
                 {location.pathname.split("/")[2] === "edit"
