@@ -18,6 +18,7 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 import { availability, spokenLanguages } from "../utils";
+import { SERVICE_ICON_OPTIONS, getServiceIcon } from "../utils/serviceIcons";
 
 // const uid = localStorage.getItem("user_id");
 
@@ -28,7 +29,11 @@ export default function Info() {
   const [file, setFile] = useState("");
   const [bufferedFile, setBufferedFile] = useState("");
   const [skill, setSkill] = useState({ skillName: "" });
-  const [service, setService] = useState({ name: "", description: "" });
+  const [service, setService] = useState({
+    name: "",
+    description: "",
+    icon: "code",
+  });
   const [allSkills, setAllSkills] = useState([]);
   const [allServices, setAllServices] = useState([]);
   const [allTestimonials, setAllTestimonials] = useState([]);
@@ -138,10 +143,11 @@ export default function Info() {
       const res = await addService({
         name: service.name,
         description: service?.description,
+        icon: service?.icon || "code",
       });
       if (res?.status === 201 || res?.status === 200) {
         await getallServices();
-        setService({ name: "", description: "" });
+        setService({ name: "", description: "", icon: "code" });
       }
       handleCloseServiceModel();
     } else {
@@ -1082,20 +1088,44 @@ export default function Info() {
                   name="name"
                   id="name"
                   value={service?.name}
-                  onChange={(e) => setService({ name: e.target.value })}
+                  onChange={(e) =>
+                    setService({ ...service, name: e.target.value })
+                  }
                 />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Service Icon</Form.Label>
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  {(() => {
+                    const Icon = getServiceIcon(service.icon);
+                    return <Icon size={22} color="#069c7a" />;
+                  })()}
+                  <Form.Select
+                    value={service.icon || "code"}
+                    onChange={(e) =>
+                      setService({ ...service, icon: e.target.value })
+                    }
+                  >
+                    {SERVICE_ICON_OPTIONS.map(({ value, label }) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </div>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Service Description</Form.Label>
                 <Form.Control
-                  type="textarea"
+                  as="textarea"
+                  rows={4}
                   placeholder="Enter description"
                   name="description"
                   id="description"
-                  value={service.description} // Update this line
+                  value={service.description}
                   onChange={(e) =>
                     setService({ ...service, description: e.target.value })
-                  } // Update this line
+                  }
                 />
               </Form.Group>
 
