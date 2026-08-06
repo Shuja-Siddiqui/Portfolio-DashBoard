@@ -39,7 +39,6 @@ export default function Info() {
     devId: "",
     country: "",
     city: "",
-    age: "",
     devCV: "",
     email: "",
     phoneNo: "",
@@ -48,13 +47,32 @@ export default function Info() {
     intro: "",
     avatar: "",
     skills: [],
-    links: [{ title: "", url: "" }],
+    links: [],
     projects: [],
     testimonials: [],
     services: [],
     languages: [],
     availability: "",
   });
+  const [linkDraft, setLinkDraft] = useState({ title: "", url: "" });
+  const platformPresets = [
+    "GitHub",
+    "LinkedIn",
+    "StackOverflow",
+    "Upwork",
+    "Kaggle",
+    "Fiverr",
+    "Behance",
+    "Dribbble",
+    "Twitter",
+    "X",
+    "Instagram",
+    "YouTube",
+    "Medium",
+    "Dev.to",
+    "Portfolio",
+    "Other",
+  ];
   const navigate = useNavigate();
   const location = useLocation();
   // Delete links
@@ -209,7 +227,6 @@ export default function Info() {
           devId,
           country,
           city,
-          age,
           devCV,
           email,
           phoneNo,
@@ -226,14 +243,13 @@ export default function Info() {
           devId,
           country,
           city,
-          age,
           devCV,
           email,
           intro,
           phoneNo,
           skype,
           about,
-          links,
+          links: links?.length ? links : [],
           avatar,
           languages,
           availability,
@@ -261,17 +277,21 @@ export default function Info() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      ...formData,
+      links: (formData.links || []).filter((link) => link?.title && link?.url),
+    };
     let res;
     if (!params?.id) {
       const fileId = await createImageId(file);
-      formData["avatar"] = fileId;
-      res = await createDeveloper(formData);
+      payload.avatar = fileId;
+      res = await createDeveloper(payload);
     } else {
       if (file !== formData?.avatar) {
         const fileId = await createImageId(file);
-        formData["avatar"] = fileId;
+        payload.avatar = fileId;
       }
-      res = await updateDeveloper(formData, params?.id);
+      res = await updateDeveloper(payload, params?.id);
     }
     if (res?.status === 201 || res?.status === 200) {
       alert("Updated successfully!");
@@ -287,32 +307,32 @@ export default function Info() {
   // Modals
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleCloseLinkModel = () => setShowLink(false);
+  const handleCloseLinkModel = () => {
+    setShowLink(false);
+    setLinkDraft({ title: "", url: "" });
+  };
   const handleShowLinkModel = () => setShowLink(true);
   const handleCloseServiceModel = () => setShowSerivce(false);
   const handleShowServiceModel = () => setShowSerivce(true);
 
-  // Function to update the links state
-  const updateLinks = (index, field, value) => {
-    setFormData((prevData) => {
-      const newLinks = [...prevData.links];
-      newLinks[index] = { ...newLinks[index], [field]: value };
-      return { ...prevData, links: newLinks };
-    });
-  };
-
-  // Function to add a new empty link
-  const addNewLink = () => {
+  const saveLinkDraft = () => {
+    const title = linkDraft.title.trim();
+    const url = linkDraft.url.trim();
+    if (!title || !url) {
+      alert("Platform name and URL are required.");
+      return;
+    }
     setFormData((prevData) => ({
       ...prevData,
-      links: [...prevData.links, { title: "", url: "" }],
+      links: [...(prevData.links || []), { title, url }],
     }));
+    handleCloseLinkModel();
   };
 
-  // Function to remove a link
-  // useEffect(() => {
-  //   console.log(formData, "formData");
-  // }, [formData]);
+  const addNewLink = () => {
+    setLinkDraft({ title: "", url: "" });
+    handleShowLinkModel();
+  };
 
   // LANGUAGES
   const handleLanguageChange = (event) => {
@@ -329,37 +349,59 @@ export default function Info() {
   };
 
   const renderLinksFields = () => {
-    const lastIndex = formData?.links?.length - 1;
-    const lastLink = formData?.links?.[lastIndex];
-
-    if (!lastLink) return null; // If there's no last link, return null
+    const selectedPreset =
+      platformPresets.includes(linkDraft.title) || linkDraft.title === ""
+        ? linkDraft.title
+        : "Other";
 
     return (
       <div>
-        <Form.Group>
-          <Form.Label>Platform Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter name"
-            value={lastLink.title}
-            onChange={(e) => updateLinks(lastIndex, "title", e.target.value)}
-          />
+        <Form.Group className="mb-3">
+          <Form.Label>Platform</Form.Label>
+          <Form.Select
+            value={selectedPreset}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLinkDraft((prev) => ({
+                ...prev,
+                title: value === "Other" ? "" : value,
+              }));
+            }}
+          >
+            <option value="">Select platform</option>
+            {platformPresets.map((platform) => (
+              <option key={platform} value={platform}>
+                {platform}
+              </option>
+            ))}
+          </Form.Select>
         </Form.Group>
-        <Form.Group>
+        {(selectedPreset === "Other" || selectedPreset === "") && (
+          <Form.Group className="mb-3">
+            <Form.Label>Custom Platform Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="e.g. Kaggle, Upwork, Custom"
+              value={linkDraft.title}
+              onChange={(e) =>
+                setLinkDraft((prev) => ({ ...prev, title: e.target.value }))
+              }
+            />
+          </Form.Group>
+        )}
+        <Form.Group className="mb-3">
           <Form.Label>URL</Form.Label>
           <Form.Control
-            type="text"
-            placeholder="Enter URL"
-            value={lastLink.url}
-            onChange={(e) => updateLinks(lastIndex, "url", e.target.value)}
+            type="url"
+            placeholder="https://..."
+            value={linkDraft.url}
+            onChange={(e) =>
+              setLinkDraft((prev) => ({ ...prev, url: e.target.value }))
+            }
           />
         </Form.Group>
-        <Button
-          variant="primary"
-          onClick={handleCloseLinkModel}
-          className="p-0"
-        >
-          Add
+        <Button variant="primary" onClick={saveLinkDraft}>
+          Add Platform
         </Button>
       </div>
     );
@@ -484,18 +526,6 @@ export default function Info() {
               onChange={handleChange}
               required
             />
-            <label htmlFor="age" className="text-white">
-              Age:
-            </label>
-            <input
-              type="number"
-              name="age"
-              id="age"
-              placeholder="e.g 20"
-              value={formData.age}
-              onChange={handleChange}
-              required
-            />
              <label htmlFor="devCV" className="text-white">
               CV:
             </label>
@@ -614,7 +644,7 @@ export default function Info() {
                         if (e.target.checked) {
                           updatedSkills.push({
                             title: e.target.value,
-                            ratings: 0,
+                            ratings: 1,
                           });
                         } else {
                           const indexToRemove = updatedSkills.findIndex(
@@ -626,44 +656,9 @@ export default function Info() {
                         setFormData({ ...formData, skills: updatedSkills });
                       }}
                     />
-                    {/* Label for skill name */}
                     <label className="text-white" htmlFor={skill._id}>
                       {skill?.skillName}
                     </label>
-                    {/* Slider for skill ratings */}
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={
-                        formData?.skills?.find(
-                          (formDataSkill) => formDataSkill?.title === skill?._id
-                        )?.ratings || 0
-                      }
-                      onChange={(e) => {
-                        const updatedSkills = formData?.skills?.map(
-                          (formDataSkill) => {
-                            if (formDataSkill.title === skill?._id) {
-                              return {
-                                ...formDataSkill,
-                                ratings: parseInt(e.target.value),
-                              };
-                            }
-                            return formDataSkill;
-                          }
-                        );
-                        setFormData({ ...formData, skills: updatedSkills });
-                      }}
-                      style={{ width: "100%", padding: "0" }} // Adjust width as needed
-                    />
-                    {/* Display the current rating value */}
-                    <span style={{ marginLeft: "5px", color: "white" }}>
-                      {formData?.skills?.find(
-                        (formDataSkill) => formDataSkill?.title === skill?._id
-                      )?.ratings || 0}
-                    </span>
-                    {console.log(index, "index")}
-                    {/* Delete button for removing the skill */}
                     <button
                       onClick={(e) => handleDeleteSkill(skill?._id, e, index)}
                       style={{ padding: "0", margin: "0" }}
@@ -897,28 +892,28 @@ export default function Info() {
               </div>
             </div>
 
-            {/* Social Links */}
+            {/* Social / Platform Links */}
             <div style={{ width: "100%", display: "flex" }}>
               <Button
                 variant="primary"
-                onClick={() => {
-                  handleShowLinkModel();
-                  addNewLink();
-                }}
+                onClick={addNewLink}
                 style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
               >
-                Add social links
+                Add platform link (GitHub, Upwork, Kaggle, etc.)
               </Button>
             </div>
             {formData?.links?.length > 0 && (
-              <div className="w-[100%] mb-3 border rounded border-secondary gap-2 p-2 m-0 items-center  d-flex  justify-content-center ">
+              <div className="w-[100%] mb-3 border rounded border-secondary gap-2 p-2 m-0 items-center d-flex flex-wrap justify-content-start">
                 {formData?.links?.map((link, index) => (
                   <h5 key={index} className="m-0 p-0 position-relative">
                     <Badge bg="secondary">
-                      <p className="text-white p-2 m-0">{link.title}</p>
+                      <p className="text-white p-2 m-0">
+                        {link.title}
+                        {link.url ? ` — ${link.url}` : ""}
+                      </p>
                       <span
                         className="position-absolute top-0 end-0 cursor-pointer"
-                        onClick={() => handleDelete(index)} // handleDelete function not defined, you need to define it
+                        onClick={() => handleDelete(index)}
                       >
                         <MdOutlineCancel />
                       </span>
@@ -1105,21 +1100,15 @@ export default function Info() {
           </Modal.Body>
         </Modal>
 
-        {/* Add Social Link Model */}
         <Modal show={showLink} onHide={handleCloseLinkModel}>
           <Modal.Header closeButton>
-            <Modal.Title>Add social link</Modal.Title>
+            <Modal.Title>Add platform link</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form
               style={{ background: "white", padding: "2rem", margin: "1rem" }}
             >
-              <Form.Group>
-                {renderLinksFields()}
-                {/* <Button variant="primary" onClick={addNewLink} className="p-0">
-                  Add Link
-                </Button> */}
-              </Form.Group>
+              <Form.Group>{renderLinksFields()}</Form.Group>
             </Form>
           </Modal.Body>
         </Modal>
