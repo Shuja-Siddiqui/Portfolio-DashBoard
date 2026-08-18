@@ -196,6 +196,8 @@ export default function Info() {
           ratings: skill?.ratings,
           title: skill?.title?._id,
           skillName: skill?.title?.skillName,
+          featured: Boolean(skill?.featured),
+          typedOrder: skill?.typedOrder || "",
         }));
         setFile(developer?.avatar);
         // Update formData with refined skills only
@@ -619,63 +621,149 @@ export default function Info() {
                 style={{
                   margin: "0",
                   padding: "0",
-                  marginBottom: "1rem",
+                  marginBottom: "0.5rem",
                   color: "white",
                 }}
               >
                 Select Developer skill
               </h5>
+              <p
+                style={{
+                  color: "#b0b0b0",
+                  fontSize: "0.85rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                For skills on this portfolio, set a profile order (1–5) to show
+                under the avatar typed line. Only those nominated skills appear
+                there (max 5).
+              </p>
               {(allSkills &&
                 allSkills.length > 0 &&
-                allSkills?.map((skill, index) => (
-                  <div
-                    key={skill._id}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      gap: "10px",
-                      marginBottom: "1rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    {/* Checkbox for skill selection */}
-                    <input
-                      type="checkbox"
-                      id={skill._id}
-                      style={{ width: "1rem", padding: "0", margin: "0" }}
-                      name="skills"
-                      value={skill?._id}
-                      checked={formData?.skills?.some(
-                        (formDataSkill) => formDataSkill?.title === skill?._id
-                      )}
-                      onChange={(e) => {
-                        const updatedSkills = [...formData.skills];
-                        if (e.target.checked) {
-                          updatedSkills.push({
-                            title: e.target.value,
-                            ratings: 1,
-                          });
-                        } else {
-                          const indexToRemove = updatedSkills.findIndex(
-                            (formDataSkill) =>
-                              formDataSkill?.title === e.target.value
-                          );
-                          updatedSkills.splice(indexToRemove, 1);
-                        }
-                        setFormData({ ...formData, skills: updatedSkills });
+                allSkills?.map((skill, index) => {
+                  const selected = formData?.skills?.find(
+                    (formDataSkill) => formDataSkill?.title === skill?._id
+                  );
+                  const nominatedCount = (formData?.skills || []).filter(
+                    (s) => s?.typedOrder >= 1 && s?.typedOrder <= 5
+                  ).length;
+
+                  return (
+                    <div
+                      key={skill._id}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        gap: "10px",
+                        marginBottom: "1rem",
+                        alignItems: "center",
+                        flexWrap: "wrap",
                       }}
-                    />
-                    <label className="text-white" htmlFor={skill._id}>
-                      {skill?.skillName}
-                    </label>
-                    <button
-                      onClick={(e) => handleDeleteSkill(skill?._id, e, index)}
-                      style={{ padding: "0", margin: "0" }}
                     >
-                      Delete
-                    </button>
-                  </div>
-                ))) ||
+                      <input
+                        type="checkbox"
+                        id={skill._id}
+                        style={{ width: "1rem", padding: "0", margin: "0" }}
+                        name="skills"
+                        value={skill?._id}
+                        checked={Boolean(selected)}
+                        onChange={(e) => {
+                          const updatedSkills = [...formData.skills];
+                          if (e.target.checked) {
+                            updatedSkills.push({
+                              title: e.target.value,
+                              ratings: 1,
+                              featured: false,
+                              typedOrder: "",
+                            });
+                          } else {
+                            const indexToRemove = updatedSkills.findIndex(
+                              (formDataSkill) =>
+                                formDataSkill?.title === e.target.value
+                            );
+                            updatedSkills.splice(indexToRemove, 1);
+                          }
+                          setFormData({ ...formData, skills: updatedSkills });
+                        }}
+                      />
+                      <label className="text-white" htmlFor={skill._id}>
+                        {skill?.skillName}
+                      </label>
+                      {selected ? (
+                        <select
+                          aria-label={`Profile typed order for ${skill?.skillName}`}
+                          value={selected?.typedOrder || ""}
+                          style={{
+                            marginLeft: "auto",
+                            minWidth: "9rem",
+                            padding: "0.25rem 0.4rem",
+                            borderRadius: "6px",
+                          }}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const order = value === "" ? "" : Number(value);
+                            const updatedSkills = formData.skills.map((s) => {
+                              if (s.title !== skill._id) {
+                                // Free the order slot if another skill held it
+                                if (
+                                  order !== "" &&
+                                  Number(s.typedOrder) === order
+                                ) {
+                                  return {
+                                    ...s,
+                                    typedOrder: "",
+                                    featured: false,
+                                  };
+                                }
+                                return s;
+                              }
+                              if (order === "") {
+                                return {
+                                  ...s,
+                                  typedOrder: "",
+                                  featured: false,
+                                };
+                              }
+                              if (
+                                nominatedCount >= 5 &&
+                                !(
+                                  selected?.typedOrder >= 1 &&
+                                  selected?.typedOrder <= 5
+                                )
+                              ) {
+                                return s;
+                              }
+                              return {
+                                ...s,
+                                typedOrder: order,
+                                featured: true,
+                              };
+                            });
+                            setFormData({
+                              ...formData,
+                              skills: updatedSkills,
+                            });
+                          }}
+                        >
+                          <option value="">Not on profile</option>
+                          <option value="1">Profile #1</option>
+                          <option value="2">Profile #2</option>
+                          <option value="3">Profile #3</option>
+                          <option value="4">Profile #4</option>
+                          <option value="5">Profile #5</option>
+                        </select>
+                      ) : null}
+                      <button
+                        onClick={(e) =>
+                          handleDeleteSkill(skill?._id, e, index)
+                        }
+                        style={{ padding: "0", margin: "0" }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  );
+                })) ||
                 "NoSkill"}
             </div>
             <div style={{ width: "100%", display: "flex" }}>
