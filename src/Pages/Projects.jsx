@@ -290,22 +290,33 @@ export default function Projects() {
     try {
       setIsLoading(true);
 
-      if (!params?.id && !(heroFile instanceof File) && !existingHeroId) {
-        toast("Hero image is required for a new project.");
-        setIsLoading(false);
-        return;
-      }
-
       if (!formData.technologies?.length) {
         toast("Select at least one technology.");
         setIsLoading(false);
         return;
       }
 
+      const hasYoutube =
+        isShowcase && String(formData.youtubeUrl || "").trim().length > 0;
+      const hasHeroImage =
+        heroFile instanceof File || Boolean(existingHeroId);
+      const hasGalleryImages =
+        existingGalleryIds.length + newGalleryFiles.length > 0;
+
+      if (!hasYoutube && !hasHeroImage && !hasGalleryImages) {
+        toast(
+          isShowcase
+            ? "Add a YouTube URL or at least one image for the hero."
+            : "Add at least one image for the hero."
+        );
+        setIsLoading(false);
+        return;
+      }
+
       const payload = await buildPayload();
 
-      if (!payload.hero) {
-        toast("Hero image is required.");
+      if (!hasYoutube && !payload.hero && !(payload.gallery || []).length) {
+        toast("Hero media is missing.");
         setIsLoading(false);
         return;
       }
@@ -375,7 +386,7 @@ export default function Projects() {
                 }
               >
                 <strong>Classic</strong>
-                <span>Hero, description, gallery grid, tech logos</span>
+                <span>Images in hero (carousel if 2+), description, tech</span>
               </button>
               <button
                 type="button"
@@ -387,7 +398,7 @@ export default function Projects() {
                 }
               >
                 <strong>Showcase</strong>
-                <span>Carousel, problem/solution, FAQs, YouTube</span>
+                <span>YouTube hero or image carousel + problem/solution/FAQs</span>
               </button>
             </div>
           </section>
@@ -465,44 +476,120 @@ export default function Projects() {
             </div>
           </section>
 
-          {/* Media */}
+          {/* Media — classic vs showcase */}
           <section className="project-card">
-            <h2>3. Media</h2>
-            <label className="file-label">
-              Hero image {!params?.id ? "(required)" : "(optional to replace)"}
-              <input type="file" accept="image/*" onChange={handleHero} />
-            </label>
-            {heroPreview ? (
-              <div
-                className="hero-preview"
-                style={{ backgroundImage: `url(${heroPreview})` }}
-              />
+            <h2>3. Hero media</h2>
+            {isShowcase ? (
+              <>
+                <p className="hint">
+                  Prefer a YouTube URL for the hero. If you add a video, hero
+                  images are optional. If there is no video and you add 2+
+                  images, the portfolio shows an image carousel in the hero.
+                </p>
+                <label>
+                  YouTube URL (hero video)
+                  <input
+                    type="url"
+                    name="youtubeUrl"
+                    value={formData.youtubeUrl}
+                    onChange={handleChange}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                  />
+                </label>
+                {!String(formData.youtubeUrl || "").trim() && (
+                  <>
+                    <label className="file-label">
+                      Main image (optional if you only use gallery)
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleHero}
+                      />
+                    </label>
+                    {heroPreview ? (
+                      <div
+                        className="hero-preview"
+                        style={{ backgroundImage: `url(${heroPreview})` }}
+                      />
+                    ) : null}
+                    <label className="file-label" style={{ marginTop: "1rem" }}>
+                      More images (2+ = carousel in hero)
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleGalleryAdd}
+                      />
+                    </label>
+                    <div className="gallery-row">
+                      {galleryPreviews.map((src, index) => (
+                        <div
+                          key={`${src}-${index}`}
+                          className="gallery-thumb"
+                          style={{ backgroundImage: `url(${src})` }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryAt(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {String(formData.youtubeUrl || "").trim() && (
+                  <p className="hint">
+                    Video set — images are not required for the hero.
+                  </p>
+                )}
+              </>
             ) : (
-              <p className="hint">No hero selected yet.</p>
-            )}
-
-            <label className="file-label" style={{ marginTop: "1rem" }}>
-              Gallery images (optional)
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleGalleryAdd}
-              />
-            </label>
-            <div className="gallery-row">
-              {galleryPreviews.map((src, index) => (
-                <div
-                  key={`${src}-${index}`}
-                  className="gallery-thumb"
-                  style={{ backgroundImage: `url(${src})` }}
-                >
-                  <button type="button" onClick={() => removeGalleryAt(index)}>
-                    ×
-                  </button>
+              <>
+                <p className="hint">
+                  Add one image for a single hero, or 2+ images for a carousel
+                  on the project detail page.
+                </p>
+                <label className="file-label">
+                  Main / hero image
+                  <input type="file" accept="image/*" onChange={handleHero} />
+                </label>
+                {heroPreview ? (
+                  <div
+                    className="hero-preview"
+                    style={{ backgroundImage: `url(${heroPreview})` }}
+                  />
+                ) : (
+                  <p className="hint">No main image yet.</p>
+                )}
+                <label className="file-label" style={{ marginTop: "1rem" }}>
+                  Extra images (optional — enables hero carousel)
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryAdd}
+                  />
+                </label>
+                <div className="gallery-row">
+                  {galleryPreviews.map((src, index) => (
+                    <div
+                      key={`${src}-${index}`}
+                      className="gallery-thumb"
+                      style={{ backgroundImage: `url(${src})` }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => removeGalleryAt(index)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </section>
 
           {/* Technologies — compact */}
@@ -581,19 +668,8 @@ export default function Projects() {
             <section className="project-card showcase-card">
               <h2>5. Showcase content</h2>
               <p className="hint">
-                Only used when layout is Showcase. Classic projects ignore these.
+                These fields only appear for Showcase layout.
               </p>
-
-              <label>
-                YouTube URL (optional)
-                <input
-                  type="url"
-                  name="youtubeUrl"
-                  value={formData.youtubeUrl}
-                  onChange={handleChange}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                />
-              </label>
 
               <div className="block-editor">
                 <h3>Problem</h3>
