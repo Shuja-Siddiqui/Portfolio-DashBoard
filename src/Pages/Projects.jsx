@@ -448,6 +448,10 @@ export default function Projects() {
               </label>
               <label className="full">
                 Description
+                <span className="hint" style={{ display: "block", margin: "0.35rem 0" }}>
+                  Wrap key words in **asterisks** or [[brackets]] to highlight
+                  them in theme color on the project page.
+                </span>
                 <textarea
                   name="description"
                   rows="5"
@@ -649,6 +653,10 @@ export default function Projects() {
 
               <div className="block-editor">
                 <h3>Problem</h3>
+                <p className="hint">
+                  Tip: wrap key words in **double asterisks** or [[brackets]] to
+                  highlight them in theme color on the portfolio.
+                </p>
                 <select
                   value={formData.problem?.format || "paragraph"}
                   onChange={(e) =>
@@ -710,6 +718,9 @@ export default function Projects() {
 
               <div className="block-editor">
                 <h3>Solution</h3>
+                <p className="hint">
+                  Same highlight tip: **text** or [[text]] for theme color.
+                </p>
                 <select
                   value={formData.solution?.format || "paragraph"}
                   onChange={(e) =>
@@ -771,6 +782,9 @@ export default function Projects() {
 
               <div className="block-editor">
                 <h3>FAQs</h3>
+                <p className="hint">
+                  In answers, use **text** or [[text]] for theme highlights.
+                </p>
                 {(formData.faqs || []).map((faq, idx) => (
                   <div className="faq-editor" key={`faq-${idx}`}>
                     <input
