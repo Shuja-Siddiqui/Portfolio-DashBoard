@@ -35,6 +35,11 @@ export default function Projects() {
     projectLink: "",
     technologies: [],
     gallery: [],
+    detailLayout: "classic",
+    youtubeUrl: "",
+    problem: { format: "paragraph", text: "", items: [] },
+    solution: { format: "paragraph", text: "", items: [] },
+    faqs: [],
   });
   const [images, setImages] = useState([]);
   const [preveiousImages, setPreveiousImages] = useState([]);
@@ -86,7 +91,15 @@ export default function Projects() {
         // Also set the image URLs to display them in the UI
         setImagesToShow(res.gallery.map((img) => `${baseURL}/file/${img}`));
       }
-      setFormData(res);
+      setFormData({
+        ...res,
+        detailLayout: res?.detailLayout === "showcase" ? "showcase" : "classic",
+        youtubeUrl: res?.youtubeUrl || "",
+        problem: res?.problem || { format: "paragraph", text: "", items: [] },
+        solution: res?.solution || { format: "paragraph", text: "", items: [] },
+        faqs: Array.isArray(res?.faqs) ? res.faqs : [],
+        projectLink: res?.projectLink || "",
+      });
     })();
   }, [params?.id]);
   useEffect(() => {
@@ -458,21 +471,284 @@ export default function Projects() {
             placeholder="Project description"
             required
           />
-          {/* <ProjectDescription
-            theme="snow"
-            placeholder="Project Description"
-            style={{ color: "white" }}
-            setFormData={setFormData}
-            formData={formData}
-          /> */}
+
+          <label htmlFor="detailLayout" className="text-white">
+            Detail page layout:
+          </label>
+          <select
+            name="detailLayout"
+            id="detailLayout"
+            value={formData?.detailLayout || "classic"}
+            onChange={handleChange}
+            style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+          >
+            <option value="classic">Classic (current layout)</option>
+            <option value="showcase">
+              Showcase (carousel, problem/solution, FAQs)
+            </option>
+          </select>
+
+          <label htmlFor="youtubeUrl" className="text-white">
+            YouTube video URL (optional, showcase carousel):
+          </label>
+          <input
+            type="url"
+            name="youtubeUrl"
+            id="youtubeUrl"
+            value={formData?.youtubeUrl || ""}
+            onChange={handleChange}
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+
+          {/* Problem */}
+          <h5 style={{ color: "white", marginTop: "1rem" }}>Problem</h5>
+          <label className="text-white">Problem format:</label>
+          <select
+            value={formData?.problem?.format || "paragraph"}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                problem: {
+                  ...(formData.problem || {}),
+                  format: e.target.value,
+                },
+              })
+            }
+            style={{ width: "100%", marginBottom: "0.75rem", padding: "0.5rem" }}
+          >
+            <option value="paragraph">Paragraph</option>
+            <option value="bullets">Bullet points</option>
+          </select>
+          {(formData?.problem?.format || "paragraph") === "paragraph" ? (
+            <textarea
+              rows="4"
+              value={formData?.problem?.text || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  problem: {
+                    ...(formData.problem || { format: "paragraph", items: [] }),
+                    text: e.target.value,
+                  },
+                })
+              }
+              placeholder="Describe the problem in a paragraph"
+            />
+          ) : (
+            <div style={{ marginBottom: "1rem" }}>
+              {(formData?.problem?.items || []).map((item, idx) => (
+                <div
+                  key={`problem-${idx}`}
+                  style={{ display: "flex", gap: "8px", marginBottom: "8px" }}
+                >
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => {
+                      const items = [...(formData.problem?.items || [])];
+                      items[idx] = e.target.value;
+                      setFormData({
+                        ...formData,
+                        problem: { ...formData.problem, items },
+                      });
+                    }}
+                    placeholder={`Bullet ${idx + 1}`}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const items = (formData.problem?.items || []).filter(
+                        (_, i) => i !== idx
+                      );
+                      setFormData({
+                        ...formData,
+                        problem: { ...formData.problem, items },
+                      });
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    problem: {
+                      ...formData.problem,
+                      format: "bullets",
+                      items: [...(formData.problem?.items || []), ""],
+                    },
+                  })
+                }
+              >
+                Add problem bullet
+              </button>
+            </div>
+          )}
+
+          {/* Solution */}
+          <h5 style={{ color: "white", marginTop: "1rem" }}>Solution</h5>
+          <label className="text-white">Solution format:</label>
+          <select
+            value={formData?.solution?.format || "paragraph"}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                solution: {
+                  ...(formData.solution || {}),
+                  format: e.target.value,
+                },
+              })
+            }
+            style={{ width: "100%", marginBottom: "0.75rem", padding: "0.5rem" }}
+          >
+            <option value="paragraph">Paragraph</option>
+            <option value="bullets">Bullet points</option>
+          </select>
+          {(formData?.solution?.format || "paragraph") === "paragraph" ? (
+            <textarea
+              rows="4"
+              value={formData?.solution?.text || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  solution: {
+                    ...(formData.solution || {
+                      format: "paragraph",
+                      items: [],
+                    }),
+                    text: e.target.value,
+                  },
+                })
+              }
+              placeholder="Describe the solution in a paragraph"
+            />
+          ) : (
+            <div style={{ marginBottom: "1rem" }}>
+              {(formData?.solution?.items || []).map((item, idx) => (
+                <div
+                  key={`solution-${idx}`}
+                  style={{ display: "flex", gap: "8px", marginBottom: "8px" }}
+                >
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => {
+                      const items = [...(formData.solution?.items || [])];
+                      items[idx] = e.target.value;
+                      setFormData({
+                        ...formData,
+                        solution: { ...formData.solution, items },
+                      });
+                    }}
+                    placeholder={`Bullet ${idx + 1}`}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const items = (formData.solution?.items || []).filter(
+                        (_, i) => i !== idx
+                      );
+                      setFormData({
+                        ...formData,
+                        solution: { ...formData.solution, items },
+                      });
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    solution: {
+                      ...formData.solution,
+                      format: "bullets",
+                      items: [...(formData.solution?.items || []), ""],
+                    },
+                  })
+                }
+              >
+                Add solution bullet
+              </button>
+            </div>
+          )}
+
+          {/* FAQs */}
+          <h5 style={{ color: "white", marginTop: "1rem" }}>FAQs</h5>
+          {(formData?.faqs || []).map((faq, idx) => (
+            <div
+              key={`faq-${idx}`}
+              style={{
+                border: "1px solid #444",
+                padding: "0.75rem",
+                marginBottom: "0.75rem",
+                borderRadius: "8px",
+              }}
+            >
+              <input
+                type="text"
+                value={faq.question || ""}
+                onChange={(e) => {
+                  const faqs = [...(formData.faqs || [])];
+                  faqs[idx] = { ...faqs[idx], question: e.target.value };
+                  setFormData({ ...formData, faqs });
+                }}
+                placeholder="Question"
+                style={{ width: "100%", marginBottom: "0.5rem" }}
+              />
+              <textarea
+                rows="3"
+                value={faq.answer || ""}
+                onChange={(e) => {
+                  const faqs = [...(formData.faqs || [])];
+                  faqs[idx] = { ...faqs[idx], answer: e.target.value };
+                  setFormData({ ...formData, faqs });
+                }}
+                placeholder="Answer"
+                style={{ width: "100%", marginBottom: "0.5rem" }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const faqs = (formData.faqs || []).filter((_, i) => i !== idx);
+                  setFormData({ ...formData, faqs });
+                }}
+              >
+                Remove FAQ
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            style={{ marginBottom: "1rem" }}
+            onClick={() =>
+              setFormData({
+                ...formData,
+                faqs: [...(formData.faqs || []), { question: "", answer: "" }],
+              })
+            }
+          >
+            Add FAQ
+          </button>
+
+          <label htmlFor="projectLink" className="text-white">
+            Project link (optional — Visit button only shows if set):
+          </label>
           <input
             type="url"
             name="projectLink"
-            value={formData?.projectLink}
+            value={formData?.projectLink || ""}
             onChange={handleChange}
-            id=""
-            placeholder="https//:"
-            required
+            id="projectLink"
+            placeholder="https://"
           />
           {location.pathname.split("/")[2] === "view" ? (
             <></>
