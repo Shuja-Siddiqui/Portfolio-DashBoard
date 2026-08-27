@@ -1,0 +1,265 @@
+.project-admin {
+  max-width: 920px;
+  margin: 0 auto;
+  color: #f2f2f2;
+}
+
+.project-admin-header {
+  margin-bottom: 1.25rem;
+}
+
+.project-admin-header h1 {
+  color: #fff;
+  font-size: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.project-admin-header p {
+  color: #b0b0b0;
+  margin: 0;
+}
+
+.project-card {
+  background: #23232e;
+  border: 1px solid #3a3a48;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.project-card h2 {
+  color: #01be96;
+  font-size: 1.05rem;
+  margin: 0 0 0.85rem;
+}
+
+.project-card h3 {
+  color: #fff;
+  font-size: 0.95rem;
+  margin: 0.85rem 0 0.5rem;
+}
+
+.project-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #ddd;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-card input,
+.project-card textarea,
+.project-card select {
+  width: 100%;
+  border: 1px solid #444;
+  background: #1a1a22;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+}
+
+.project-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.project-grid-2 .full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+  .project-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.layout-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .layout-picker {
+    grid-template-columns: 1fr;
+  }
+}
+
+.layout-option {
+  text-align: left;
+  border: 1px solid #444;
+  background: #1a1a22;
+  color: #ddd;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.layout-option strong {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.layout-option span {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+}
+
+.layout-option.is-active {
+  border-color: #01be96;
+  background: rgba(1, 190, 150, 0.12);
+  box-shadow: 0 0 0 1px #01be96 inset;
+}
+
+.hint {
+  color: #9a9a9a;
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0.75rem;
+}
+
+.file-label {
+  margin-bottom: 0.5rem;
+}
+
+.hero-preview {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background-size: cover;
+  background-position: center;
+}
+
+.gallery-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.gallery-thumb {
+  width: 88px;
+  height: 88px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.gallery-thumb button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.selected-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.skill-search {
+  margin-bottom: 0.65rem !important;
+}
+
+.skill-pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 220px;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.skill-pick-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-chip {
+  border: 1px solid #555;
+  background: #1a1a22;
+  color: #ddd;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.skill-chip.is-on {
+  border-color: #01be96;
+  color: #01be96;
+  background: rgba(1, 190, 150, 0.12);
+}
+
+.skill-delete {
+  border: 0;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.showcase-card {
+  border-color: #01be96;
+}
+
+.block-editor {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #333;
+}
+
+.bullet-row,
+.faq-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+}
+
+.bullet-row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.bullet-row input {
+  flex: 1;
+}
+
+.project-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0 2rem;
+}
+
+.save-btn {
+  background: #01be96;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

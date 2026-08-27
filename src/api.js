@@ -118,6 +118,7 @@ export const createProject = async (data) => {
     return response;
   } catch (error) {
     console.log("Error occured", error?.message);
+    throw error;
   }
 };
 export const updateProject = async (data, id) => {
@@ -126,6 +127,7 @@ export const updateProject = async (data, id) => {
     return response;
   } catch (error) {
     console.log("Error occured", error?.message);
+    throw error;
   }
 };
 export const addTestimonials = async (data) => {
