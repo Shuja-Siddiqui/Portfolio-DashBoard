@@ -1,266 +1,108 @@
-import React, { useState } from "react";
-import { Card, Container, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import "./index.css";
+import React from "react";
+import "./AdminEntity.css";
 
 export const UserInfoCard = ({
   name,
-  skills,
+  skills = [],
   devId,
   onEdit,
   onView,
-  onRemove,
-  onExpRemove,
-  education,
-  experience,
+  education = [],
+  experience = [],
+  projects = [],
+  avatar,
+  baseURL,
 }) => {
-  const [deleteClicked, setDeleteClicked] = useState(null);
-  const navigate = useNavigate();
-  return (
-    <Container fluid>
-      <Row className="d-flex justify-content-center">
-        <Col xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Card
-            className="bg-dark rounded border-secondary text-white"
-            style={{ minHeight: "450px" }}
-          >
-            <Card.Body
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-              }}
-            >
-              <Card.Title className="text-white">
-                <h5
-                  style={{ padding: "0", marginBottom: "10px", color: "#333" }}
-                >
-                  Developer Information
-                </h5>
-              </Card.Title>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  marginBottom: "10px",
-                }}
-              >
-                <div style={{ width: "48%" }}>
-                  <strong style={{ color: "grey" }}>Name: </strong>
-                  <span style={{ fontSize: "14px" }}>{name}</span>
-                </div>
-                <div style={{ width: "48%" }}>
-                  <strong style={{ color: "grey" }}>Dev Id: </strong>
-                  <span style={{ fontSize: "14px" }}>{devId}</span>
-                </div>
-              </div>
+  const skillChips = (skills || [])
+    .map((s) => ({
+      name: s?.title?.skillName || s?.skillName || "",
+      featured: Boolean(s?.featured || (s?.typedOrder >= 1 && s?.typedOrder <= 5)),
+      order: s?.typedOrder || null,
+    }))
+    .filter((s) => s.name)
+    .sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return (a.order || 99) - (b.order || 99);
+    })
+    .slice(0, 6);
 
-              <div
-                style={{
-                  width: "100%",
-                  flexDirection: "column",
-                  marginBottom: "10px",
-                }}
-              >
-                <strong style={{ color: "grey" }}>Major skills: </strong>
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    gap: "10px",
-                    flexWrap: "wrap",
-                    // justifyContent: ''
-                  }}
-                >
-                  {skills?.map(({ title, ratings, index, ...skills }) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        // gap: "10px",
-                      }}
-                    >
-                      <span className="text-white" key={index}>
-                        {title?.skillName}_
-                        <span style={{ color: "grey" }}>{ratings}%,</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  marginBottom: "10px",
-                }}
-              >
-                <h5
-                  style={{ padding: "0", marginBottom: "10px", color: "#333" }}
-                >
-                  Education
-                </h5>
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    gap: "10px",
-                    flexDirection: "column",
-                  }}
-                >
-                  {education?.map(({ major, timeSpan, index, _id }) => (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        gap: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "50%",
-                          display: "flex",
-                          gap: "10px",
-                        }}
-                      >
-                        <strong style={{ color: "grey" }} key={index}>
-                          {major}
-                        </strong>
-                        {/* <p>{timeSpan?.startYear}</p>
-                      <span>{timeSpan?.endYear}</span> */}
-                      </div>
-                      <div
-                        style={{
-                          width: "50%",
-                          display: "flex",
-                          gap: "10px",
-                        }}
-                      >
-                        <div style={{ display: "flex", width: "48%" }}>
-                          <p style={{ padding: "0", margin: "0" }}>
-                            {timeSpan?.startYear}
-                          </p>
-                          -
-                          <p style={{ padding: "0", margin: "0" }}>
-                            {timeSpan?.endYear}
-                          </p>
-                        </div>
-                        <div style={{ display: "flex", width: "48%" }}>
-                          <button
-                            onClick={() => navigate(`/education/edit/${_id}`)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => navigate(`/education/view/${_id}`)}
-                          >
-                            View
-                          </button>
-                          <button onClick={() => onRemove(_id)}>Delete</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  marginBottom: "1rem",
-                }}
-              >
-                <h5
-                  style={{ padding: "0", marginBottom: "10px", color: "#333" }}
-                >
-                  Experience
-                </h5>
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    gap: "10px",
-                    flexDirection: "column",
-                  }}
-                >
-                  {experience?.map(({ company, timeSpan, index, _id }) => (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        gap: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "50%",
-                          display: "flex",
-                          gap: "10px",
-                        }}
-                      >
-                        <strong style={{ color: "grey" }} key={index}>
-                          {company}
-                        </strong>
-                        {/* <p>{timeSpan?.startYear}</p>
-                      <span>{timeSpan?.endYear}</span> */}
-                      </div>
-                      <div
-                        style={{
-                          width: "50%",
-                          display: "flex",
-                          gap: "10px",
-                        }}
-                      >
-                        <div style={{ display: "flex", width: "48%" }}>
-                          <p style={{ padding: "0", margin: "0" }}>
-                            {timeSpan?.startYear}
-                          </p>
-                          -
-                          <p style={{ padding: "0", margin: "0" }}>
-                            {timeSpan?.endYear}
-                          </p>
-                        </div>
-                        <div style={{ display: "flex", width: "48%" }}>
-                          <button
-                            onClick={() => navigate(`/experience/edit/${_id}`)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => navigate(`/experience/view/${_id}`)}
-                          >
-                            View
-                          </button>
-                          <button
-                            className={
-                              deleteClicked === _id ? "delete-button" : ""
-                            }
-                            onClick={() => {
-                              onExpRemove(_id);
-                              setDeleteClicked(_id);
-                            }}
-                            disabled={deleteClicked === _id}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="w-100 d-flex justify-content-between justify-items-center">
-                <button onClick={onEdit}>Edit Developer</button>{" "}
-                <button onClick={onView}>View Developer</button>{" "}
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+  const moreSkills = Math.max((skills || []).length - skillChips.length, 0);
+
+  return (
+    <div className="admin-card">
+      <div style={{ display: "flex", gap: "0.85rem", alignItems: "flex-start" }}>
+        {avatar ? (
+          <img
+            src={`${baseURL}/file/${avatar}`}
+            alt=""
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid #3a3a48",
+              flexShrink: 0,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              background: "#1a1a22",
+              border: "2px solid #3a3a48",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#01be96",
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
+          >
+            {(name || "?").charAt(0)}
+          </div>
+        )}
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <h3 className="admin-card-title">{name || "Untitled developer"}</h3>
+          <p className="admin-card-sub">ID: {devId || "—"}</p>
+        </div>
+      </div>
+
+      <div className="admin-chip-row">
+        {skillChips.map((s) => (
+          <span
+            key={`${s.name}-${s.order}`}
+            className={`admin-chip ${s.featured ? "is-featured" : ""}`}
+          >
+            {s.featured && s.order ? `#${s.order} ` : ""}
+            {s.name}
+          </span>
+        ))}
+        {moreSkills > 0 && (
+          <span className="admin-chip">+{moreSkills} more</span>
+        )}
+        {!skillChips.length && (
+          <span className="admin-chip">No skills linked</span>
+        )}
+      </div>
+
+      <div className="admin-counts">
+        <span className="admin-count">{education?.length || 0} education</span>
+        <span className="admin-count">{experience?.length || 0} experience</span>
+        <span className="admin-count">{projects?.length || 0} projects</span>
+        <span className="admin-count">{skills?.length || 0} skills</span>
+      </div>
+
+      <div className="admin-card-actions">
+        <button type="button" className="admin-btn-primary" onClick={onEdit}>
+          Edit
+        </button>
+        <button type="button" onClick={onView}>
+          View
+        </button>
+      </div>
+    </div>
   );
 };

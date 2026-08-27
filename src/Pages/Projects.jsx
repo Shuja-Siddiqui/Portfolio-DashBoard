@@ -8,7 +8,6 @@ import {
   createImageIds,
   fetchProject,
   baseURL,
-  removeSkill,
 } from "../api";
 import { Toaster } from "../common";
 import { Button, Form, Modal } from "react-bootstrap";
@@ -212,22 +211,6 @@ export default function Projects() {
     setAllSkills(skills || []);
     setNewSkillName("");
     setShow(false);
-  };
-
-  const handleDeleteSkill = async (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await removeSkill(id);
-      const skills = await fetchSkills();
-      setAllSkills(skills || []);
-      setFormData((prev) => ({
-        ...prev,
-        technologies: prev.technologies.filter((t) => String(t.name) !== String(id)),
-      }));
-    } catch (error) {
-      toast(error?.message || "Failed to delete skill");
-    }
   };
 
   const buildPayload = async () => {
@@ -635,13 +618,6 @@ export default function Projects() {
                     >
                       {on ? "✓ " : "+ "}
                       {skill.skillName}
-                    </button>
-                    <button
-                      type="button"
-                      className="skill-delete"
-                      onClick={(e) => handleDeleteSkill(skill._id, e)}
-                    >
-                      Delete
                     </button>
                   </div>
                 );

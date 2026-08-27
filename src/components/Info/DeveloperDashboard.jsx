@@ -1,75 +1,89 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
-import { UserInfoCard } from "./UserInfoCard";
-import { getDevelopers, removeEducation, removeExperience } from "../../api";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { getDevelopers, baseURL } from "../../api";
 import { useNavigate } from "react-router-dom";
+import { UserInfoCard } from "./UserInfoCard";
+import "./AdminEntity.css";
 
 export const DeveloperDashboard = () => {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
   const fetchDev = useCallback(async () => {
     const users = await getDevelopers();
-    setData(users);
+    setData(users || []);
   }, []);
 
   useEffect(() => {
     fetchDev();
   }, [fetchDev]);
 
-  const handleEdit = (id) => {
-    navigate(`edit/${id}`);
-  };
-
-  const handleDeleteEducation = async (id) => {
-    await removeEducation(id);
-    await fetchDev();
-  };
-
-  const handleDeleteExperience = async (id) => {
-    await removeExperience(id);
-    await fetchDev();
-  };
-
-  const onView = (id) => {
-    navigate(`view/${id}`);
-  };
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter((d) => {
+      const name = String(d?.name || "").toLowerCase();
+      const id = String(d?.devId || "").toLowerCase();
+      const skills = (d?.skills || [])
+        .map((s) => s?.title?.skillName || "")
+        .join(" ")
+        .toLowerCase();
+      return name.includes(q) || id.includes(q) || skills.includes(q);
+    });
+  }, [data, query]);
 
   return (
-    <div style={{ width: "100%" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 className="text-white">Developers</h2>
-        <button onClick={() => navigate("/education")}>+Add Education</button>
-        <button onClick={() => navigate("/experience")}>+Add Experience</button>
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <h2>Developers</h2>
+        <div className="admin-header-actions">
+          <button
+            type="button"
+            className="admin-btn-primary"
+            onClick={() => navigate("/info")}
+          >
+            + Add Developer
+          </button>
+          <button type="button" onClick={() => navigate("/education")}>
+            + Education
+          </button>
+          <button type="button" onClick={() => navigate("/experience")}>
+            + Experience
+          </button>
+        </div>
       </div>
-      <Row xs={1} md={1} className="g-4">
-        {data &&
-          data.map(({ name, skills, devId, _id, education, experience }) => (
-            <div key={_id} className="col">
-              <UserInfoCard
-                name={name}
-                devId={devId}
-                skills={skills}
-                onEdit={() => handleEdit(_id)}
-                onView={() => onView(_id)}
-                onRemove={handleDeleteEducation}
-                onExpRemove={handleDeleteExperience}
-                id={_id}
-                education={education}
-                experience={experience}
-              />
-            </div>
-          ))}
-      </Row>
+
+      <input
+        className="admin-search"
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by name, ID, or skill…"
+      />
+      <p className="admin-meta">
+        Showing {filtered.length} of {data.length} developers
+      </p>
+
+      <div>
+        {filtered.map((dev) => (
+          <UserInfoCard
+            key={dev._id}
+            name={dev.name}
+            devId={dev.devId}
+            skills={dev.skills}
+            education={dev.education}
+            experience={dev.experience}
+            projects={dev.projects}
+            avatar={dev.avatar}
+            baseURL={baseURL}
+            onEdit={() => navigate(`edit/${dev._id}`)}
+            onView={() => navigate(`view/${dev._id}`)}
+          />
+        ))}
+        {filtered.length === 0 && (
+          <p className="admin-meta">No developers match your search.</p>
+        )}
+      </div>
     </div>
   );
 };

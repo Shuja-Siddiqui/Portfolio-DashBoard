@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal, Button, Form, Badge } from "react-bootstrap";
 import {
   createDeveloper,
@@ -12,13 +12,14 @@ import {
   fetchTestimonials,
   fetchServices,
   addService,
-  removeSkill,
 } from "../api";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 import { availability, spokenLanguages } from "../utils";
 import { SERVICE_ICON_OPTIONS, getServiceIcon } from "../utils/serviceIcons";
+import { SearchableMultiSelect } from "../components/Info/SearchableMultiSelect";
+import "../components/Info/AdminEntity.css";
 
 // const uid = localStorage.getItem("user_id");
 
@@ -29,6 +30,8 @@ export default function Info() {
   const [file, setFile] = useState("");
   const [bufferedFile, setBufferedFile] = useState("");
   const [skill, setSkill] = useState({ skillName: "" });
+  const [skillSearch, setSkillSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("profile");
   const [service, setService] = useState({
     name: "",
     description: "",
@@ -93,19 +96,6 @@ export default function Info() {
     });
   };
 
-  // FOR STARS
-  function generateStars(numStars) {
-    const stars = [];
-    for (let i = 0; i < numStars; i++) {
-      stars.push(
-        <span key={i} style={{ color: "gold" }}>
-          &#9733;
-        </span>
-      ); // &#9733; is the Unicode for a star
-    }
-    return stars;
-  }
-
   // Add Skills
   const handleSkill = async () => {
     const skillName = skill;
@@ -118,25 +108,6 @@ export default function Info() {
     }
   };
 
-  //
-  const handleDeleteSkill = async (id, e, index) => {
-    e.preventDefault();
-    try {
-      await removeSkill(id);
-      await getAllSkills();
-
-      setFormData((prevData) => {
-        const updatedSkills = [...prevData.skills];
-        updatedSkills.splice(index, 1);
-        return {
-          ...prevData,
-          skills: updatedSkills,
-        };
-      });
-    } catch (error) {
-      console.log("Error occurred while deleting skill:", error?.message);
-    }
-  };
   // Add Service
   const handleService = async () => {
     if (service) {
@@ -288,25 +259,32 @@ export default function Info() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
-      links: (formData.links || []).filter((link) => link?.title && link?.url),
-    };
-    let res;
-    if (!params?.id) {
-      const fileId = await createImageId(file);
-      payload.avatar = fileId;
-      res = await createDeveloper(payload);
-    } else {
-      if (file !== formData?.avatar) {
-        const fileId = await createImageId(file);
-        payload.avatar = fileId;
+    try {
+      const payload = {
+        ...formData,
+        links: (formData.links || []).filter((link) => link?.title && link?.url),
+      };
+
+      if (file instanceof File) {
+        payload.avatar = await createImageId(file);
+      } else if (params?.id) {
+        payload.avatar = formData?.avatar || "";
       }
-      res = await updateDeveloper(payload, params?.id);
-    }
-    if (res?.status === 201 || res?.status === 200) {
-      alert("Updated successfully!");
-      navigate("/developers");
+
+      let res;
+      if (!params?.id) {
+        res = await createDeveloper(payload);
+      } else {
+        res = await updateDeveloper(payload, params?.id);
+      }
+      if (res?.status === 201 || res?.status === 200) {
+        alert("Updated successfully!");
+        navigate("/developers");
+      }
+    } catch (error) {
+      alert(error?.message || "Failed to save developer.");
+    } finally {
+      /* no-op: keep submit resilient */
     }
   };
 
@@ -358,6 +336,131 @@ export default function Info() {
 
     setFormData({ ...formData, languages: updatedLanguages });
   };
+
+  const selectedSkillIds = useMemo(
+    () => new Set((formData.skills || []).map((s) => String(s.title))),
+    [formData.skills]
+  );
+
+  const filteredSkills = useMemo(() => {
+    const q = skillSearch.trim().toLowerCase();
+    const list = allSkills || [];
+    if (!q) return list.slice(0, 12);
+    return list
+      .filter((s) => s?.skillName?.toLowerCase().includes(q))
+      .slice(0, 20);
+  }, [allSkills, skillSearch]);
+
+  const selectedSkills = useMemo(() => {
+    return (formData.skills || [])
+      .map((s) => {
+        const skillMeta = allSkills.find(
+          (sk) => String(sk._id) === String(s.title)
+        );
+        return {
+          id: String(s.title),
+          name: skillMeta?.skillName || s.skillName || s.title,
+          typedOrder: s.typedOrder || "",
+          featured: Boolean(s.featured),
+        };
+      })
+      .filter((s) => s.id && s.id !== "undefined");
+  }, [formData.skills, allSkills]);
+
+  const nominatedCount = useMemo(
+    () =>
+      (formData.skills || []).filter(
+        (s) => s?.typedOrder >= 1 && s?.typedOrder <= 5
+      ).length,
+    [formData.skills]
+  );
+
+  const toggleSkill = (skillId) => {
+    const id = String(skillId);
+    setFormData((prev) => {
+      const updatedSkills = [...(prev.skills || [])];
+      const indexToRemove = updatedSkills.findIndex(
+        (formDataSkill) => String(formDataSkill?.title) === id
+      );
+      if (indexToRemove >= 0) {
+        updatedSkills.splice(indexToRemove, 1);
+      } else {
+        updatedSkills.push({
+          title: id,
+          ratings: 1,
+          featured: false,
+          typedOrder: "",
+        });
+      }
+      return { ...prev, skills: updatedSkills };
+    });
+  };
+
+  const setSkillTypedOrder = (skillId, value) => {
+    const order = value === "" ? "" : Number(value);
+    setFormData((prev) => {
+      const currentNominated = (prev.skills || []).filter(
+        (s) => s?.typedOrder >= 1 && s?.typedOrder <= 5
+      ).length;
+      const selected = (prev.skills || []).find(
+        (s) => String(s.title) === String(skillId)
+      );
+      const updatedSkills = (prev.skills || []).map((s) => {
+        if (String(s.title) !== String(skillId)) {
+          if (order !== "" && Number(s.typedOrder) === order) {
+            return { ...s, typedOrder: "", featured: false };
+          }
+          return s;
+        }
+        if (order === "") {
+          return { ...s, typedOrder: "", featured: false };
+        }
+        if (
+          currentNominated >= 5 &&
+          !(selected?.typedOrder >= 1 && selected?.typedOrder <= 5)
+        ) {
+          return s;
+        }
+        return { ...s, typedOrder: order, featured: true };
+      });
+      return { ...prev, skills: updatedSkills };
+    });
+  };
+
+  const routeMode = location.pathname.split("/")[2];
+  const pageTitle =
+    routeMode === "view"
+      ? "View Developer"
+      : routeMode === "edit"
+        ? "Edit Developer"
+        : "Add Developer";
+
+  const projectItems = useMemo(
+    () =>
+      (allProjects || []).map((p) => ({
+        id: p._id,
+        label: p.projectName,
+      })),
+    [allProjects]
+  );
+
+  const testimonialItems = useMemo(
+    () =>
+      (allTestimonials || []).map((t) => ({
+        id: t._id,
+        label: `${t.clientName}${t?.stars ? ` (${"★".repeat(t.stars)})` : ""}`,
+      })),
+    [allTestimonials]
+  );
+
+  const serviceItems = useMemo(
+    () =>
+      (allServices || []).map((s) => ({
+        id: s._id,
+        label: s.name,
+      })),
+    [allServices]
+  );
 
   const renderLinksFields = () => {
     const selectedPreset =
@@ -435,819 +538,620 @@ export default function Info() {
       reader.readAsDataURL(selectedFile);
     }
   };
+
+  const tabs = [
+    { id: "profile", label: "Profile" },
+    { id: "skills", label: "Skills" },
+    { id: "portfolio", label: "Portfolio" },
+    { id: "media", label: "Media" },
+  ];
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-      }}
-    >
-      <div className="container">
-        <h1 style={{ color: "white", textAlign: "center" }}>Dev Information</h1>
-        <form
-          type="submit"
-          onSubmit={handleSubmit}
-          id="myForm"
-          style={{ width: "100%", margin: "0" }}
-        >
-          <fieldset disabled={view ? "disabled" : null}>
-            <label htmlFor="name" className="text-white">
-              Name:
-            </label>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-            <label htmlFor="devId" className="text-white">
-              Developer Id:
-            </label>
-            <input
-              type="text"
-              name="devId"
-              id="devId"
-              placeholder="DevId"
-              required
-              value={formData.devId}
-              onChange={handleChange}
-            />
-            <label htmlFor="devId" className="text-white">
-              Email
-            </label>
-            <input
-              type="text"
-              name="email"
-              id="email"
-              placeholder="Email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <label htmlFor="devId" className="text-white">
-              Phone No.
-            </label>
-            <input
-              type="text"
-              name="phoneNo"
-              id="phoneNo"
-              placeholder="Phone No"
-              required
-              value={formData.phoneNo}
-              onChange={handleChange}
-            />
-            <label htmlFor="devId" className="text-white">
-              Skype Id:
-            </label>
-            <input
-              type="text"
-              name="skype"
-              id="skype"
-              placeholder="Skype Id"
-              required
-              value={formData.skype}
-              onChange={handleChange}
-            />
-            <label htmlFor="country" className="text-white">
-              country:
-            </label>
-            <input
-              type="text"
-              name="country"
-              id="country"
-              placeholder="country"
-              value={formData.country}
-              onChange={handleChange}
-              required
-            />
-            <label htmlFor="city" className="text-white">
-              city:
-            </label>
-            <input
-              type="text"
-              name="city"
-              id="city"
-              placeholder="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
-             <label htmlFor="devCV" className="text-white">
-              CV:
-            </label>
-            <input
-              type="text"
-              name="devCV"
-              id="devCV"
-              placeholder="devCV"
-              value={formData.devCV}
-              onChange={handleChange}
-            />
-            <Form.Group style={{ width: "100%" }}>
-              <h5>Languages</h5>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  width: "100%",
-                }}
-              >
-                {spokenLanguages.map((language, index) => (
-                  <Form.Check
-                    style={{ width: "20%" }}
-                    key={index}
-                    type="checkbox"
-                    id={`language-checkbox-${index}`}
-                    label={language}
-                    value={language.toLowerCase()} // Lowercase the language for consistency
-                    checked={formData.languages.includes(
-                      language.toLowerCase()
-                    )}
-                    onChange={handleLanguageChange}
-                  />
-                ))}
-              </div>
-            </Form.Group>
+    <div className="dev-form admin-page">
+      <div className="admin-page-header">
+        <h1>{pageTitle}</h1>
+      </div>
 
-            {/* Availability */}
-            <Form.Group style={{ width: "100%" }}>
-              <h5>Availability</h5>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  width: "100%",
-                }}
-              >
-                {availability.map((availabilityItem, index) => (
-                  <Form.Check
-                    style={{ width: "20%" }}
-                    key={index}
-                    type="checkbox"
-                    id={`availability-checkbox-${index}`}
-                    label={availabilityItem}
-                    value={availabilityItem.toLowerCase()}
-                    checked={
-                      formData.availability === availabilityItem.toLowerCase()
-                    }
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData({
-                        ...formData,
-                        availability: value.toLowerCase(),
-                      });
-                    }}
-                  />
-                ))}
-              </div>
-            </Form.Group>
-
-            {/* Developer Skill */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "start",
-                alignItems: "start",
-                width: "100%",
-                flexDirection: "column",
-              }}
+      <form type="submit" onSubmit={handleSubmit} id="myForm">
+        <div className="dev-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`dev-tab${activeTab === tab.id ? " is-active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
             >
-              <h5
-                style={{
-                  margin: "0",
-                  padding: "0",
-                  marginBottom: "0.5rem",
-                  color: "white",
-                }}
-              >
-                Select Developer skill
-              </h5>
-              <p
-                style={{
-                  color: "#b0b0b0",
-                  fontSize: "0.85rem",
-                  marginBottom: "1rem",
-                }}
-              >
-                For skills on this portfolio, set a profile order (1–5) to show
-                under the avatar typed line. Only those nominated skills appear
-                there (max 5).
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <fieldset disabled={view ? "disabled" : null}>
+          {activeTab === "profile" && (
+            <div className="dev-section">
+              <h3>Profile</h3>
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="devId">Developer Id</label>
+              <input
+                type="text"
+                name="devId"
+                id="devId"
+                placeholder="DevId"
+                required
+                value={formData.devId}
+                onChange={handleChange}
+              />
+              <label htmlFor="email">Email</label>
+              <input
+                type="text"
+                name="email"
+                id="email"
+                placeholder="Email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <label htmlFor="phoneNo">Phone No.</label>
+              <input
+                type="text"
+                name="phoneNo"
+                id="phoneNo"
+                placeholder="Phone No"
+                required
+                value={formData.phoneNo}
+                onChange={handleChange}
+              />
+              <label htmlFor="skype">Skype Id</label>
+              <input
+                type="text"
+                name="skype"
+                id="skype"
+                placeholder="Skype Id"
+                required
+                value={formData.skype}
+                onChange={handleChange}
+              />
+              <label htmlFor="country">Country</label>
+              <input
+                type="text"
+                name="country"
+                id="country"
+                placeholder="country"
+                value={formData.country}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="city">City</label>
+              <input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="devCV">CV</label>
+              <input
+                type="text"
+                name="devCV"
+                id="devCV"
+                placeholder="devCV"
+                value={formData.devCV}
+                onChange={handleChange}
+              />
+
+              <Form.Group style={{ width: "100%", marginTop: "0.75rem" }}>
+                <h5>Languages</h5>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    width: "100%",
+                  }}
+                >
+                  {spokenLanguages.map((language, index) => (
+                    <Form.Check
+                      style={{ width: "20%" }}
+                      key={index}
+                      type="checkbox"
+                      id={`language-checkbox-${index}`}
+                      label={language}
+                      value={language.toLowerCase()}
+                      checked={formData.languages.includes(
+                        language.toLowerCase()
+                      )}
+                      onChange={handleLanguageChange}
+                    />
+                  ))}
+                </div>
+              </Form.Group>
+
+              <Form.Group style={{ width: "100%", marginTop: "0.75rem" }}>
+                <h5>Availability</h5>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    width: "100%",
+                  }}
+                >
+                  {availability.map((availabilityItem, index) => (
+                    <Form.Check
+                      style={{ width: "20%" }}
+                      key={index}
+                      type="checkbox"
+                      id={`availability-checkbox-${index}`}
+                      label={availabilityItem}
+                      value={availabilityItem.toLowerCase()}
+                      checked={
+                        formData.availability ===
+                        availabilityItem.toLowerCase()
+                      }
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        setFormData({
+                          ...formData,
+                          availability: value.toLowerCase(),
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+              </Form.Group>
+            </div>
+          )}
+
+          {activeTab === "skills" && (
+            <div className="dev-section">
+              <h3>Skills</h3>
+              <p className="admin-meta">
+                Search and add skills. For skills on this portfolio, set a
+                profile order (1–5) to show under the avatar typed line. Only
+                those nominated skills appear there (max 5).
               </p>
-              {(allSkills &&
-                allSkills.length > 0 &&
-                allSkills?.map((skill, index) => {
-                  const selected = formData?.skills?.find(
-                    (formDataSkill) => formDataSkill?.title === skill?._id
-                  );
-                  const nominatedCount = (formData?.skills || []).filter(
-                    (s) => s?.typedOrder >= 1 && s?.typedOrder <= 5
-                  ).length;
 
+              {selectedSkills.length > 0 && (
+                <div className="picker-selected">
+                  {selectedSkills.map((s) => (
+                    <button
+                      type="button"
+                      key={s.id}
+                      className="picker-chip"
+                      onClick={() => toggleSkill(s.id)}
+                      title="Click to remove"
+                      disabled={view}
+                    >
+                      {s.name} ×
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <input
+                type="search"
+                className="admin-search"
+                style={{ maxWidth: "100%" }}
+                placeholder="Search skills to add…"
+                value={skillSearch}
+                disabled={view}
+                onChange={(e) => setSkillSearch(e.target.value)}
+              />
+
+              <div className="picker-list">
+                {filteredSkills.map((sk) => {
+                  const on = selectedSkillIds.has(String(sk._id));
                   return (
-                    <div
-                      key={skill._id}
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        gap: "10px",
-                        marginBottom: "1rem",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                      }}
+                    <button
+                      key={sk._id}
+                      type="button"
+                      className={`picker-option${on ? " is-on" : ""}`}
+                      disabled={view}
+                      onClick={() => toggleSkill(sk._id)}
                     >
-                      <input
-                        type="checkbox"
-                        id={skill._id}
-                        style={{ width: "1rem", padding: "0", margin: "0" }}
-                        name="skills"
-                        value={skill?._id}
-                        checked={Boolean(selected)}
-                        onChange={(e) => {
-                          const updatedSkills = [...formData.skills];
-                          if (e.target.checked) {
-                            updatedSkills.push({
-                              title: e.target.value,
-                              ratings: 1,
-                              featured: false,
-                              typedOrder: "",
-                            });
-                          } else {
-                            const indexToRemove = updatedSkills.findIndex(
-                              (formDataSkill) =>
-                                formDataSkill?.title === e.target.value
-                            );
-                            updatedSkills.splice(indexToRemove, 1);
-                          }
-                          setFormData({ ...formData, skills: updatedSkills });
-                        }}
-                      />
-                      <label className="text-white" htmlFor={skill._id}>
-                        {skill?.skillName}
-                      </label>
-                      {selected ? (
-                        <select
-                          aria-label={`Profile typed order for ${skill?.skillName}`}
-                          value={selected?.typedOrder || ""}
-                          style={{
-                            marginLeft: "auto",
-                            minWidth: "9rem",
-                            padding: "0.25rem 0.4rem",
-                            borderRadius: "6px",
-                          }}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            const order = value === "" ? "" : Number(value);
-                            const updatedSkills = formData.skills.map((s) => {
-                              if (s.title !== skill._id) {
-                                // Free the order slot if another skill held it
-                                if (
-                                  order !== "" &&
-                                  Number(s.typedOrder) === order
-                                ) {
-                                  return {
-                                    ...s,
-                                    typedOrder: "",
-                                    featured: false,
-                                  };
-                                }
-                                return s;
-                              }
-                              if (order === "") {
-                                return {
-                                  ...s,
-                                  typedOrder: "",
-                                  featured: false,
-                                };
-                              }
-                              if (
-                                nominatedCount >= 5 &&
-                                !(
-                                  selected?.typedOrder >= 1 &&
-                                  selected?.typedOrder <= 5
-                                )
-                              ) {
-                                return s;
-                              }
-                              return {
-                                ...s,
-                                typedOrder: order,
-                                featured: true,
-                              };
-                            });
-                            setFormData({
-                              ...formData,
-                              skills: updatedSkills,
-                            });
-                          }}
-                        >
-                          <option value="">Not on profile</option>
-                          <option value="1">Profile #1</option>
-                          <option value="2">Profile #2</option>
-                          <option value="3">Profile #3</option>
-                          <option value="4">Profile #4</option>
-                          <option value="5">Profile #5</option>
-                        </select>
-                      ) : null}
-                      <button
-                        onClick={(e) =>
-                          handleDeleteSkill(skill?._id, e, index)
-                        }
-                        style={{ padding: "0", margin: "0" }}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                      {on ? "✓ " : "+ "}
+                      {sk.skillName}
+                    </button>
                   );
-                })) ||
-                "NoSkill"}
-            </div>
-            <div style={{ width: "100%", display: "flex" }}>
-              <Button
-                variant="primary"
-                onClick={handleShow}
-                style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
-              >
-                Add developer skill
-              </Button>
-            </div>
+                })}
+                {!filteredSkills.length && (
+                  <span style={{ color: "#888", fontSize: "0.85rem" }}>
+                    {skillSearch.trim() ? "No matches" : "Type to find more"}
+                  </span>
+                )}
+              </div>
 
-            {/* Developer Projects */}
-            <h5 className="mb-3 ">Developer Projects</h5>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
-              {allProjects && allProjects.length > 0
-                ? allProjects.map((project, index) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      key={index}
-                    >
-                      <input
-                        name="project"
-                        id={`project-${index}`}
-                        type="checkbox"
-                        style={{ width: "20px", padding: "0", margin: "0" }}
-                        value={project._id}
-                        checked={formData?.projects?.some(
-                          (formProject) => formProject.id === project._id
-                        )}
-                        onChange={(e) => {
-                          const checkedProjectId = e.target.value;
-                          setFormData((prevFormData) => {
-                            const updatedProjects = [
-                              ...(prevFormData.projects || []),
-                            ];
-                            if (e.target.checked) {
-                              updatedProjects.push({ id: checkedProjectId });
-                            } else {
-                              const indexToRemove = updatedProjects.findIndex(
-                                (proj) => proj.id === checkedProjectId
-                              );
-                              if (indexToRemove !== -1) {
-                                updatedProjects.splice(indexToRemove, 1);
-                              }
-                            }
-                            return {
-                              ...prevFormData,
-                              projects: updatedProjects,
-                            };
-                          });
-                        }}
-                      />
-                      <label
-                        htmlFor={`project-${index}`}
-                        className="text-white"
+              {selectedSkills.length > 0 && (
+                <div style={{ marginTop: "1rem" }}>
+                  <h5 style={{ color: "#fff", marginBottom: "0.5rem" }}>
+                    Profile order
+                  </h5>
+                  {selectedSkills.map((s) => (
+                    <div key={s.id} className="skill-order-row">
+                      <span style={{ minWidth: "8rem" }}>{s.name}</span>
+                      <select
+                        aria-label={`Profile typed order for ${s.name}`}
+                        value={s.typedOrder || ""}
+                        disabled={view}
+                        onChange={(e) =>
+                          setSkillTypedOrder(s.id, e.target.value)
+                        }
                       >
-                        {project.projectName}
-                      </label>
+                        <option value="">Not on profile</option>
+                        <option value="1">Profile #1</option>
+                        <option value="2">Profile #2</option>
+                        <option value="3">Profile #3</option>
+                        <option value="4">Profile #4</option>
+                        <option value="5">Profile #5</option>
+                      </select>
+                      {nominatedCount >= 5 &&
+                        !(s.typedOrder >= 1 && s.typedOrder <= 5) && (
+                          <span className="admin-meta" style={{ margin: 0 }}>
+                            Max 5 on profile
+                          </span>
+                        )}
                     </div>
-                  ))
-                : "No Project"}
-            </div>
+                  ))}
+                </div>
+              )}
 
-            {/* Testimonials */}
-            <h5 className="mb-3 ">Testimonials</h5>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
-              {allTestimonials && allTestimonials.length > 0
-                ? allTestimonials.map((testimonial, index) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      key={index}
-                    >
-                      <input
-                        name="testimonial"
-                        id="testimonial"
-                        type="checkbox"
-                        style={{ width: "20px", padding: "0", margin: "0" }}
-                        value={testimonial._id}
-                        checked={formData?.testimonials?.some(
-                          (formTestimonial) =>
-                            formTestimonial === testimonial._id
-                        )}
-                        onChange={(e) => {
-                          const checkedTestimonialId = e.target.value;
-                          setFormData((prevFormData) => {
-                            const prevTestimonials =
-                              prevFormData.testimonials || [];
-                            let updatedTestimonials;
-                            if (e.target.checked) {
-                              if (
-                                !prevTestimonials.includes(checkedTestimonialId)
-                              ) {
-                                updatedTestimonials = [
-                                  ...prevTestimonials,
-                                  checkedTestimonialId,
-                                ];
-                              } else {
-                                updatedTestimonials = prevTestimonials;
-                              }
-                            } else {
-                              updatedTestimonials = prevTestimonials.filter(
-                                (testimonialId) =>
-                                  testimonialId !== checkedTestimonialId
-                              );
-                            }
-                            return {
-                              ...prevFormData,
-                              testimonials: updatedTestimonials,
-                            };
-                          });
-                        }}
-                      />
-                      <label
-                        htmlFor={`testimonial-${index}`}
-                        className="text-white"
-                      >
-                        {testimonial.clientName}
-                        <sup>{generateStars(testimonial?.stars)}</sup>
-                      </label>
-                    </div>
-                  ))
-                : "No Testimonials"}
-            </div>
-
-            {/* Services */}
-            <h5 className="mb-3 ">Services</h5>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
-              {allServices && allServices.length > 0
-                ? allServices.map((service, index) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      key={index}
-                    >
-                      <input
-                        name="service"
-                        id="service"
-                        type="checkbox"
-                        style={{ width: "20px", padding: "0", margin: "0" }}
-                        value={service._id}
-                        checked={formData?.services?.some(
-                          (formService) => formService === service._id
-                        )}
-                        onChange={(e) => {
-                          const checkedServiceId = e.target.value;
-                          setFormData((prevFormData) => {
-                            const prevServices = prevFormData.services || [];
-                            let updatedServices;
-                            if (e.target.checked) {
-                              if (!prevServices.includes(checkedServiceId)) {
-                                updatedServices = [
-                                  ...prevServices,
-                                  checkedServiceId,
-                                ];
-                              } else {
-                                updatedServices = prevServices;
-                              }
-                            } else {
-                              updatedServices = prevServices.filter(
-                                (serviceId) => serviceId !== checkedServiceId
-                              );
-                            }
-                            return {
-                              ...prevFormData,
-                              services: updatedServices,
-                            };
-                          });
-                        }}
-                      />
-                      <label
-                        htmlFor={`service-${index}`}
-                        className="text-white"
-                      >
-                        {service.name}
-                      </label>
-                    </div>
-                  ))
-                : "No Service"}
-              <div style={{ width: "100%", display: "flex" }}>
+              {!view && (
                 <Button
                   variant="primary"
+                  type="button"
+                  onClick={handleShow}
+                  className="admin-btn"
+                  style={{ marginTop: "0.75rem" }}
+                >
+                  Create new skill
+                </Button>
+              )}
+            </div>
+          )}
+
+          {activeTab === "portfolio" && (
+            <div className="dev-section">
+              <h3>Portfolio</h3>
+
+              <h5 style={{ color: "#fff", marginTop: "0.25rem" }}>Projects</h5>
+              <SearchableMultiSelect
+                items={projectItems}
+                value={(formData.projects || []).map((p) => p.id)}
+                disabled={view}
+                placeholder="Search projects to add…"
+                emptyLabel="No projects selected"
+                onChange={(ids) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    projects: ids.map((id) => ({ id })),
+                  }))
+                }
+              />
+
+              <h5 style={{ color: "#fff", marginTop: "1rem" }}>
+                Testimonials
+              </h5>
+              <SearchableMultiSelect
+                items={testimonialItems}
+                value={formData.testimonials || []}
+                disabled={view}
+                placeholder="Search testimonials to add…"
+                emptyLabel="No testimonials selected"
+                onChange={(ids) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    testimonials: ids,
+                  }))
+                }
+              />
+
+              <h5 style={{ color: "#fff", marginTop: "1rem" }}>Services</h5>
+              <SearchableMultiSelect
+                items={serviceItems}
+                value={formData.services || []}
+                disabled={view}
+                placeholder="Search services to add…"
+                emptyLabel="No services selected"
+                onChange={(ids) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    services: ids,
+                  }))
+                }
+              />
+
+              {!view && (
+                <Button
+                  variant="primary"
+                  type="button"
                   onClick={handleShowServiceModel}
-                  style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
+                  className="admin-btn"
+                  style={{ marginTop: "0.75rem" }}
                 >
                   Add service
                 </Button>
-              </div>
-            </div>
+              )}
 
-            {/* Social / Platform Links */}
-            <div style={{ width: "100%", display: "flex" }}>
-              <Button
-                variant="primary"
-                onClick={addNewLink}
-                style={{ width: "100%", marginBottom: "1rem", padding: "0" }}
-              >
-                Add platform link (GitHub, Upwork, Kaggle, etc.)
-              </Button>
+              {!view && (
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={addNewLink}
+                  className="admin-btn"
+                  style={{ marginTop: "0.75rem", marginLeft: "0.5rem" }}
+                >
+                  Add platform link
+                </Button>
+              )}
+
+              {formData?.links?.length > 0 && (
+                <div className="w-[100%] mb-3 mt-3 border rounded border-secondary gap-2 p-2 m-0 items-center d-flex flex-wrap justify-content-start">
+                  {formData?.links?.map((link, index) => (
+                    <h5 key={index} className="m-0 p-0 position-relative">
+                      <Badge bg="secondary">
+                        <p className="text-white p-2 m-0">
+                          {link.title}
+                          {link.url ? ` — ${link.url}` : ""}
+                        </p>
+                        {!view && (
+                          <span
+                            className="position-absolute top-0 end-0 cursor-pointer"
+                            onClick={() => handleDelete(index)}
+                          >
+                            <MdOutlineCancel />
+                          </span>
+                        )}
+                      </Badge>
+                    </h5>
+                  ))}
+                </div>
+              )}
             </div>
-            {formData?.links?.length > 0 && (
-              <div className="w-[100%] mb-3 border rounded border-secondary gap-2 p-2 m-0 items-center d-flex flex-wrap justify-content-start">
-                {formData?.links?.map((link, index) => (
-                  <h5 key={index} className="m-0 p-0 position-relative">
-                    <Badge bg="secondary">
-                      <p className="text-white p-2 m-0">
-                        {link.title}
-                        {link.url ? ` — ${link.url}` : ""}
-                      </p>
-                      <span
-                        className="position-absolute top-0 end-0 cursor-pointer"
-                        onClick={() => handleDelete(index)}
-                      >
-                        <MdOutlineCancel />
-                      </span>
-                    </Badge>
-                  </h5>
-                ))}
-              </div>
-            )}
-            <div
-              style={{
-                maxWidth: "100%",
-                border: "1px solid #333",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "10px",
-                marginBottom: "1rem",
-              }}
-              className="rounded-4"
-            >
+          )}
+
+          {activeTab === "media" && (
+            <div className="dev-section">
+              <h3>Media</h3>
               <div
                 style={{
-                  maxWidth: "50%",
+                  maxWidth: "100%",
+                  border: "1px solid #333",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: "10px",
+                  padding: "10px",
+                  marginBottom: "1rem",
                 }}
+                className="rounded-4"
               >
                 <div
                   style={{
-                    backgroundImage: `url(${bufferedFile})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    width: "200px", // Adjust as per your design
-                    height: "200px", // Adjust as per your design
-                    borderRadius: "50%",
-                    border: "2px solid #aaa",
+                    maxWidth: "50%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
-                ></div>
-                {!view ? (
-                  <input
-                    type="file"
-                    name="avatar"
-                    id="avatar"
-                    className="p-2 m-0"
-                    accept="image/jpg, image/jpeg, image/png ,image/webp"
-                    onChange={handleFileChange}
-                  />
-                ) : (
-                  <h5>Profile picture</h5>
-                )}
-              </div>
-            </div>
-            <h5 htmlFor="about" className=" mb-3">
-              About developer
-            </h5>
-            <textarea
-              style={{ marginBottom: "1rem" }}
-              name="about"
-              id="about"
-              col="30"
-              rows="10"
-              placeholder="About Developer!"
-              value={formData.about}
-              onChange={handleChange}
-              required
-            >
-              {formData?.about}
-            </textarea>
-            <h5 htmlFor="about" className=" mb-3">
-              Developer Introduction
-            </h5>
-            <textarea
-              style={{ marginBottom: "1rem" }}
-              name="intro"
-              id="intro"
-              col="30"
-              rows="10"
-              placeholder="Developer Introduction!"
-              value={formData.intro}
-              onChange={handleChange}
-              required
-            >
-              {formData?.intro}
-            </textarea>
-            <label htmlFor="introVideo" className="text-white">
-              Intro YouTube Video (optional):
-            </label>
-            <input
-              type="url"
-              name="introVideo"
-              id="introVideo"
-              placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
-              value={formData.introVideo || ""}
-              onChange={handleChange}
-            />
-            <p className="text-white" style={{ fontSize: "12px", marginTop: "-0.5rem", marginBottom: "1rem", opacity: 0.7 }}>
-              If set, the portfolio hero shows this video. If empty, a custom animation is shown instead.
-            </p>
-            {!view && (
-              <button>
-                {location.pathname.split("/")[2] === "edit"
-                  ? "UPDATE"
-                  : "SUBMIT"}
-              </button>
-            )}
-          </fieldset>
-        </form>
-        {/* Add Skill Modal */}
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Skill</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form
-              style={{ background: "white", padding: "2rem", margin: "2rem" }}
-            >
-              <Form.Group>
-                <Form.Label>Skill Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter name"
-                  name="title"
-                  id="title"
-                  value={skill?.skillName}
-                  onChange={(e) => setSkill(e.target.value)}
-                />
-              </Form.Group>
-
-              <Button
-                variant="secondary"
-                onClick={handleClose}
-                style={{ marginRight: "10px", padding: "0" }}
-              >
-                Close
-              </Button>
-              <Button
-                variant="primary"
-                style={{ marginRight: "10px", padding: "0" }}
-                onClick={handleSkill}
-              >
-                Save Changes
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
-
-        {/* Add Services Model */}
-        <Modal show={showSerivce} onHide={handleCloseServiceModel}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Services</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form
-              style={{ background: "white", padding: "2rem", margin: "2rem" }}
-            >
-              <Form.Group>
-                <Form.Label>Service Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter name"
-                  name="name"
-                  id="name"
-                  value={service?.name}
-                  onChange={(e) =>
-                    setService({ ...service, name: e.target.value })
-                  }
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Service Icon</Form.Label>
-                <div className="d-flex align-items-center gap-2 mb-2">
-                  {(() => {
-                    const Icon = getServiceIcon(service.icon);
-                    return <Icon size={22} color="#069c7a" />;
-                  })()}
-                  <Form.Select
-                    value={service.icon || "code"}
-                    onChange={(e) =>
-                      setService({ ...service, icon: e.target.value })
-                    }
-                  >
-                    {SERVICE_ICON_OPTIONS.map(({ value, label }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </Form.Select>
+                >
+                  <div
+                    style={{
+                      backgroundImage: `url(${bufferedFile})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      width: "200px",
+                      height: "200px",
+                      borderRadius: "50%",
+                      border: "2px solid #aaa",
+                    }}
+                  ></div>
+                  {!view ? (
+                    <input
+                      type="file"
+                      name="avatar"
+                      id="avatar"
+                      className="p-2 m-0"
+                      accept="image/jpg, image/jpeg, image/png ,image/webp"
+                      onChange={handleFileChange}
+                    />
+                  ) : (
+                    <h5>Profile picture</h5>
+                  )}
                 </div>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Service Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  placeholder="Enter description"
-                  name="description"
-                  id="description"
-                  value={service.description}
-                  onChange={(e) =>
-                    setService({ ...service, description: e.target.value })
-                  }
-                />
-              </Form.Group>
+              </div>
 
-              <Button
-                variant="secondary"
-                onClick={handleCloseServiceModel}
-                style={{ marginRight: "10px", padding: "0" }}
+              <h5 htmlFor="about" className="mb-3">
+                About developer
+              </h5>
+              <textarea
+                style={{ marginBottom: "1rem" }}
+                name="about"
+                id="about"
+                col="30"
+                rows="10"
+                placeholder="About Developer!"
+                value={formData.about}
+                onChange={handleChange}
+                required
+              />
+              <h5 htmlFor="intro" className="mb-3">
+                Developer Introduction
+              </h5>
+              <textarea
+                style={{ marginBottom: "1rem" }}
+                name="intro"
+                id="intro"
+                col="30"
+                rows="10"
+                placeholder="Developer Introduction!"
+                value={formData.intro}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="introVideo">
+                Intro YouTube Video (optional)
+              </label>
+              <input
+                type="url"
+                name="introVideo"
+                id="introVideo"
+                placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                value={formData.introVideo || ""}
+                onChange={handleChange}
+              />
+              <p
+                className="admin-meta"
+                style={{ marginTop: "-0.25rem", marginBottom: "0.5rem" }}
               >
-                Close
-              </Button>
-              <Button
-                variant="primary"
-                style={{ marginRight: "10px", padding: "0" }}
-                onClick={handleService}
-              >
-                Save Changes
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
+                If set, the portfolio hero shows this video. If empty, a custom
+                animation is shown instead.
+              </p>
+            </div>
+          )}
+        </fieldset>
 
-        <Modal show={showLink} onHide={handleCloseLinkModel}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add platform link</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form
-              style={{ background: "white", padding: "2rem", margin: "1rem" }}
+        {!view && (
+          <button type="submit" className="admin-btn admin-btn-primary">
+            {routeMode === "edit" ? "Update" : "Save"}
+          </button>
+        )}
+      </form>
+
+      {/* Add Skill Modal */}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Skill</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            style={{ background: "white", padding: "2rem", margin: "2rem" }}
+          >
+            <Form.Group>
+              <Form.Label>Skill Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter name"
+                name="title"
+                id="title"
+                value={skill?.skillName}
+                onChange={(e) => setSkill(e.target.value)}
+              />
+            </Form.Group>
+
+            <Button
+              variant="secondary"
+              onClick={handleClose}
+              style={{ marginRight: "10px", padding: "0" }}
             >
-              <Form.Group>{renderLinksFields()}</Form.Group>
-            </Form>
-          </Modal.Body>
-        </Modal>
-      </div>
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              style={{ marginRight: "10px", padding: "0" }}
+              onClick={handleSkill}
+            >
+              Save Changes
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Add Services Model */}
+      <Modal show={showSerivce} onHide={handleCloseServiceModel}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Services</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            style={{ background: "white", padding: "2rem", margin: "2rem" }}
+          >
+            <Form.Group>
+              <Form.Label>Service Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter name"
+                name="name"
+                id="name"
+                value={service?.name}
+                onChange={(e) =>
+                  setService({ ...service, name: e.target.value })
+                }
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Service Icon</Form.Label>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                {(() => {
+                  const Icon = getServiceIcon(service.icon);
+                  return <Icon size={22} color="#069c7a" />;
+                })()}
+                <Form.Select
+                  value={service.icon || "code"}
+                  onChange={(e) =>
+                    setService({ ...service, icon: e.target.value })
+                  }
+                >
+                  {SERVICE_ICON_OPTIONS.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Service Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                placeholder="Enter description"
+                name="description"
+                id="description"
+                value={service.description}
+                onChange={(e) =>
+                  setService({ ...service, description: e.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Button
+              variant="secondary"
+              onClick={handleCloseServiceModel}
+              style={{ marginRight: "10px", padding: "0" }}
+            >
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              style={{ marginRight: "10px", padding: "0" }}
+              onClick={handleService}
+            >
+              Save Changes
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showLink} onHide={handleCloseLinkModel}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add platform link</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            style={{ background: "white", padding: "2rem", margin: "1rem" }}
+          >
+            <Form.Group>{renderLinksFields()}</Form.Group>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

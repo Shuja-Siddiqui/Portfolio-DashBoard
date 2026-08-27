@@ -35,7 +35,7 @@ export default function Header({ children }) {
 
     {
       path: "/testimonialsDashboard",
-      name: "Testiminials",
+      name: "Testimonials",
       icon: <GiNothingToSay />,
     },
     {

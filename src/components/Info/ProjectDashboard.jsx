@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Row } from "react-bootstrap";
-import { fetchProjects, removeProject } from "../../api";
+import { fetchProjects, removeProject, baseURL } from "../../api";
 import { useNavigate } from "react-router-dom";
-import { ProjectInfoCard } from "./ProjectInfoCard";
+import "./AdminEntity.css";
 
 export const ProjectDashboard = () => {
   const [data, setData] = useState([]);
@@ -14,15 +13,11 @@ export const ProjectDashboard = () => {
     setData(users || []);
   }, []);
 
-  const handleEdit = (id) => {
-    navigate(`edit/${id}`);
-  };
-
-  const onView = (id) => {
-    navigate(`view/${id}`);
-  };
+  const handleEdit = (id) => navigate(`edit/${id}`);
+  const onView = (id) => navigate(`view/${id}`);
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Delete this project? This cannot be undone.")) return;
     await removeProject(id);
     await fetchDev();
   };
@@ -51,70 +46,102 @@ export const ProjectDashboard = () => {
   }, [data, query]);
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <h2>Projects</h2>
+        <div className="admin-header-actions">
+          <button
+            type="button"
+            className="admin-btn-primary"
+            onClick={() => navigate("/projects")}
+          >
+            + Add Project
+          </button>
+        </div>
+      </div>
+
+      <input
+        className="admin-search"
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by name, client, stack, or layout…"
+      />
+      <p className="admin-meta">
+        Showing {filtered.length} of {data.length} projects
+      </p>
+
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "1rem",
-          flexWrap: "wrap",
-          marginBottom: "1rem",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          gap: "0.85rem",
         }}
       >
-        <h2 className="text-white" style={{ margin: 0 }}>
-          Projects
-        </h2>
-        <button type="button" onClick={() => navigate("/projects")}>
-          + Add Project
-        </button>
-      </div>
-
-      <div style={{ marginBottom: "1rem" }}>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name, client, tech stack, or layout…"
-          style={{
-            width: "100%",
-            maxWidth: "420px",
-            padding: "0.65rem 0.85rem",
-            borderRadius: "8px",
-            border: "1px solid #444",
-            background: "#1a1a22",
-            color: "#fff",
-          }}
-        />
-        <p style={{ color: "#9a9a9a", fontSize: "0.85rem", marginTop: "0.4rem" }}>
-          Showing {filtered.length} of {data.length} projects
-        </p>
-      </div>
-
-      <Row xs={1} md={2} className="g-4">
-        {filtered.map(({ projectName, clientName, techStack, _id, detailLayout }) => (
-          <div key={_id} className="col">
-            <ProjectInfoCard
-              projectName={projectName}
-              clientName={clientName}
-              techStack={
-                detailLayout === "showcase"
-                  ? `${techStack || ""} · Showcase`
-                  : techStack
-              }
-              onEdit={() => handleEdit(_id)}
-              onView={() => onView(_id)}
-              onRemove={() => handleDelete(_id)}
-              id={_id}
-            />
+        {filtered.map((p) => (
+          <div key={p._id} className="admin-card" style={{ marginBottom: 0 }}>
+            {p.hero ? (
+              <div
+                style={{
+                  width: "100%",
+                  height: 120,
+                  borderRadius: 8,
+                  marginBottom: "0.75rem",
+                  backgroundImage: `url(${baseURL}/file/${p.hero})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  border: "1px solid #3a3a48",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: 80,
+                  borderRadius: 8,
+                  marginBottom: "0.75rem",
+                  background: "#1a1a22",
+                  border: "1px solid #3a3a48",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#666",
+                  fontSize: "0.85rem",
+                }}
+              >
+                No thumbnail
+              </div>
+            )}
+            <h3 className="admin-card-title">
+              {p.projectName}
+              <span className="admin-layout-badge">
+                {p.detailLayout === "showcase" ? "Showcase" : "Classic"}
+              </span>
+            </h3>
+            <p className="admin-card-sub">
+              {p.clientName || "—"} · {p.techStack || "No stack"}
+            </p>
+            <div className="admin-card-actions">
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={() => handleEdit(p._id)}
+              >
+                Edit
+              </button>
+              <button type="button" onClick={() => onView(p._id)}>
+                View
+              </button>
+              <button type="button" onClick={() => handleDelete(p._id)}>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
-      </Row>
+      </div>
 
       {filtered.length === 0 && (
-        <p style={{ color: "#aaa", marginTop: "1.5rem" }}>
-          No projects match your search.
-        </p>
+        <p className="admin-meta">No projects match your search.</p>
       )}
     </div>
   );
