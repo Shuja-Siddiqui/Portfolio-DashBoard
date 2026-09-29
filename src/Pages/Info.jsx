@@ -1062,45 +1062,59 @@ export default function Info() {
                   </button>
                 ) : null}
               </div>
-              <div className="resume-list">
-                {resumeExperience.map((item) => (
-                  <div key={item._id} className="resume-row">
-                    <div className="resume-row-main">
-                      <h4 className="resume-row-title">
-                        {item.role || "Untitled role"}
-                      </h4>
-                      <p className="resume-row-sub">
-                        {item.company || "—"} · {formatSpan(item.timeSpan)}
-                      </p>
-                    </div>
-                    <div className="resume-row-actions">
-                      <button
-                        type="button"
-                        className="admin-btn-primary"
-                        onClick={() =>
-                          navigate(
-                            `/experience/edit/${item._id}?devId=${params.id}`
-                          )
-                        }
-                      >
-                        Edit
-                      </button>
-                      {!view && (
-                        <button
-                          type="button"
-                          className="admin-btn-danger"
-                          onClick={() => handleDeleteExperience(item._id)}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {!resumeExperience.length && (
-                  <p className="admin-meta">No experience linked yet.</p>
-                )}
-              </div>
+              {resumeExperience.length ? (
+                <ul className="admin-timeline">
+                  {resumeExperience.map((item) => (
+                    <li key={item._id} className="admin-timeline-item">
+                      <div className="admin-timeline-meta">
+                        <h6 className="admin-timeline-company">
+                          {item.company || "—"}
+                        </h6>
+                        <p className="admin-timeline-years">
+                          {formatSpan(item.timeSpan)}
+                        </p>
+                        <span className="admin-timeline-dot" aria-hidden="true" />
+                      </div>
+                      <div className="admin-timeline-body">
+                        <h4 className="admin-timeline-role">
+                          {item.role || "Untitled role"}
+                        </h4>
+                        {item.description ? (
+                          <p className="admin-timeline-desc">
+                            {item.description}
+                          </p>
+                        ) : null}
+                        <div className="admin-card-actions">
+                          <button
+                            type="button"
+                            className="admin-btn-primary"
+                            onClick={() =>
+                              navigate(
+                                `/experience/edit/${item._id}?devId=${params.id}`
+                              )
+                            }
+                          >
+                            Edit
+                          </button>
+                          {!view && (
+                            <button
+                              type="button"
+                              className="admin-btn-danger"
+                              onClick={() =>
+                                handleDeleteExperience(item._id)
+                              }
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="admin-meta">No experience linked yet.</p>
+              )}
 
               <div className="admin-page-header" style={{ marginBottom: "0.75rem" }}>
                 <h3 style={{ margin: 0 }}>Education</h3>
@@ -1116,45 +1130,57 @@ export default function Info() {
                   </button>
                 ) : null}
               </div>
-              <div className="resume-list">
-                {resumeEducation.map((item) => (
-                  <div key={item._id} className="resume-row">
-                    <div className="resume-row-main">
-                      <h4 className="resume-row-title">
-                        {item.major || "Untitled major"}
-                      </h4>
-                      <p className="resume-row-sub">
-                        {item.institution || "—"} · {formatSpan(item.timeSpan)}
-                      </p>
-                    </div>
-                    <div className="resume-row-actions">
-                      <button
-                        type="button"
-                        className="admin-btn-primary"
-                        onClick={() =>
-                          navigate(
-                            `/education/edit/${item._id}?devId=${params.id}`
-                          )
-                        }
-                      >
-                        Edit
-                      </button>
-                      {!view && (
-                        <button
-                          type="button"
-                          className="admin-btn-danger"
-                          onClick={() => handleDeleteEducation(item._id)}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {!resumeEducation.length && (
-                  <p className="admin-meta">No education linked yet.</p>
-                )}
-              </div>
+              {resumeEducation.length ? (
+                <ul className="admin-timeline">
+                  {resumeEducation.map((item) => (
+                    <li key={item._id} className="admin-timeline-item">
+                      <div className="admin-timeline-meta">
+                        <h6 className="admin-timeline-company">
+                          {item.institution || "—"}
+                        </h6>
+                        <p className="admin-timeline-years">
+                          {formatSpan(item.timeSpan)}
+                        </p>
+                        <span className="admin-timeline-dot" aria-hidden="true" />
+                      </div>
+                      <div className="admin-timeline-body">
+                        <h4 className="admin-timeline-role">
+                          {item.major || "Untitled major"}
+                        </h4>
+                        {item.description ? (
+                          <p className="admin-timeline-desc">
+                            {item.description}
+                          </p>
+                        ) : null}
+                        <div className="admin-card-actions">
+                          <button
+                            type="button"
+                            className="admin-btn-primary"
+                            onClick={() =>
+                              navigate(
+                                `/education/edit/${item._id}?devId=${params.id}`
+                              )
+                            }
+                          >
+                            Edit
+                          </button>
+                          {!view && (
+                            <button
+                              type="button"
+                              className="admin-btn-danger"
+                              onClick={() => handleDeleteEducation(item._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="admin-meta">No education linked yet.</p>
+              )}
 
               {!params?.id && (
                 <p className="admin-meta">

@@ -205,6 +205,145 @@
   gap: 0.4rem;
 }
 
+/* Portfolio-style timeline grouped by developer */
+.admin-dev-group {
+  border: 1px solid #3a3a48;
+  border-radius: 12px;
+  background: #23232e;
+  padding: 1rem 1.1rem 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.admin-dev-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #3a3a48;
+}
+
+.admin-dev-group-title {
+  margin: 0 0 0.25rem;
+  color: #fff;
+  font-size: 1.15rem;
+}
+
+.admin-dev-group-sub {
+  margin: 0;
+  color: #9a9a9a;
+  font-size: 0.82rem;
+}
+
+.admin-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.5rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .admin-timeline::before {
+    content: "";
+    position: absolute;
+    left: 11.5rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: #3b3b3b;
+  }
+}
+
+.admin-timeline-item {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1.1rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid #3a3a48;
+  border-radius: 10px;
+  background: #1a1a22;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .admin-timeline-item {
+    grid-template-columns: 11rem 1fr;
+    gap: 1.5rem;
+    border: 0;
+    background: transparent;
+    padding: 0.35rem 0 0.85rem;
+    border-radius: 0;
+  }
+}
+
+.admin-timeline-meta {
+  position: relative;
+}
+
+.admin-timeline-company {
+  margin: 0 0 0.25rem;
+  color: #cfcfcf;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.admin-timeline-years {
+  margin: 0;
+  color: #8a8a8a;
+  font-size: 0.82rem;
+}
+
+.admin-timeline-dot {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .admin-timeline-dot {
+    display: block;
+    position: absolute;
+    right: -1.55rem;
+    top: 0.35rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: rgba(66, 67, 68, 0.55);
+  }
+
+  .admin-timeline-dot::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #01be96;
+  }
+}
+
+.admin-timeline-body {
+  min-width: 0;
+}
+
+.admin-timeline-role {
+  margin: 0 0 0.4rem;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.admin-timeline-desc {
+  margin: 0 0 0.75rem;
+  color: #b8b8b8;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
 /* Developer form tabs */
 .dev-form {
   max-width: 920px;

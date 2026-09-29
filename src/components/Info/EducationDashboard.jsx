@@ -1,23 +1,29 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchEducations, removeEducation } from "../../api";
+import { getDevelopers, removeEducation } from "../../api";
 import { useNavigate } from "react-router-dom";
 import "./AdminEntity.css";
 
 const formatSpan = (timeSpan) => {
   if (!timeSpan) return "—";
-  const start = timeSpan.startYear || "?";
-  const end = timeSpan.endYear || "?";
-  return `${start} – ${end}`;
+  return `${timeSpan.startYear || "?"} – ${timeSpan.endYear || "?"}`;
 };
 
+const sortEducation = (list = []) =>
+  [...list].sort((a, b) => {
+    const endA = parseInt(a?.timeSpan?.endYear, 10) || 0;
+    const endB = parseInt(b?.timeSpan?.endYear, 10) || 0;
+    if (endA !== endB) return endB - endA;
+    return (b?.timeSpan?.startYear || 0) - (a?.timeSpan?.startYear || 0);
+  });
+
 export const EducationDashboard = () => {
-  const [data, setData] = useState([]);
+  const [developers, setDevelopers] = useState([]);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
   const load = useCallback(async () => {
-    const res = await fetchEducations();
-    setData(res?.data || []);
+    const users = await getDevelopers();
+    setDevelopers(users || []);
   }, []);
 
   useEffect(() => {
@@ -32,20 +38,34 @@ export const EducationDashboard = () => {
     await load();
   };
 
-  const filtered = useMemo(() => {
+  const visibleGroups = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return data;
-    return data.filter((item) => {
-      const institution = String(item?.institution || "").toLowerCase();
-      const major = String(item?.major || "").toLowerCase();
-      const description = String(item?.description || "").toLowerCase();
-      return (
-        institution.includes(q) ||
-        major.includes(q) ||
-        description.includes(q)
-      );
-    });
-  }, [data, query]);
+    return (developers || [])
+      .map((dev) => {
+        const items = sortEducation(
+          (dev.education || []).filter((item) => item && item._id)
+        ).filter((item) => {
+          if (!q) return true;
+          const hay = [
+            item.institution,
+            item.major,
+            item.description,
+            dev.name,
+            dev.devId,
+          ]
+            .map((v) => String(v || "").toLowerCase())
+            .join(" ");
+          return hay.includes(q);
+        });
+        return { dev, items };
+      })
+      .filter((g) => g.items.length > 0);
+  }, [developers, query]);
+
+  const totalEntries = visibleGroups.reduce(
+    (sum, g) => sum + g.items.length,
+    0
+  );
 
   return (
     <div className="admin-page">
@@ -67,48 +87,91 @@ export const EducationDashboard = () => {
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by institution, major, or description…"
+        placeholder="Search by developer, institution, major…"
       />
       <p className="admin-meta">
-        Showing {filtered.length} of {data.length} entries
+        {totalEntries} entr{totalEntries === 1 ? "y" : "ies"} across{" "}
+        {visibleGroups.length} developer
+        {visibleGroups.length === 1 ? "" : "s"}
       </p>
 
-      <div className="admin-resume-grid">
-        {filtered.map((item) => (
-          <div key={item._id} className="admin-card" style={{ marginBottom: 0 }}>
-            <h3 className="admin-card-title">
-              {item.major || "Untitled major"}
-            </h3>
-            <p className="admin-card-sub">
-              {item.institution || "—"} · {formatSpan(item.timeSpan)}
-            </p>
-            {item.description ? (
-              <p className="admin-card-snippet">{item.description}</p>
-            ) : null}
-            <div className="admin-card-actions">
+      {visibleGroups.map(({ dev, items }) => (
+        <section key={dev._id} className="admin-dev-group">
+          <header className="admin-dev-group-head">
+            <div>
+              <h3 className="admin-dev-group-title">{dev.name || "Untitled"}</h3>
+              <p className="admin-dev-group-sub">
+                Dev ID: {dev.devId || "—"} · {items.length} education
+                {items.length === 1 ? "" : "s"}
+              </p>
+            </div>
+            <div className="admin-header-actions">
+              <button
+                type="button"
+                onClick={() => navigate(`/developers/edit/${dev._id}`)}
+              >
+                Edit developer
+              </button>
               <button
                 type="button"
                 className="admin-btn-primary"
-                onClick={() => navigate(`/education/edit/${item._id}`)}
+                onClick={() => navigate(`/education?devId=${dev._id}`)}
               >
-                Edit
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(`/education/view/${item._id}`)}
-              >
-                View
-              </button>
-              <button type="button" onClick={() => handleDelete(item._id)}>
-                Delete
+                + Add for this dev
               </button>
             </div>
-          </div>
-        ))}
-      </div>
+          </header>
 
-      {filtered.length === 0 && (
-        <p className="admin-meta">No education entries match your search.</p>
+          <ul className="admin-timeline">
+            {items.map((item) => (
+              <li key={item._id} className="admin-timeline-item">
+                <div className="admin-timeline-meta">
+                  <h6 className="admin-timeline-company">
+                    {item.institution || "—"}
+                  </h6>
+                  <p className="admin-timeline-years">
+                    {formatSpan(item.timeSpan)}
+                  </p>
+                  <span className="admin-timeline-dot" aria-hidden="true" />
+                </div>
+                <div className="admin-timeline-body">
+                  <h4 className="admin-timeline-role">
+                    {item.major || "Untitled major"}
+                  </h4>
+                  {item.description ? (
+                    <p className="admin-timeline-desc">{item.description}</p>
+                  ) : null}
+                  <div className="admin-card-actions">
+                    <button
+                      type="button"
+                      className="admin-btn-primary"
+                      onClick={() =>
+                        navigate(
+                          `/education/edit/${item._id}?devId=${dev._id}`
+                        )
+                      }
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn-danger"
+                      onClick={() => handleDelete(item._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      {visibleGroups.length === 0 && (
+        <p className="admin-meta">
+          No education entries found. Add one or clear your search.
+        </p>
       )}
     </div>
   );
