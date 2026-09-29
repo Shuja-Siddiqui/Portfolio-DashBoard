@@ -1,57 +1,111 @@
-import React, { useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
-import { fetchExperiences } from "../../api";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchExperiences, removeExperience } from "../../api";
 import { useNavigate } from "react-router-dom";
-import { ExperienceInfoCard } from "./ExperienceInfoCard";
+import "./AdminEntity.css";
+
+const formatSpan = (timeSpan) => {
+  if (!timeSpan) return "—";
+  const start = timeSpan.startYear || "?";
+  const end = timeSpan.endYear || "?";
+  return `${start} – ${end}`;
+};
 
 export const ExperienceDashboard = () => {
   const [data, setData] = useState([]);
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
-  const fetchExperience = async () => {
-    const users = await fetchExperiences();
-    setData(users.data);
-  };
 
-  useEffect(() => {
-    fetchExperience();
+  const load = useCallback(async () => {
+    const res = await fetchExperiences();
+    setData(res?.data || []);
   }, []);
 
-  const handleEdit = (id) => {
-    navigate(`edit/${id}`);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this experience? This cannot be undone.")) {
+      return;
+    }
+    await removeExperience(id);
+    await load();
   };
 
-  const onView = (id) => {
-    navigate(`view/${id}`);
-  };
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter((item) => {
+      const company = String(item?.company || "").toLowerCase();
+      const role = String(item?.role || "").toLowerCase();
+      const description = String(item?.description || "").toLowerCase();
+      return (
+        company.includes(q) || role.includes(q) || description.includes(q)
+      );
+    });
+  }, [data, query]);
 
   return (
-    <div style={{ width: "100%" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 className="text-white">Experience</h2>
-        <button onClick={() => navigate("/experience")}>+Add Experience</button>
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <h2>Experience</h2>
+        <div className="admin-header-actions">
+          <button
+            type="button"
+            className="admin-btn-primary"
+            onClick={() => navigate("/experience")}
+          >
+            + Add Experience
+          </button>
+        </div>
       </div>
-      {console.log("data.length", data.length)}
-      <Row xs={1} md={2} className="g-4">
-        {data &&
-          data.map(({ description, company, role, _id }) => (
-            <div key={_id} className="col">
-              <ExperienceInfoCard
-                description={description}
-                company={company}
-                role={role}
-                onEdit={() => handleEdit(_id)}
-                onView={() => onView(_id)}
-                id={_id}
-              />
+
+      <input
+        className="admin-search"
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by company, role, or description…"
+      />
+      <p className="admin-meta">
+        Showing {filtered.length} of {data.length} entries
+      </p>
+
+      <div className="admin-resume-grid">
+        {filtered.map((item) => (
+          <div key={item._id} className="admin-card" style={{ marginBottom: 0 }}>
+            <h3 className="admin-card-title">{item.role || "Untitled role"}</h3>
+            <p className="admin-card-sub">
+              {item.company || "—"} · {formatSpan(item.timeSpan)}
+            </p>
+            {item.description ? (
+              <p className="admin-card-snippet">{item.description}</p>
+            ) : null}
+            <div className="admin-card-actions">
+              <button
+                type="button"
+                className="admin-btn-primary"
+                onClick={() => navigate(`/experience/edit/${item._id}`)}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/experience/view/${item._id}`)}
+              >
+                View
+              </button>
+              <button type="button" onClick={() => handleDelete(item._id)}>
+                Delete
+              </button>
             </div>
-          ))}
-      </Row>
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <p className="admin-meta">No experience entries match your search.</p>
+      )}
     </div>
   );
 };

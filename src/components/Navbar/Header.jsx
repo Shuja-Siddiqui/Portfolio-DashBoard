@@ -4,9 +4,10 @@ import {
   FaUserAlt,
   FaDiceD20,
   FaVideo,
+  FaBriefcase,
 } from "react-icons/fa";
 import { AiOutlineProject } from "react-icons/ai";
-import { GiNothingToSay } from "react-icons/gi";
+import { GiNothingToSay, GiGraduateCap } from "react-icons/gi";
 import { NavLink } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
 import { BsFileText } from "react-icons/bs";
@@ -26,7 +27,16 @@ export default function Header({ children }) {
       name: "Projects",
       icon: <AiOutlineProject />,
     },
-
+    {
+      path: "/experienceDashboard",
+      name: "Experience",
+      icon: <FaBriefcase />,
+    },
+    {
+      path: "/educationDashboard",
+      name: "Education",
+      icon: <GiGraduateCap />,
+    },
     {
       path: "/servicesDashboard",
       name: "Services",
@@ -48,16 +58,6 @@ export default function Header({ children }) {
       name: "Videos",
       icon: <FaVideo />,
     },
-    // {
-    //   path: "/educationDashboard",
-    //   name: "Education",
-    //   icon: <GiGraduateCap />,
-    // },
-    // {
-    //   path: "/experienceDashboard",
-    //   name: "Experience",
-    //   icon: <IoNewspaperOutline />
-    // },
     {
       path: "/logout",
       name: "Logout",

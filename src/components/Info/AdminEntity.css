@@ -141,6 +141,70 @@
   margin-left: 0.4rem;
 }
 
+.admin-resume-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.85rem;
+}
+
+.admin-card-snippet {
+  color: #b8b8b8;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0 0 0.85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-btn-danger {
+  border-color: #7a3a3a !important;
+  color: #ffb4b4 !important;
+}
+
+.resume-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.resume-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid #3a3a48;
+  border-radius: 10px;
+  background: #1a1a22;
+}
+
+.resume-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.resume-row-title {
+  margin: 0 0 0.25rem;
+  color: #fff;
+  font-size: 0.98rem;
+}
+
+.resume-row-sub {
+  margin: 0;
+  color: #9a9a9a;
+  font-size: 0.82rem;
+}
+
+.resume-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 /* Developer form tabs */
 .dev-form {
   max-width: 920px;

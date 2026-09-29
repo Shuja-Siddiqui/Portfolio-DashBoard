@@ -12,6 +12,8 @@ import {
   fetchTestimonials,
   fetchServices,
   addService,
+  removeEducation,
+  removeExperience,
 } from "../api";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -32,6 +34,8 @@ export default function Info() {
   const [skill, setSkill] = useState({ skillName: "" });
   const [skillSearch, setSkillSearch] = useState("");
   const [activeTab, setActiveTab] = useState("profile");
+  const [resumeEducation, setResumeEducation] = useState([]);
+  const [resumeExperience, setResumeExperience] = useState([]);
   const [service, setService] = useState({
     name: "",
     description: "",
@@ -171,6 +175,12 @@ export default function Info() {
           typedOrder: skill?.typedOrder || "",
         }));
         setFile(developer?.avatar);
+        setResumeEducation(
+          Array.isArray(developer?.education) ? developer.education : []
+        );
+        setResumeExperience(
+          Array.isArray(developer?.experience) ? developer.experience : []
+        );
         // Update formData with refined skills only
         setFormData((prevFormData) => ({
           ...prevFormData,
@@ -543,8 +553,26 @@ export default function Info() {
     { id: "profile", label: "Profile" },
     { id: "skills", label: "Skills" },
     { id: "portfolio", label: "Portfolio" },
+    { id: "resume", label: "Resume" },
     { id: "media", label: "Media" },
   ];
+
+  const formatSpan = (timeSpan) => {
+    if (!timeSpan) return "—";
+    return `${timeSpan.startYear || "?"} – ${timeSpan.endYear || "?"}`;
+  };
+
+  const handleDeleteEducation = async (eduId) => {
+    if (!window.confirm("Delete this education entry?")) return;
+    await removeEducation(eduId);
+    setResumeEducation((prev) => prev.filter((e) => e?._id !== eduId));
+  };
+
+  const handleDeleteExperience = async (expId) => {
+    if (!window.confirm("Delete this experience entry?")) return;
+    await removeExperience(expId);
+    setResumeExperience((prev) => prev.filter((e) => e?._id !== expId));
+  };
 
   return (
     <div className="dev-form admin-page">
@@ -1017,6 +1045,126 @@ export default function Info() {
             </div>
           )}
         </fieldset>
+
+          {activeTab === "resume" && (
+            <div className="dev-section">
+              <div className="admin-page-header" style={{ marginBottom: "0.75rem" }}>
+                <h3 style={{ margin: 0 }}>Experience</h3>
+                {!view && params?.id ? (
+                  <button
+                    type="button"
+                    className="admin-btn-primary"
+                    onClick={() =>
+                      navigate(`/experience?devId=${params.id}`)
+                    }
+                  >
+                    + Add Experience
+                  </button>
+                ) : null}
+              </div>
+              <div className="resume-list">
+                {resumeExperience.map((item) => (
+                  <div key={item._id} className="resume-row">
+                    <div className="resume-row-main">
+                      <h4 className="resume-row-title">
+                        {item.role || "Untitled role"}
+                      </h4>
+                      <p className="resume-row-sub">
+                        {item.company || "—"} · {formatSpan(item.timeSpan)}
+                      </p>
+                    </div>
+                    <div className="resume-row-actions">
+                      <button
+                        type="button"
+                        className="admin-btn-primary"
+                        onClick={() =>
+                          navigate(
+                            `/experience/edit/${item._id}?devId=${params.id}`
+                          )
+                        }
+                      >
+                        Edit
+                      </button>
+                      {!view && (
+                        <button
+                          type="button"
+                          className="admin-btn-danger"
+                          onClick={() => handleDeleteExperience(item._id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {!resumeExperience.length && (
+                  <p className="admin-meta">No experience linked yet.</p>
+                )}
+              </div>
+
+              <div className="admin-page-header" style={{ marginBottom: "0.75rem" }}>
+                <h3 style={{ margin: 0 }}>Education</h3>
+                {!view && params?.id ? (
+                  <button
+                    type="button"
+                    className="admin-btn-primary"
+                    onClick={() =>
+                      navigate(`/education?devId=${params.id}`)
+                    }
+                  >
+                    + Add Education
+                  </button>
+                ) : null}
+              </div>
+              <div className="resume-list">
+                {resumeEducation.map((item) => (
+                  <div key={item._id} className="resume-row">
+                    <div className="resume-row-main">
+                      <h4 className="resume-row-title">
+                        {item.major || "Untitled major"}
+                      </h4>
+                      <p className="resume-row-sub">
+                        {item.institution || "—"} · {formatSpan(item.timeSpan)}
+                      </p>
+                    </div>
+                    <div className="resume-row-actions">
+                      <button
+                        type="button"
+                        className="admin-btn-primary"
+                        onClick={() =>
+                          navigate(
+                            `/education/edit/${item._id}?devId=${params.id}`
+                          )
+                        }
+                      >
+                        Edit
+                      </button>
+                      {!view && (
+                        <button
+                          type="button"
+                          className="admin-btn-danger"
+                          onClick={() => handleDeleteEducation(item._id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {!resumeEducation.length && (
+                  <p className="admin-meta">No education linked yet.</p>
+                )}
+              </div>
+
+              {!params?.id && (
+                <p className="admin-meta">
+                  Save the developer first, then add education and experience
+                  from this tab.
+                </p>
+              )}
+            </div>
+          )}
+
 
         {!view && (
           <button type="submit" className="admin-btn admin-btn-primary">

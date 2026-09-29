@@ -44,11 +44,17 @@ export const DeveloperDashboard = () => {
           >
             + Add Developer
           </button>
-          <button type="button" onClick={() => navigate("/education")}>
-            + Education
+          <button type="button" onClick={() => navigate("/experienceDashboard")}>
+            Experience
+          </button>
+          <button type="button" onClick={() => navigate("/educationDashboard")}>
+            Education
           </button>
           <button type="button" onClick={() => navigate("/experience")}>
             + Experience
+          </button>
+          <button type="button" onClick={() => navigate("/education")}>
+            + Education
           </button>
         </div>
       </div>

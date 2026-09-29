@@ -6,7 +6,12 @@ import {
   fetchEducation,
   updateEducation,
 } from "../api";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 export const Education = () => {
   const [developers, setDevelopers] = useState([]);
@@ -27,11 +32,11 @@ export const Education = () => {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  //   HANDLE FORM STATE
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "startYear" || (name === "endYear" && name !== "major")) {
+    if (name === "startYear" || name === "endYear") {
       let tempTimeSpan = { ...formData.timeSpan };
       tempTimeSpan[name] = value;
       setFormData({ ...formData, timeSpan: tempTimeSpan });
@@ -43,8 +48,6 @@ export const Education = () => {
     }
   };
 
-  // USE EFFECT TO CHECK IF ITs EDIT/VIEW REQ
-
   useEffect(() => {
     if (params?.id) setId(params.id);
     else setId("");
@@ -52,7 +55,6 @@ export const Education = () => {
     setView(location.pathname.split("/")[2] === "view");
   }, [params?.id, location.pathname]);
 
-  // USEFFECT FOR DEVS
   useEffect(() => {
     (async () => {
       const devs = await fetchAllDevelopers();
@@ -62,71 +64,66 @@ export const Education = () => {
     })();
   }, []);
 
-  //   GET EDUCATION TO EDIT
+  useEffect(() => {
+    const qDevId = searchParams.get("devId");
+    if (qDevId) {
+      setFormData((prev) => ({
+        ...prev,
+        devId: prev.devId || qDevId,
+      }));
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
         const res = await fetchEducation(id);
         if (res?.status === 200) {
-          setFormData(res?.data);
+          const data = res?.data || {};
+          const fromDoc =
+            typeof data.devId === "object" && data.devId?._id
+              ? data.devId._id
+              : data.devId || "";
+          setFormData((prev) => ({
+            ...data,
+            timeSpan: data.timeSpan || { startYear: "", endYear: "" },
+            devId: fromDoc || prev.devId || searchParams.get("devId") || "",
+          }));
         }
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [id]);
+  }, [id, searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Start loading
     setIsLoading(true);
     try {
       let res;
       if (!id) {
         res = await addEducation(formData);
-        if (res?.status === 200 || res?.status === 201) {
-          console.log(res);
-          setFormData({
-            devId: "",
-            institution: "",
-            major: "",
-            timeSpan: {
-              startYear: "",
-              endYear: "",
-            },
-            description: "",
-          });
-        }
       } else {
         res = await updateEducation(id, formData);
-        if (res?.status === 200 || res?.status === 201) {
-          console.log(res);
-          setFormData({
-            devId: "",
-            institution: "",
-            major: "",
-            timeSpan: {
-              startYear: "",
-              endYear: "",
-            },
-            description: "",
-          });
-        }
       }
-      if (res) {
-        navigate("/developers");
-        alert("Education updated successfully!");
+      if (res?.status === 200 || res?.status === 201) {
+        const dest = formData.devId
+          ? `/developers/edit/${formData.devId}`
+          : "/educationDashboard";
+        navigate(dest);
+        alert(
+          id
+            ? "Education updated successfully!"
+            : "Education added successfully!"
+        );
       }
     } catch (error) {
       console.log(error);
     }
-    // End loading
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group>
@@ -181,6 +178,7 @@ export const Education = () => {
           name="endYear"
           value={formData?.timeSpan?.endYear}
           onChange={handleChange}
+          readOnly={view}
         />
       </Form.Group>
 
@@ -212,9 +210,7 @@ export const Education = () => {
         />
       </Form.Group>
 
-      {location.pathname.split("/")[2] === "view" ? (
-        <></>
-      ) : (
+      {location.pathname.split("/")[2] === "view" ? null : (
         <button variant="primary" type="submit">
           {isLoading
             ? "Loading..."

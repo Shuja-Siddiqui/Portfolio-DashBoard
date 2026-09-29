@@ -6,7 +6,12 @@ import {
   fetchExperience,
   updateExperience,
 } from "../api";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 export const Experience = () => {
   const [developers, setDevelopers] = useState([]);
@@ -22,17 +27,16 @@ export const Experience = () => {
       endYear: "",
     },
     description: "",
-    summary: "",
   });
 
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  //   HANDLE FORM STATE
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "startYear" || (name === "endYear" && name !== "role")) {
+    if (name === "startYear" || name === "endYear") {
       let tempTimeSpan = { ...formData.timeSpan };
       tempTimeSpan[name] = value;
       setFormData({ ...formData, timeSpan: tempTimeSpan });
@@ -44,8 +48,6 @@ export const Experience = () => {
     }
   };
 
-  // USE EFFECT TO CHECK IF ITs EDIT/VIEW REQ
-
   useEffect(() => {
     if (params?.id) setId(params.id);
     else setId("");
@@ -53,7 +55,6 @@ export const Experience = () => {
     setView(location.pathname.split("/")[2] === "view");
   }, [params?.id, location.pathname]);
 
-  // USEFFECT FOR DEVS
   useEffect(() => {
     (async () => {
       const devs = await fetchAllDevelopers();
@@ -63,20 +64,41 @@ export const Experience = () => {
     })();
   }, []);
 
-  //   GET EXPERIENCE TO EDIT
+  useEffect(() => {
+    const qDevId = searchParams.get("devId");
+    if (qDevId) {
+      setFormData((prev) => ({
+        ...prev,
+        devId: prev.devId || qDevId,
+      }));
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
         const res = await fetchExperience(id);
         if (res?.status === 200) {
-          setFormData(res?.data);
+          const data = res?.data || {};
+          const fromDoc =
+            typeof data.devId === "object" && data.devId?._id
+              ? data.devId._id
+              : data.devId || "";
+          setFormData((prev) => ({
+            company: data.company || "",
+            role: data.role || "",
+            description: data.description || "",
+            timeSpan: data.timeSpan || { startYear: "", endYear: "" },
+            devId: fromDoc || prev.devId || searchParams.get("devId") || "",
+          }));
         }
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [id]);
+  }, [id, searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -84,67 +106,32 @@ export const Experience = () => {
       let res;
       if (!id) {
         res = await addExperience(formData);
-        if (res?.status === 200 || res?.status === 201) {
-          console.log(res);
-          setFormData({
-            devId: "",
-            company: "",
-            role: "",
-            timeSpan: {
-              startYear: "",
-              endYear: "",
-            },
-            description: "",
-          });
-        }
       } else {
         res = await updateExperience(id, formData);
-        if (res?.status === 200 || res?.status === 201) {
-          console.log(res);
-          setFormData({
-            devId: "",
-            company: "",
-            role: "",
-            timeSpan: {
-              startYear: "",
-              endYear: "",
-            },
-            description: "",
-          });
-        }
       }
-      if (res) {
-        navigate("/developers");
-        alert("Update Successfully!");
+      if (res?.status === 200 || res?.status === 201) {
+        const dest = formData.devId
+          ? `/developers/edit/${formData.devId}`
+          : "/experienceDashboard";
+        navigate(dest);
+        alert(
+          id
+            ? "Experience updated successfully!"
+            : "Experience added successfully!"
+        );
       }
     } catch (error) {
       console.log(error);
     }
     setIsLoading(false);
   };
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group>
-        <Form.Label>Summary</Form.Label>
-        <Form.Control
-          required
-          as="textarea"
-          className="mb-3"
-          rows={3}
-          placeholder="Enter summary"
-          name="summary"
-          value={formData?.summary}
-          onChange={handleChange}
-        />
-      </Form.Group>
-
-      <Form.Group>
         <Form.Label>Developer ID</Form.Label>
         <Form.Control
-          required
+          required={!id}
           as="select"
           name="devId"
           value={formData?.devId}
@@ -225,9 +212,7 @@ export const Experience = () => {
         />
       </Form.Group>
 
-      {location.pathname.split("/")[2] === "view" ? (
-        <></>
-      ) : (
+      {location.pathname.split("/")[2] === "view" ? null : (
         <button variant="primary" type="submit" disabled={isLoading}>
           {isLoading
             ? "Loading..."
